@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # internal apps
-    'students'
+    'students',
+    'marks'
 ]
 
 MIDDLEWARE = [
