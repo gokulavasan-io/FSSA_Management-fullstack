@@ -11,7 +11,7 @@ const App = () => {
 
   // Fetch student names from the API
   useEffect(() => {
-    axios.get(API_PATHS.GET_STUDENTS_NAME)
+    axios.get(`${API_PATHS.GET_STUDENTS_NAME}?section=A`)
       .then((response) => {
         const studentNames = response.data;  // Assuming API returns an array of names
         const initialData = studentNames.map(name => [name, '', '', '']);  // Initialize the table with student names
@@ -29,7 +29,36 @@ const App = () => {
     return ((parseFloat(marks) / 50) * 100).toFixed(2);
   };
   const handleSave = () => {
-    console.log('Data to save:', data);
+  
+    function transformMarksData(marksArray, month, subject) {
+      return {
+        month: month,
+        subject: subject,
+        marks: marksArray.map(item => ({
+          student_name: item[0],
+          mark: item[1] || "", // Default to empty string if mark is empty
+          remark: item[2] || "", // Default to empty string if remark is empty
+        })),
+      };
+    }
+    
+    // Example Usage
+    const month = "March";
+    const subject = "Tech";
+    
+    const formattedData = transformMarksData(data, month, subject);
+    console.log(JSON.stringify(formattedData, null, 2));
+  axios.post(API_PATHS.POST_MARKS, formattedData)
+  .then(response => {
+    console.log("Marks data submitted successfully!", response.data);
+  })
+  .catch(error => {
+    console.error("Error submitting marks data:", error);
+  });
+
+    
+
+
   };
 
 
