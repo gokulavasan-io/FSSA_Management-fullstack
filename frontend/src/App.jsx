@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Button, Box, Paper, Typography, InputLabel, MenuItem, FormControl, Select, TextField } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
+import { Save as SaveIcon, Archive as ArchiveIcon, Unarchive as UnarchiveIcon } from '@mui/icons-material';
+
+
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.css';
@@ -17,10 +19,12 @@ const App = () => {
   const [testNames, setTestNames] = useState([]);
   const [testName,setTestName]=useState('Test 1')
   const [error, setError] = useState('');
+  const [isArchived, setIsArchived] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const month = "January";
   const subject = "English";
-  const isArchived = true;
+  // const isArchived = true;
 
   // Fetch student names from the API
   useEffect(() => {
@@ -82,9 +86,10 @@ const App = () => {
     const formattedData = transformMarksData(data, month, subject);
     console.log(JSON.stringify(formattedData, null, 2));
 
-    axios.post(API_PATHS.POST_MARKS, formattedData)
+    axios.post(API_PATHS.POST_MARK, formattedData)
       .then(response => {
         console.log("Marks data submitted successfully!", response.data);
+        setIsSaved(true);
       })
       .catch(error => {
         console.error("Error submitting marks data:", error.response.data);
@@ -195,6 +200,14 @@ const App = () => {
     }
   }
 
+  const handleArchive = () => {
+    setIsArchived(prevState => {
+      const newState = !prevState;
+      console.log(newState ? 'File Archived' : 'File Unarchived');
+      return newState;
+    });
+  };
+  
 
 
   return (
@@ -204,23 +217,42 @@ const App = () => {
           Marks Entry Table
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button
+  size="small"
+  color={isSaved ? "primary" : "success"}  // Change color after save
+  startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
+  variant="contained"
+  onClick={handleSave}
+  disabled={!!error || !testName.trim() || !section || !month || !totalMark}
+  sx={{
+    borderRadius: 1,
+    textTransform: 'none',
+    padding: '1px 20px',
+    height: 40,
+    boxShadow: 3,
+  }}
+>
+  {isSaved ? "Update" : "Save"}  {/* Toggle between Save and Update */}
+</Button>
             <Button
-              size="small"
-              color="success"
-              startIcon={<SaveIcon />}
-              variant="contained"
-              onClick={handleSave}
-              disabled={!!error || !testName.trim()||!section||!month||!totalMark}
-              sx={{
-                borderRadius: 1,
-                textTransform: 'none',
-                padding: '1px 20px',
-                height: 40,
-                boxShadow: 3,
-              }}
-            >
-              Save
-            </Button>
+  size="small"
+  color={isArchived ? "info" : "warning"}
+  startIcon={isArchived ? <UnarchiveIcon /> : <ArchiveIcon />}
+  variant="contained"
+  onClick={handleArchive}
+  sx={{
+    borderRadius: 1,
+    textTransform: 'none',
+    padding: '1px 20px',
+    height: 40,
+    boxShadow: 3,
+    marginLeft: 2,
+  }}
+>
+  {isArchived ? 'Unarchive' : 'Archive'}
+</Button>
+
+
 
             <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
               <InputLabel id="demo-select-small-label">Section</InputLabel>

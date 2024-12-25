@@ -2,6 +2,10 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('add_mark/', AddTestAndMarksView.as_view(), name='add_test_and_marks'),
-    path('fetch_test_names/', FetchTestNamesView.as_view(), name='fetch_test_names'),
+    path('add_mark/', AddTestAndMarksView.as_view()),
+    path('get_mark/', GetTestAndMarksView.as_view()),
+    path('update_mark/', UpdateTestAndMarksView.as_view()),
+    path('fetch_test_names/', FetchTestNamesView.as_view()),
+    path('rename_test/', RenameTestView.as_view()),
+    path('archive_status_change/', ChangeTestArchiveStatusView.as_view()),
 ]
