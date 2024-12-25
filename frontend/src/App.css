@@ -1,0 +1,18 @@
+.cell-red {
+  background-color: red !important;
+  color: white !important;
+}
+
+.cell-yellow {
+  background-color: yellow !important;
+  color: black !important;
+}
+
+.cell-green {
+  background-color: green !important;
+  color: white !important;
+}
+
+.cell-center {
+  text-align: center !important;
+}

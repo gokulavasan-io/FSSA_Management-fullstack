@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@handsontable/react": "^15.0.0",
+    "@mui/icons-material": "^6.3.0",
+    "@mui/lab": "^6.0.0-beta.21",
+    "handsontable": "^15.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
