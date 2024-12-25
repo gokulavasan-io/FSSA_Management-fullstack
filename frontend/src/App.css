@@ -1,18 +1,58 @@
 .cell-red {
   background-color: red !important;
   color: white !important;
+  font-weight: bolder;
 }
 
 .cell-yellow {
   background-color: yellow !important;
   color: black !important;
+  font-weight: bolder;
 }
 
 .cell-green {
   background-color: green !important;
   color: white !important;
+  font-weight: bolder;
+}
+.cell-absent{
+  background-color: brown !important;
+  color: white !important;
+}
+.cell-names{
+  color: black !important;
 }
 
 .cell-center {
   text-align: center !important;
+}
+
+/* hot styles */
+
+.handsontable td:nth-child(3) {
+  text-align: center !important;
+}
+.handsontable td:nth-child(4) {
+  text-align: center !important;
+}
+
+.handsontable td {
+  padding: 1px 7px;
+} 
+
+.handsontable td, .handsontable th {
+  border-color:  black !important;
+}
+
+.handsontable th {
+  color: black !important; 
+  font-weight: bold; 
+}
+
+.handsontable {
+  border-color:  black !important;
+}
+
+.ht_master tbody tr th {
+  border-color:  black !important;
 }

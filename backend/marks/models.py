@@ -22,16 +22,19 @@ class TestDetail(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)  # Relationship to Subject
     total_marks = models.PositiveIntegerField()  # Maximum marks of the test
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the test was created
+    isArchived = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.test_name} ({self.subject}) - {self.section}"
+        month_str = self.month.strftime('%b') if hasattr(self.month, 'strftime') else str(self.month)[:3]
+        return f"{self.test_name} - {month_str} ({self.subject})"
 
 class Marks(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE)  # Relationship to School (Student)
-    mark = models.FloatField()  # Marks scored in the test
-    average_mark = models.FloatField()  # Average marks of the student
+    mark = models.CharField(max_length=255, blank=True, null=True)  # Marks scored in the test
+    average_mark = models.CharField(max_length=255, blank=True, null=True) # Average marks of the student
     remark = models.CharField(max_length=255, blank=True, null=True)  # Optional remark about the student
     test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE)  # Relationship to TestDetail
 
     def __str__(self):
         return f"{self.student.name}: {self.mark}/{self.test_detail.total_marks}"
+
