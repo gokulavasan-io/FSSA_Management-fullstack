@@ -6,9 +6,9 @@ const API_PATHS = {
     POST_MARK: "http://127.0.0.1:8000/marks/add_mark/",
     GET_MARK: "http://127.0.0.1:8000/marks/get_mark/",
     UPDATE_MARK: "http://127.0.0.1:8000/marks/update_mark/",
-    GET_TEST_NAMES: "http://127.0.0.1:8000/marks/fetch_test_names/",
-    RENAME_TEST: "http://127.0.0.1:8000/marks/rename_test/",
-    ARCHIVE_STATUS_CHANGE: "http://127.0.0.1:8000/marks/archive_status_change/",
+    UPDATE_ARCHIVE: "http://127.0.0.1:8000/marks/update_archive/",
+    GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
+
   };
   
 export default API_PATHS;

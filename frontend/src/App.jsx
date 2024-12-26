@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Button, Box, Paper, Typography, InputLabel, MenuItem, FormControl, Select, TextField } from '@mui/material';
-import { Save as SaveIcon, Archive as ArchiveIcon, Unarchive as UnarchiveIcon } from '@mui/icons-material';
+import { Button, Box, Paper, Typography,IconButton, TextField, } from '@mui/material';
+import { Save as SaveIcon} from '@mui/icons-material';
 
-
+import Sidebar from './sidebarformark.jsx'
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.css';
@@ -15,18 +17,20 @@ const App = () => {
   const [students, setStudents] = useState([]);
   const [data, setData] = useState([]);
   const [section, setSection] = useState('A');
-  const [totalMark, setTotalMark] = useState('100');
+  const [totalMark, setTotalMark] = useState("");
   const [testNames, setTestNames] = useState([]);
-  const [testName,setTestName]=useState('Test 1')
+  const [testName,setTestName]=useState('')
+  const [previousTestName, setPreviousTestName] = useState('');
   const [error, setError] = useState('');
   const [isArchived, setIsArchived] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [testId, setTestId] = useState(null);
+
+
 
   const month = "January";
   const subject = "English";
-  // const isArchived = true;
 
-  // Fetch student names from the API
   useEffect(() => {
     axios.get(`${API_PATHS.GET_STUDENTS_NAME}?section=${section}`)
       .then((response) => {
@@ -43,9 +47,11 @@ const App = () => {
   useEffect(() => {
     if (section && month) {
       axios
-        .get(`${API_PATHS.GET_TEST_NAMES}?section=${section}&month=${month}`)
+        .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}&only_test_names=true`)
         .then((response) => {
           setTestNames(response.data.test_names || []);
+          console.log(response.data.test_names);
+          
         })
         .catch((error) => {
           console.error('Error fetching test names:', error);
@@ -61,7 +67,7 @@ const App = () => {
   };
 
   const handleSave = () => {
-    if (error || testNames.includes(testName)) {
+    if (error || testNames.includes(testName) && !isSaved) {
       setError('Cannot save. Test name already exists.');
       return;
     }
@@ -95,6 +101,36 @@ const App = () => {
         console.error("Error submitting marks data:", error.response.data);
       });
   };
+  const handleUpdate = () => {
+
+    function transformMarksData(marksArray, month, subject) {
+      return {
+        month: month,
+        subject: subject,
+        test_name: testName.trim(),
+        section: section,
+        total_marks: totalMark,
+        isArchived: isArchived,
+        students: marksArray.map(item => ({
+          student_name: item[0],
+          mark: item[1] !== "" ? item[1] : 0.0,
+          average_mark: item[2] !== "" ? item[2] : 0.0,
+          remark: item[3] || "",
+        })),
+      };
+    }
+    const formattedData = transformMarksData(data, month, subject);
+    console.log(JSON.stringify(formattedData, null, 2));
+
+    axios.put(`${API_PATHS.UPDATE_MARK}${testId}/`, formattedData)
+      .then(response => {
+        console.log("Marks data updated successfully!", response.data);
+        
+      })
+      .catch(error => {
+        console.error("Error submitting marks data:", error.message);
+      });
+  };
 
   const columns = [
     { title: 'Student', width: 200, readOnly: true },
@@ -103,18 +139,21 @@ const App = () => {
     { title: 'Remark', width: 100 },
   ];
 
+
   const handleDataChange = useCallback((changes) => {
     if (!changes) return;
-    const updatedData = [...data];
-    changes.forEach(([row, col, oldValue, newValue]) => {
-      updatedData[row][col] = newValue;
-      if (col === 1) {
-        if (newValue === "A") updatedData[row][2] = "Absent";
-        else updatedData[row][2] = calculateMarksOutOf100(newValue);
-      }
+    setData((prevData) => {
+      const updatedData = [...prevData];
+      changes.forEach(([row, col, , newValue]) => {
+        updatedData[row][col] = newValue;
+        if (col === 1) {
+          updatedData[row][2] = newValue === "A" ? "Absent" : calculateMarksOutOf100(newValue);
+        }
+      });
+      return updatedData;
     });
-    setData(updatedData);
-  }, [data, totalMark]);
+  }, [calculateMarksOutOf100]);
+  
 
   const handleBeforeChange = (changes) => {
     if (!changes) return;
@@ -131,8 +170,6 @@ const App = () => {
       }
     }
   };
-
-
  
 
   const cellRenderer = function (instance, td, row, col, prop, value, cellProperties) {
@@ -166,13 +203,22 @@ const App = () => {
   const handleTestNameChange = (event) => {
     const input = event.target.value;
     setTestName(input);
-    if (testNames.includes(input.trim())) {
+  
+    // Check if the test name is already in use, excluding the current test's name if saved
+    if (testNames.includes(input) && (!isSaved || (isSaved && input !== previousTestName))) {
       setError('Test name already exists.');
     } else {
       setError('');
     }
   };
-
+  
+  
+  const handleStartEditingTestName = () => {
+    if (isSaved) {
+      setPreviousTestName(testName); 
+    }
+  };
+  
 
   const handleTotalMarkKeyPress = (event) => {
     if (event.key === 'Enter') {
@@ -190,39 +236,52 @@ const App = () => {
         return row;
       });
   
-      setData(updatedData);  
+      setData(updatedData); 
+      event.target.blur();
+
     }
   };
 
   const handleKeyPress=(event)=>{
     if (event.key === 'Enter') {
       event.preventDefault(); 
+      event.target.blur();
     }
   }
 
-  const handleArchive = () => {
-    setIsArchived(prevState => {
-      const newState = !prevState;
-      console.log(newState ? 'File Archived' : 'File Unarchived');
-      return newState;
-    });
+  
+
+  const handleOptionClick = (testName, testId, totalMark, isArchived, isSaved) => {
+    console.log(testId);
+    
+    setTestName(testName);  
+    setTestId(testId);  
+    setIsArchived(isArchived);
+    setIsSaved(isSaved);  
+    setTotalMark(totalMark);  
+    setPreviousTestName(testName);
   };
   
 
 
+
   return (
-    <Box sx={{ padding: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <>
+     <DndProvider backend={HTML5Backend}>
+    <Sidebar onOptionClick={handleOptionClick} section={section} month={month} subject={subject} />
+     </DndProvider>
+      
+    <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', maxWidth: '1000px' }}>
         <Typography variant="h5" sx={{ marginBottom: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="primary">
-          Marks Entry Table
-
+          <div>{testName}</div>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Button
   size="small"
-  color={isSaved ? "primary" : "success"}  // Change color after save
+  color={isSaved ? "primary" : "success"}  
   startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
   variant="contained"
-  onClick={handleSave}
+  onClick={isSaved?handleUpdate:handleSave}
   disabled={!!error || !testName.trim() || !section || !month || !totalMark}
   sx={{
     borderRadius: 1,
@@ -232,41 +291,8 @@ const App = () => {
     boxShadow: 3,
   }}
 >
-  {isSaved ? "Update" : "Save"}  {/* Toggle between Save and Update */}
+  {isSaved ? "Update" : "Save"}  
 </Button>
-            <Button
-  size="small"
-  color={isArchived ? "info" : "warning"}
-  startIcon={isArchived ? <UnarchiveIcon /> : <ArchiveIcon />}
-  variant="contained"
-  onClick={handleArchive}
-  sx={{
-    borderRadius: 1,
-    textTransform: 'none',
-    padding: '1px 20px',
-    height: 40,
-    boxShadow: 3,
-    marginLeft: 2,
-  }}
->
-  {isArchived ? 'Unarchive' : 'Archive'}
-</Button>
-
-
-
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="demo-select-small-label">Section</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={section}
-                onChange={handleClassChange}
-              >
-                <MenuItem value={"A"}>Class A</MenuItem>
-                <MenuItem value={"B"}>Class B</MenuItem>
-                <MenuItem value={"C"}>Class C</MenuItem>
-              </Select>
-            </FormControl>
 
             <Box component="form" sx={{ '& > :not(style)': { m: 1, width: '8ch' } }} noValidate autoComplete="off">
               <TextField
@@ -281,22 +307,22 @@ const App = () => {
               />
             </Box>
             <Box component="form" sx={{ '& > :not(style)': { m: 1, width: '8ch' } }} noValidate autoComplete="off">
-              <TextField
-                id="outlined-size-small"
-                size="small"
-                label="Test name"
-                variant="outlined"
-                type="text"
-                value={testName}
-                onChange={handleTestNameChange}
-                error={!!error}
-                helperText={error}
-                onKeyPress={handleKeyPress}
-              />
-            </Box>
+    <TextField
+      id="outlined-size-small"
+      size="small"
+      label="Test name"
+      variant="outlined"
+      type="text"
+      value={testName}
+      onChange={handleTestNameChange}
+      onFocus={handleStartEditingTestName} 
+      error={!!error}
+      helperText={error}
+      onKeyPress={handleKeyPress}
+    />
+  </Box>
           </Box>
         </Typography>
-
         <HotTable
           data={data}
           colHeaders={columns.map((col) => col.title)}
@@ -314,7 +340,9 @@ const App = () => {
           }}
         />
       </Paper>
-    </Box>
+
+
+    </Box></>
   );
 };
 
