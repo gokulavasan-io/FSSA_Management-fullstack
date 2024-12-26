@@ -210,7 +210,6 @@ class GetAllTestDataView(APIView):
             month_name = request.query_params.get('month')
             subject_name = request.query_params.get('subject')
             only_test_names = request.query_params.get('only_test_names', 'false').lower() == 'true'
-            only_test_detail = request.query_params.get('only_test_detail', 'false').lower() == 'true'  # New optional query parameter
 
             # Validate if required parameters are present
             if not section_name or not month_name or not subject_name:
@@ -250,27 +249,22 @@ class GetAllTestDataView(APIView):
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S')
                 }
 
-                # Only include marks if `only_test_detail` is False
-                if not only_test_detail:
-                    marks_query = Marks.objects.filter(test_detail=test_detail)
-                    marks_data = [
-                        {
+                
+                marks_query = Marks.objects.filter(test_detail=test_detail)
+                marks_data = [
+                    {
                             "student_name": mark.student.name,
                             "mark": mark.mark,
                             "average_mark": mark.average_mark,
                             "remark": mark.remark
-                        }
+                    }
                         for mark in marks_query
                     ]
-                    response_data.append({
+                response_data.append({
                         "test_detail": test_detail_data,
                         "marks": marks_data
                     })
-                else:
-                    # Just return test_detail data if `only_test_detail` is True
-                    response_data.append({
-                        "test_detail": test_detail_data
-                    })
+                
 
             return Response(response_data, status=status.HTTP_200_OK)
 

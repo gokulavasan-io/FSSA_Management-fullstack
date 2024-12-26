@@ -14,23 +14,9 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { useDrag, useDrop } from 'react-dnd';
 
-const Sidebar = ({ onOptionClick, section, month, subject,totalMarkRef }) => {
+const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Sidebar visibility
-  const [testDetails, setTestDetails] = useState([]);
-
-  useEffect(() => {
-    if (section && month) {
-      axios
-        .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}&only_test_detail=true`)
-        .then((response) => {
-          setTestDetails(response.data || []);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error('Error fetching test names:', error);
-        });
-    }
-  }, [section, month]);
+  
 
   // Toggles sidebar visibility
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -171,7 +157,7 @@ const Sidebar = ({ onOptionClick, section, month, subject,totalMarkRef }) => {
 >
   <IconButton
     sx={{
-      marginRight: 2, // Add spacing between the icon and text
+      marginRight: 2, 
       backgroundColor: '#1976d2',
       color: '#fff',
       '&:hover': {

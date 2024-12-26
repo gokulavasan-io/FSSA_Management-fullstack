@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Button, Box, Paper, Typography,IconButton, TextField, } from '@mui/material';
-import { Save as SaveIcon} from '@mui/icons-material';
+import { Save as SaveIcon,Refresh as RefreshIcon} from '@mui/icons-material';
 
 import Sidebar from './sidebarformark.jsx'
 import { DndProvider } from 'react-dnd';
@@ -14,9 +14,8 @@ import { categoryMark } from './constValues';
 import './App.css';
 
 const App = () => {
-  const [students, setStudents] = useState([]);
   const [data, setData] = useState([]);
-  const [section, setSection] = useState('A');
+  const [section, setSection] = useState('B');
   const [totalMark, setTotalMark] = useState("");
   const [testNames, setTestNames] = useState([]);
   const [testName,setTestName]=useState('')
@@ -25,24 +24,38 @@ const App = () => {
   const [isArchived, setIsArchived] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [testId, setTestId] = useState(null);
+  const [isEdited, setIsEdited] = useState(false);
+  const [isMainTable, setIsMainTable] = useState(false);
+  const [testDetails, setTestDetails] = useState([]);
 
-
+  
 
   const month = "January";
   const subject = "English";
 
   useEffect(() => {
-    axios.get(`${API_PATHS.GET_STUDENTS_NAME}?section=${section}`)
+    if(testId){
+      axios.get(`${API_PATHS.GET_MARK}${testId}/`)
+      .then((response) => {
+        const marksData = response.data.marks; 
+        const initialData = marksData.map(row => [row.student_name, row.mark, row.average_mark, row.remark]);      
+        setData(initialData);         
+      })
+      .catch((error) => {
+        console.error('Error fetching student names:', error);
+      });
+    }else{
+      axios.get(`${API_PATHS.GET_STUDENTS_NAME}?section=${section}`)
       .then((response) => {
         const studentNames = response.data;
         const initialData = studentNames.map(name => [name, '', '', '']);
-        setStudents(studentNames);
         setData(initialData);
       })
       .catch((error) => {
         console.error('Error fetching student names:', error);
       });
-  }, [section]);
+    }
+  }, [testId]);
 
   useEffect(() => {
     if (section && month) {
@@ -50,7 +63,6 @@ const App = () => {
         .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}&only_test_names=true`)
         .then((response) => {
           setTestNames(response.data.test_names || []);
-          console.log(response.data.test_names);
           
         })
         .catch((error) => {
@@ -58,6 +70,20 @@ const App = () => {
         });
     }
   }, [section, month]);
+
+  useEffect(() => {
+    if (section && month) {
+      axios
+        .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}`)
+        .then((response) => {
+          setTestDetails(response.data || []);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching test names:', error);
+        });
+    }
+  }, [isSaved]);
 
   // Calculate Marks out of 100
   const calculateMarksOutOf100 = (marks) => {
@@ -150,6 +176,7 @@ const App = () => {
           updatedData[row][2] = newValue === "A" ? "Absent" : calculateMarksOutOf100(newValue);
         }
       });
+      setIsEdited(true)
       return updatedData;
     });
   }, [calculateMarksOutOf100]);
@@ -164,7 +191,7 @@ const App = () => {
           changes[i][3] = 'A';
           continue;
         }
-        if (newValue !== '' && (isNaN(newValue) || parseFloat(newValue) > totalMark)) {
+        if (newValue !== '' && (isNaN(newValue) || parseFloat(newValue) > totalMark || newValue<0)) {
           return false;
         }
       }
@@ -189,26 +216,54 @@ const App = () => {
     if (col === 0 || col === 1 || col === 3) td.classList.add('cell-names');
   };
 
-  const handleClassChange = (event) => {
-    setSection(event.target.value);
+
+  const handleReset = () => {
+     
+  
+    // Determine the API endpoint based on whether testId is available
+    const apiUrl = testId
+      ? `${API_PATHS.GET_MARK}${testId}/`
+      : `${API_PATHS.GET_STUDENTS_NAME}?section=${section}`;
+  
+    // Fetch data from the appropriate API
+    axios.get(apiUrl)
+      .then((response) => {
+        // For testId, extract marks data; otherwise, extract student names
+        const initialData = testId
+          ? response.data.marks.map(row => [row.student_name, row.mark, row.average_mark, row.remark])
+          : response.data.map(name => [name, '', '', '']);
+        
+        setData(initialData);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+      if(!testId){
+        setTotalMark('');
+        setTestName('');
+      }
+      setError('');
+      setIsEdited(false)
   };
+  
 
   const handleTotalMarkChange = (event) => {
     const newValue = event.target.value;
     if (/^\d*$/.test(newValue)) {
       setTotalMark(newValue);
+      setIsEdited(true)
     }
   };
 
   const handleTestNameChange = (event) => {
     const input = event.target.value;
     setTestName(input);
-  
-    // Check if the test name is already in use, excluding the current test's name if saved
     if (testNames.includes(input) && (!isSaved || (isSaved && input !== previousTestName))) {
       setError('Test name already exists.');
     } else {
       setError('');
+      setIsEdited(true)
     }
   };
   
@@ -252,8 +307,6 @@ const App = () => {
   
 
   const handleOptionClick = (testName, testId, totalMark, isArchived, isSaved) => {
-    console.log(testId);
-    
     setTestName(testName);  
     setTestId(testId);  
     setIsArchived(isArchived);
@@ -262,37 +315,49 @@ const App = () => {
     setPreviousTestName(testName);
   };
   
+  const sidebarProps = {
+    onOptionClick: handleOptionClick,
+    section,
+    month,
+    subject,
+    isSaved,testDetails,setTestDetails
+  };
 
 
 
   return (
     <>
      <DndProvider backend={HTML5Backend}>
-    <Sidebar onOptionClick={handleOptionClick} section={section} month={month} subject={subject} />
-     </DndProvider>
+            <Sidebar {...sidebarProps} />    
+      </DndProvider>
       
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', maxWidth: '1000px' }}>
         <Typography variant="h5" sx={{ marginBottom: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="primary">
-          <div>{testName}</div>
+          <div>{testName?testName:"New Test Name"}</div>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Button
-  size="small"
-  color={isSaved ? "primary" : "success"}  
-  startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
-  variant="contained"
-  onClick={isSaved?handleUpdate:handleSave}
-  disabled={!!error || !testName.trim() || !section || !month || !totalMark}
-  sx={{
-    borderRadius: 1,
-    textTransform: 'none',
-    padding: '1px 20px',
-    height: 40,
-    boxShadow: 3,
-  }}
->
-  {isSaved ? "Update" : "Save"}  
-</Button>
+              size="small"
+              startIcon={<RefreshIcon />} 
+              variant="contained"
+              onClick={handleReset}
+              disabled={!isEdited}
+              sx={{ backgroundColor: '#ff4c4c', '&:hover': { backgroundColor: '#ff0000' }}}  
+            >
+              Reset
+            </Button>
+
+            <Button
+              size="small"
+              color={isSaved ? "primary" : "success"}  
+              startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
+              variant="contained"
+              onClick={isSaved ? handleUpdate : handleSave}
+              disabled={!!error || !testName.trim() || !section || !month || !totalMark || !isEdited}
+              sx={{ marginLeft: 1 }}  
+            >
+              {isSaved ? "Update" : "Save"}  
+            </Button>
 
             <Box component="form" sx={{ '& > :not(style)': { m: 1, width: '8ch' } }} noValidate autoComplete="off">
               <TextField
@@ -323,7 +388,7 @@ const App = () => {
   </Box>
           </Box>
         </Typography>
-        <HotTable
+        {!isMainTable&&<HotTable
           data={data}
           colHeaders={columns.map((col) => col.title)}
           columns={columns}
@@ -338,7 +403,8 @@ const App = () => {
           cells={(row, col) => {
             return { renderer: cellRenderer };
           }}
-        />
+        />}
+
       </Paper>
 
 
