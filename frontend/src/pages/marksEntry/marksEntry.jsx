@@ -5,9 +5,10 @@ import Sidebar from "./sidebar/sideBar.jsx";
 import API_PATHS from "../../constants/apiPaths.js";
 import { DndProvider, HTML5Backend } from "../../utils/dragAndDropImports.js";
 import { Box, Typography, Paper } from "../../utils/materialImports.js";
+import { categoryMark } from "../../constants/constValues.js";
+import {dayjs} from '../../utils/dateImports.js';
 import MainTable from "./table/mainTable.jsx";
 import TestTable from "./table/testTable.jsx";
-import { categoryMark } from "../../constants/constValues.js";
 
 const MarkEntry = () => {
   const month = "January";
@@ -16,6 +17,7 @@ const MarkEntry = () => {
 
   const [data, setData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const [previousTotalMark, setPreviousTotalMark] = useState("");
   const [testName, setTestName] = useState("");
   const [previousTestName, setPreviousTestName] = useState("");
@@ -82,12 +84,12 @@ const MarkEntry = () => {
   }
 
 
-  const [showMessage, setShowMessage] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
 
  
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowMessage(true);
+      setShowStatus(true);
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -138,6 +140,7 @@ const MarkEntry = () => {
     setPreviousTotalMark,
     previousTestName,
     previousTotalMark,
+    selectedDate,setSelectedDate
   };
 
   return (
@@ -146,7 +149,7 @@ const MarkEntry = () => {
         <Sidebar {...sidebarProps} />
       </DndProvider>
 
-      <Box
+      {showStatus&& <Box
         sx={{
           padding: 2,
           display: "flex",
@@ -162,7 +165,7 @@ const MarkEntry = () => {
           {isMainTable && mainTableColumns.length > 2 && (
             <MainTable {...mainTableProps} />
           )}
-          {isMainTable && mainTableColumns.length < 3 && showMessage && 
+          {isMainTable && mainTableColumns.length < 3  && 
             <Typography
               variant="h5"
               sx={{
@@ -177,7 +180,7 @@ const MarkEntry = () => {
             </Typography>
           }
         </Paper>
-      </Box>
+      </Box>}
     </>
   );
 };

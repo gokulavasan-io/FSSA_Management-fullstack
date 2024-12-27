@@ -21,7 +21,7 @@ class TestDetail(models.Model):
     month = models.ForeignKey(Month, on_delete=models.CASCADE)  # Relationship to Month
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)  # Relationship to Subject
     total_marks = models.PositiveIntegerField()  # Maximum marks of the test
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the test was created
+    created_at = models.DateTimeField() 
     isArchived = models.BooleanField(default=False)
 
     def __str__(self):

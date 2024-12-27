@@ -1,6 +1,8 @@
 import React, { useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { Handsontable, HotTable } from "../../../utils/handsOnTableImports";
+import {DemoContainer,AdapterDayjs,LocalizationProvider,DatePicker} from "../../../utils/dateImports.js"
+import {dayjs} from "../../../utils/dateImports.js";
 import {
   Box,
   Button,
@@ -39,6 +41,8 @@ function TestTable(props) {
     setPreviousTotalMark,
     previousTestName,
     previousTotalMark,
+    selectedDate,
+    setSelectedDate,
   } = props;
 
   const columns = useMemo(
@@ -56,32 +60,33 @@ function TestTable(props) {
     if (marks === "" || isNaN(marks) || marks === "A") return "";
     return ((parseFloat(marks) / totalMark) * 100).toFixed(2);
   };
+  const transformMarksData = (marksArray, month, subject) => {
+    return {
+      month: month,
+      subject: subject,
+      test_name: testName.trim(),
+      section: section,
+      total_marks: totalMark,
+      isArchived: isArchived,
+      created_at: selectedDate,
+      students: marksArray.map((item) => ({
+        student_name: item[0],
+        mark: item[1] !== "" ? item[1] : 0.0,
+        average_mark: item[2] !== "" ? item[2] : 0.0,
+        remark: item[3] || "",
+      })),
+    };
+  };
+  
   const handleSave = () => {
     if (error || (testNames.includes(testName) && !isSaved)) {
       setError("Cannot save. Test name already exists.");
       return;
     }
-
-    function transformMarksData(marksArray, month, subject) {
-      return {
-        month: month,
-        subject: subject,
-        test_name: testName,
-        section: section,
-        total_marks: totalMark,
-        isArchived: isArchived,
-        students: marksArray.map((item) => ({
-          student_name: item[0],
-          mark: item[1] !== "" ? item[1] : 0.0,
-          average_mark: item[2] !== "" ? item[2] : 0.0,
-          remark: item[3] || "",
-        })),
-      };
-    }
-
+  
     const formattedData = transformMarksData(data, month, subject);
     console.log(JSON.stringify(formattedData, null, 2));
-
+  
     axios
       .post(API_PATHS.POST_MARK, formattedData)
       .then((response) => {
@@ -92,26 +97,11 @@ function TestTable(props) {
         console.error("Error submitting marks data:", error.response.data);
       });
   };
+  
   const handleUpdate = () => {
-    function transformMarksData(marksArray, month, subject) {
-      return {
-        month: month,
-        subject: subject,
-        test_name: testName.trim(),
-        section: section,
-        total_marks: totalMark,
-        isArchived: isArchived,
-        students: marksArray.map((item) => ({
-          student_name: item[0],
-          mark: item[1] !== "" ? item[1] : 0.0,
-          average_mark: item[2] !== "" ? item[2] : 0.0,
-          remark: item[3] || "",
-        })),
-      };
-    }
     const formattedData = transformMarksData(data, month, subject);
     console.log(JSON.stringify(formattedData, null, 2));
-
+  
     axios
       .put(`${API_PATHS.UPDATE_MARK}${testId}/`, formattedData)
       .then((response) => {
@@ -122,6 +112,7 @@ function TestTable(props) {
         console.error("Error submitting marks data:", error.message);
       });
   };
+  
 
   const handleDataChange = useCallback(
     (changes) => {
@@ -151,10 +142,7 @@ function TestTable(props) {
           changes[i][3] = "A";
           continue;
         }
-        if (
-          newValue !== "" &&
-          (isNaN(newValue) || parseFloat(newValue) > totalMark || newValue < 0)
-        ) {
+        if ( newValue !== "" && (isNaN(newValue) || parseFloat(newValue) > totalMark || newValue < 0) ) {
           return false;
         }
       }
@@ -273,12 +261,17 @@ function TestTable(props) {
 
       const response = await axios.get(apiUrl);
       if (testId) {
+        console.log(response.data.test_detail.created_at);
+        
         setTotalMark(response.data.test_detail.total_marks);
         setPreviousTotalMark(response.data.test_detail.total_marks);
         setTestName(response.data.test_detail.test_name);
         setPreviousTestName(response.data.test_detail.test_name);
         setIsArchived(response.data.test_detail.isArchived);
         setIsSaved(true);
+        const parsedDate = dayjs(response.data.test_detail.created_at, "YYYY-MM-DD HH:mm:ss");
+        setSelectedDate(parsedDate);
+        
         return response.data.marks.map((row) => [
           row.student_name,
           row.mark,
@@ -292,6 +285,7 @@ function TestTable(props) {
         setPreviousTestName("");
         setIsArchived(false);
         setIsSaved(false);
+        setSelectedDate(null)
         return response.data.map((name) => [name, "", "", ""]);
       }
     } catch (error) {
@@ -313,6 +307,30 @@ function TestTable(props) {
 
   return (
     <>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DemoContainer components={['DatePicker']}>
+          <DatePicker
+            label="Date"
+            value={selectedDate|| dayjs()}
+            onChange={(newValue) => {
+              setSelectedDate(newValue);
+              setIsEdited(true);
+              console.log(newValue);
+              
+            }}
+            format="DD/MM/YYYY"
+            slotProps={{
+              textField: {
+                size: 'small',
+                sx: {
+                  width: '10px', 
+                },
+              },
+            }}
+          />
+        </DemoContainer>
+      </LocalizationProvider>
+
       <Typography
         variant="h5"
         sx={{

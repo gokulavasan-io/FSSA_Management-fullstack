@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
+import pytz
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import *
 from .serializers import *
-from django.db.models import Avg 
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 class AddTestAndMarksView(APIView):
     def post(self, request):
@@ -18,6 +20,20 @@ class AddTestAndMarksView(APIView):
                 month = get_object_or_404(Month, month_name=data['month'])
                 subject = get_object_or_404(Subject, subject_name=data['subject'])
 
+                created_at = data['created_at']
+                if created_at:
+                    if isinstance(created_at, str):
+                        created_at = parse_datetime(created_at)  
+
+                    # Make sure to set the timezone to IST (Indian Standard Time)
+                    if timezone.is_naive(created_at):
+                        # Set the timezone explicitly to Asia/Kolkata (IST)
+                        kolkata_timezone = pytz.timezone("Asia/Kolkata")
+                        created_at = kolkata_timezone.localize(created_at)
+
+                else:
+                    created_at = timezone.now()
+
                 # Create a new TestDetail
                 test_detail = TestDetail.objects.create(
                     section=section,
@@ -25,7 +41,8 @@ class AddTestAndMarksView(APIView):
                     month=month,
                     subject=subject,
                     total_marks=data['total_marks'],
-                    isArchived=data.get('isArchived', False)  # Default to False if not provided
+                    isArchived=data.get('isArchived', False),
+                    created_at=created_at,  # Explicitly set the created_at field
                 )
 
                 # Process students' marks (only create)
@@ -52,7 +69,8 @@ class AddTestAndMarksView(APIView):
                 # Return success response
                 return Response({
                     "message": "TestDetail and Marks created successfully",
-                    "test_detail_id": test_detail.id
+                    "test_detail_id": test_detail.id,
+                    "date": created_at,  # Returning the date to verify
                 }, status=status.HTTP_201_CREATED)
 
             # Handle invalid serializer input
@@ -63,6 +81,7 @@ class AddTestAndMarksView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class UpdateTestAndMarksView(APIView):
     def put(self, request, test_detail_id):
         try:
@@ -70,6 +89,20 @@ class UpdateTestAndMarksView(APIView):
             serializer = AddTestAndMarksSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
+                
+                created_at = data['created_at']
+                if created_at:
+                    if isinstance(created_at, str):
+                        created_at = parse_datetime(created_at)  
+
+                    # Make sure to set the timezone to IST (Indian Standard Time)
+                    if timezone.is_naive(created_at):
+                        # Set the timezone explicitly to Asia/Kolkata (IST)
+                        kolkata_timezone = pytz.timezone("Asia/Kolkata")
+                        created_at = kolkata_timezone.localize(created_at)
+
+                else:
+                    created_at = timezone.now()
 
                 # Fetch the TestDetail object based on ID
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
@@ -78,6 +111,9 @@ class UpdateTestAndMarksView(APIView):
                 test_detail.test_name = data['test_name']
                 test_detail.total_marks = data['total_marks']
                 test_detail.isArchived = data.get('isArchived', test_detail.isArchived)
+                test_detail.created_at = created_at
+                
+                
                 test_detail.save()
 
                 # Process students' marks (update existing or create new ones)

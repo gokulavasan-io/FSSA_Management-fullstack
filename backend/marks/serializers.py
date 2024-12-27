@@ -16,3 +16,4 @@ class AddTestAndMarksSerializer(serializers.Serializer):
     total_marks = serializers.IntegerField()
     students = StudentMarkSerializer(many=True)
     isArchived = serializers.BooleanField(default=False)
+    created_at = serializers.DateTimeField(required=False)  

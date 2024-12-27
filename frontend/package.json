@@ -10,9 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@handsontable/react": "^15.0.0",
     "@mui/icons-material": "^6.3.0",
     "@mui/lab": "^6.0.0-beta.21",
+    "@mui/material": "^6.3.0",
+    "@mui/x-date-pickers": "^7.23.3",
+    "dayjs": "^1.11.13",
+    "dayjs-plugin-utc": "^0.1.2",
     "handsontable": "^15.0.0",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
