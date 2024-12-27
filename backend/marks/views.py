@@ -209,7 +209,6 @@ class GetAllTestDataView(APIView):
             section_name = request.query_params.get('section')
             month_name = request.query_params.get('month')
             subject_name = request.query_params.get('subject')
-            only_test_names = request.query_params.get('only_test_names', 'false').lower() == 'true'
 
             # Validate if required parameters are present
             if not section_name or not month_name or not subject_name:
@@ -231,13 +230,11 @@ class GetAllTestDataView(APIView):
             if not test_details_query.exists():
                 return Response([], status=status.HTTP_200_OK)  # Return empty list if no tests found
 
-            # Return only test names if the only_test_names parameter is true
-            if only_test_names:
-                test_names = test_details_query.values_list('test_name', flat=True)
-                return Response({"test_names": list(test_names)}, status=status.HTTP_200_OK)
-
             # Prepare the response data for detailed test information
             response_data = []
+            student_avg_marks = {}  # To track average marks of each student
+            student_marks = {}  # To track marks for each student across all tests
+
             for test_detail in test_details_query:
                 # Prepare the test_detail information
                 test_detail_data = {
@@ -249,24 +246,64 @@ class GetAllTestDataView(APIView):
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S')
                 }
 
-                
                 marks_query = Marks.objects.filter(test_detail=test_detail)
-                marks_data = [
-                    {
-                            "student_name": mark.student.name,
-                            "mark": mark.mark,
-                            "average_mark": mark.average_mark,
-                            "remark": mark.remark
-                    }
-                        for mark in marks_query
-                    ]
-                response_data.append({
-                        "test_detail": test_detail_data,
-                        "marks": marks_data
-                    })
-                
+                marks_data = []
 
-            return Response(response_data, status=status.HTTP_200_OK)
+                for mark in marks_query:
+                    student_name = mark.student.name
+                    mark_value = mark.mark
+                    average_mark = mark.average_mark
+                    remark = mark.remark
+                    
+                    marks_data.append({
+                        "student_name": student_name,
+                        "mark": mark_value,
+                        "average_mark": average_mark,
+                        "remark": remark
+                    })
+
+
+                    if not test_detail.isArchived:
+
+                        # Initialize student data if not already present
+                        if student_name not in student_marks:
+                            student_marks[student_name] = []
+                            student_avg_marks[student_name] = 0.0  # Ensure the average is initialized as a float
+
+                        
+                        if mark.average_mark == "Absent":
+                            average_mark = 0.0  
+                            student_marks[student_name].append(mark.average_mark)  
+                        else:
+                            average_mark = float(mark.average_mark)
+                            student_marks[student_name].append(round(average_mark,1))
+                        
+
+                        # Update the cumulative average mark for the student and round to one decimal place
+                        student_avg_marks[student_name] = round(
+                            (student_avg_marks[student_name] * (len(student_marks[student_name]) - 1)) + average_mark
+                        ) / len(student_marks[student_name])
+
+                        # Now, round the result to 1 decimal place
+                        student_avg_marks[student_name] = round(student_avg_marks[student_name], 1)
+                  
+
+                response_data.append({
+                    "test_detail": test_detail_data,
+                    "marks": marks_data
+                })
+
+            # Prepare a list of student names with their average marks and individual test marks
+            student_avg_marks_list = []
+            for student_name, marks in student_marks.items():
+                avg_marks = student_avg_marks[student_name]
+                # Add the student name, average marks, and the individual test marks
+                student_avg_marks_list.append([student_name, avg_marks] + marks)
+
+            return Response({
+                "test_details": response_data,
+                "student_avg_marks": student_avg_marks_list
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(f"Unexpected error: {str(e)}")

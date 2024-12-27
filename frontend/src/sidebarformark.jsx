@@ -8,13 +8,13 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
-import { Add, Menu, Close ,Archive} from '@mui/icons-material';
+import { Add, Menu ,Archive,TableChartRounded,ArrowForwardIos} from '@mui/icons-material';
 import API_PATHS from './apiPaths';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { useDrag, useDrop } from 'react-dnd';
 
-const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
+const Sidebar = ({ onOptionClick, testDetails,setTestDetails,setIsMainTable,setIsArchivedStatusChanged }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Sidebar visibility
   
 
@@ -35,10 +35,11 @@ const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
         test.id === item.id ? { ...test, test_detail: { ...test.test_detail, isArchived: item.isArchived } } : test
       )
     );
-
+    
     axios.put(`${API_PATHS.UPDATE_ARCHIVE}${item.id}/`, {"isArchived": item.isArchived})
-      .then(response => {
-        console.log("Marks data updated successfully!", response.data);
+    .then(response => {
+      console.log("Marks data updated successfully!", response.data);
+      setIsArchivedStatusChanged(true)
       })
       .catch(error => {
         console.error("Error submitting marks data:", error.message);
@@ -97,7 +98,7 @@ const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
             },
           }}
         >
-          <Close />
+          <ArrowForwardIos />
         </IconButton>
 
         <Typography
@@ -110,23 +111,42 @@ const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
             color: '#555',
           }}
         >
-          Sidebar
+          Tests
         </Typography>
         <List>
+          {/* mainTable Button */}
+          <ListItem sx={{ justifyContent: 'center', marginBottom: 2 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<TableChartRounded />}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                padding: '10px 20px',
+                borderRadius: '5px',
+              }}
+              onClick={() => {
+                setIsMainTable(true)
+              }}
+            >
+              Average Table
+            </Button>
+          </ListItem>
           {/* New Button */}
           <ListItem sx={{ justifyContent: 'center', marginBottom: 2 }}>
             <Button
               variant="contained"
-              color="primary"
+              color="success"
               startIcon={<Add />}
               sx={{
                 textTransform: 'none',
                 fontWeight: 'bold',
                 padding: '10px 20px',
-                borderRadius: '8px',
+                borderRadius: '5px',
               }}
               onClick={() => {
-                onOptionClick("", null,"", false,false);
+                onOptionClick(null);
               }}
             >
               New
@@ -135,7 +155,7 @@ const Sidebar = ({ onOptionClick, testDetails,setTestDetails }) => {
 
           {/* Marks Section */}
           <ListItem sx={{ backgroundColor: '#e3f2fd', borderRadius: '8px', marginBottom: 1 }}>
-            <ListItemText primary="Marks" sx={{ fontWeight: 'bold', color: '#333' }} />
+            <ListItemText primary="Tests" sx={{ fontWeight: 'bolder', color: '#333' }} />
           </ListItem>
           <MarksSection
             testDetails={testDetails}
@@ -241,7 +261,7 @@ const DraggableTestItem = ({ item, onOptionClick }) => {
       ref={drag}
       button
       onClick={() => {
-        onOptionClick(item.test_detail.test_name, item.test_detail.id,item.test_detail.total_marks, item.test_detail.isArchived,true);
+        onOptionClick(item.test_detail.id);
       }}
       sx={{
         pl: 4,

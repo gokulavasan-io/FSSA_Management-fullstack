@@ -15,75 +15,110 @@ import './App.css';
 
 const App = () => {
   const [data, setData] = useState([]);
-  const [section, setSection] = useState('B');
+  const [section, setSection] = useState('A');
   const [totalMark, setTotalMark] = useState("");
-  const [testNames, setTestNames] = useState([]);
+  const [previousTotalMark, setPreviousTotalMark] = useState('');
   const [testName,setTestName]=useState('')
   const [previousTestName, setPreviousTestName] = useState('');
+  const [testId, setTestId] = useState(null);
+  const [testNames, setTestNames] = useState([]);
   const [error, setError] = useState('');
   const [isArchived, setIsArchived] = useState(false);
+  const [isArchivedStatusChanged, setIsArchivedStatusChanged] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [testId, setTestId] = useState(null);
+  const [isUpdated, setIsUpdated] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
-  const [isMainTable, setIsMainTable] = useState(false);
+  const [isMainTable, setIsMainTable] = useState(true);
   const [testDetails, setTestDetails] = useState([]);
-
+  const [mainTableData, setMainTableData] = useState([])
+  const [mainTableColumns, setMainTableColumns] = useState([])
+  const [showMainTableColor, setShowMainTableColor] = useState(false)
   
 
   const month = "January";
   const subject = "English";
+  const columns = [
+    { title: 'Student', width: 200, readOnly: true },
+    { title: `Mark (out of ${totalMark})`, width: 100, editor: 'text' },
+    { title: 'Mark (out of 100)', width: 100, readOnly: true },
+    { title: 'Remark', width: 100 },
+  ];
 
+  const fetchData = async () => {
+    try {
+      const apiUrl = testId
+        ? `${API_PATHS.GET_MARK}${testId}/`
+        : `${API_PATHS.GET_STUDENTS_NAME}?section=${section}`;
+      
+      const response = await axios.get(apiUrl);
+      if (testId) {
+        setTotalMark(response.data.test_detail.total_marks);
+        setPreviousTotalMark(response.data.test_detail.total_marks)
+        setTestName(response.data.test_detail.test_name);
+        setPreviousTestName(response.data.test_detail.test_name);
+        setIsArchived(response.data.test_detail.isArchived)
+        setIsSaved(true);
+        return response.data.marks.map(row => [row.student_name, row.mark, row.average_mark, row.remark]);
+      } else {
+        setTotalMark('');
+        setPreviousTotalMark('')
+        setTestName('');
+        setPreviousTestName('')
+        setIsArchived(false)
+        setIsSaved(false);
+        return response.data.map(name => [name, '', '', '']);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      throw error; 
+    }
+  };
+
+  useEffect(()=>{
+    setIsEdited(false)
+  },[testId,isSaved,isUpdated])
+  
   useEffect(() => {
-    if(testId){
-      axios.get(`${API_PATHS.GET_MARK}${testId}/`)
-      .then((response) => {
-        const marksData = response.data.marks; 
-        const initialData = marksData.map(row => [row.student_name, row.mark, row.average_mark, row.remark]);      
-        setData(initialData);         
-      })
-      .catch((error) => {
-        console.error('Error fetching student names:', error);
-      });
-    }else{
-      axios.get(`${API_PATHS.GET_STUDENTS_NAME}?section=${section}`)
-      .then((response) => {
-        const studentNames = response.data;
-        const initialData = studentNames.map(name => [name, '', '', '']);
+    const loadData = async () => {
+      try {
+        const initialData = await fetchData();
         setData(initialData);
-      })
-      .catch((error) => {
-        console.error('Error fetching student names:', error);
-      });
-    }
+      } catch (error) {
+        console.error('Error in useEffect:', error);
+      }
+    };
+  
+    loadData();
   }, [testId]);
-
-  useEffect(() => {
-    if (section && month) {
-      axios
-        .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}&only_test_names=true`)
-        .then((response) => {
-          setTestNames(response.data.test_names || []);
-          
-        })
-        .catch((error) => {
-          console.error('Error fetching test names:', error);
-        });
+  
+  const handleReset = async () => {
+    try {
+      const initialData = await fetchData();
+      setData(initialData);
+      setError('');
+      setIsEdited(false)
+    } catch (error) {
+      console.error('Error in handleReset:', error);
     }
-  }, [section, month]);
+  };
+
 
   useEffect(() => {
     if (section && month) {
       axios
         .get(`${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}`)
-        .then((response) => {
-          setTestDetails(response.data || []);
-          console.log(response.data);
+        .then((response) => {          
+          setTestDetails(response.data.test_details || []);
+          setTestNames(response.data.test_details.map(test=>test.test_detail.test_name))
+          mainTableCreate(response.data)
+          setIsArchivedStatusChanged(false)
         })
         .catch((error) => {
           console.error('Error fetching test names:', error);
         });
+        
     }
-  }, [isSaved]);
+  }, [isSaved,isMainTable,isArchivedStatusChanged,isUpdated]);
 
   // Calculate Marks out of 100
   const calculateMarksOutOf100 = (marks) => {
@@ -151,19 +186,14 @@ const App = () => {
     axios.put(`${API_PATHS.UPDATE_MARK}${testId}/`, formattedData)
       .then(response => {
         console.log("Marks data updated successfully!", response.data);
-        
+        setIsUpdated(prev=>!prev)
       })
       .catch(error => {
         console.error("Error submitting marks data:", error.message);
       });
   };
 
-  const columns = [
-    { title: 'Student', width: 200, readOnly: true },
-    { title: `Mark (out of ${totalMark})`, width: 100, editor: 'text' },
-    { title: 'Mark (out of 100)', width: 100, readOnly: true },
-    { title: 'Remark', width: 100 },
-  ];
+ 
 
 
   const handleDataChange = useCallback((changes) => {
@@ -215,56 +245,34 @@ const App = () => {
     if (col === 2 && value === "Absent") td.classList.add('cell-absent');
     if (col === 0 || col === 1 || col === 3) td.classList.add('cell-names');
   };
-
-
-  const handleReset = () => {
-     
   
-    // Determine the API endpoint based on whether testId is available
-    const apiUrl = testId
-      ? `${API_PATHS.GET_MARK}${testId}/`
-      : `${API_PATHS.GET_STUDENTS_NAME}?section=${section}`;
-  
-    // Fetch data from the appropriate API
-    axios.get(apiUrl)
-      .then((response) => {
-        // For testId, extract marks data; otherwise, extract student names
-        const initialData = testId
-          ? response.data.marks.map(row => [row.student_name, row.mark, row.average_mark, row.remark])
-          : response.data.map(name => [name, '', '', '']);
-        
-        setData(initialData);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-
-      if(!testId){
-        setTotalMark('');
-        setTestName('');
-      }
-      setError('');
-      setIsEdited(false)
-  };
   
 
   const handleTotalMarkChange = (event) => {
     const newValue = event.target.value;
     if (/^\d*$/.test(newValue)) {
-      setTotalMark(newValue);
-      setIsEdited(true)
+        setTotalMark(newValue);
+        setIsEdited(true);
+        if (isSaved && previousTotalMark == newValue) {
+            setIsEdited(false);
+        }
     }
-  };
+};
+
+
 
   const handleTestNameChange = (event) => {
     const input = event.target.value;
-    setTestName(input);
-    if (testNames.includes(input) && (!isSaved || (isSaved && input !== previousTestName))) {
+    const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+    setTestName(formattedInput);
+    if (testNames.includes(formattedInput) && (!isSaved || (isSaved && formattedInput !== previousTestName))) {
       setError('Test name already exists.');
-    } else {
+    }
+    else {
       setError('');
       setIsEdited(true)
     }
+    if(previousTestName==formattedInput && isSaved) setIsEdited(false)
   };
   
   
@@ -304,27 +312,65 @@ const App = () => {
     }
   }
 
+
   
 
-  const handleOptionClick = (testName, testId, totalMark, isArchived, isSaved) => {
-    setTestName(testName);  
-    setTestId(testId);  
-    setIsArchived(isArchived);
-    setIsSaved(isSaved);  
-    setTotalMark(totalMark);  
-    setPreviousTestName(testName);
+  const handleOptionClick = ( testId) => {
+    setTestId(testId);
+    setIsMainTable(false)
   };
   
+
+  function mainTableCreate(fullData){
+
+    setMainTableColumns(()=>{
+        let columnData=[
+          { title: 'Student', width: 200, readOnly: true },
+          { title: 'Average mark', width: 100,readOnly: true },
+        ];
+        
+        fullData.test_details.forEach(test=>{
+          if (!test.test_detail.isArchived) {
+            columnData.push({title:test.test_detail.test_name,width:100,readOnly:true})
+          }
+        })
+        return columnData;
+    })
+    setMainTableData(fullData.student_avg_marks)
+  }
+
+  const cellRendererForMainTable = function (instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    td.classList.remove('cell-red', 'cell-yellow', 'cell-green');
+    if (showMainTableColor) {
+      if (col > 0 && value !== '' && !isNaN(value)) {
+        const numericValue = parseFloat(value);
+        if (numericValue <= categoryMark.redEndValue) {
+          td.classList.add('cell-red');
+        } else if (numericValue >= categoryMark.yellowStartValue && numericValue <= categoryMark.yellowEndValue) {
+          td.classList.add('cell-yellow');
+        } else if (numericValue >= categoryMark.greenStartValue) {
+          td.classList.add('cell-green');
+        }
+      }
+      if (col > 0 && value === "Absent") td.classList.add('cell-absent');
+      if (col === 0) td.classList.add('cell-names');
+    }else{
+      if (col >=0) td.classList.add('cell-names');
+    }
+    
+    if (col>0) td.classList.add('cell-center')
+  };
+
+  const handleColorButtonClick = () => {
+    setShowMainTableColor(!showMainTableColor); 
+  };
+
+
+
   const sidebarProps = {
-    onOptionClick: handleOptionClick,
-    section,
-    month,
-    subject,
-    isSaved,testDetails,setTestDetails
+    onOptionClick: handleOptionClick,testDetails,setTestDetails,setIsMainTable,setIsArchivedStatusChanged
   };
-
-
-
   return (
     <>
      <DndProvider backend={HTML5Backend}>
@@ -333,7 +379,7 @@ const App = () => {
       
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', maxWidth: '1000px' }}>
-        <Typography variant="h5" sx={{ marginBottom: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="primary">
+        {!isMainTable&&<Typography variant="h5" sx={{ marginBottom: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="primary">
           <div>{testName?testName:"New Test Name"}</div>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Button
@@ -387,7 +433,7 @@ const App = () => {
     />
   </Box>
           </Box>
-        </Typography>
+        </Typography>}
         {!isMainTable&&<HotTable
           data={data}
           colHeaders={columns.map((col) => col.title)}
@@ -404,6 +450,45 @@ const App = () => {
             return { renderer: cellRenderer };
           }}
         />}
+        {isMainTable&& mainTableColumns.length>2 &&
+         <>
+
+      <Typography variant="h5" sx={{ marginBottom: 2,height:"3rem", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="primary">
+        <div>{subject} - {month}</div>
+      <Button
+              size="small"
+              variant="contained"
+              onClick={handleColorButtonClick}
+              sx={{ backgroundColor: '#ff4c4c', '&:hover': { backgroundColor: '#ff0000' }}}  
+            >
+              {showMainTableColor ? 'Hide color' : 'Show color'}
+        </Button>
+          </Typography>
+         
+        <HotTable
+          data={mainTableData}
+          colHeaders={mainTableColumns.map((test)=>test.title)}
+          columns={mainTableColumns}
+          width="100%"
+          height="auto"
+          autoRowSize={true}
+          licenseKey="non-commercial-and-evaluation"
+          rowHeaders={true}
+          stretchH="all"
+          cells={(row, col) => {
+            return { renderer: cellRendererForMainTable };
+          }}
+        />
+
+        </>
+         }
+         {
+          isMainTable&&mainTableColumns.length<3&&
+          <Typography variant="h5" sx={{ marginBottom: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }} color="primary">
+          <div>No tests added yet</div>
+          </Typography>
+         }
+
 
       </Paper>
 

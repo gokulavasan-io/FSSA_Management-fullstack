@@ -16,8 +16,9 @@
   font-weight: bolder;
 }
 .cell-absent{
-  background-color: brown !important;
+  background-color: rgb(183, 131, 20) !important;
   color: white !important;
+  font-weight: bold;
 }
 .cell-names{
   color: black !important;
