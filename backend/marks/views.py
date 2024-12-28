@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-import pytz
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -21,18 +20,10 @@ class AddTestAndMarksView(APIView):
                 subject = get_object_or_404(Subject, subject_name=data['subject'])
 
                 created_at = data['created_at']
-                if created_at:
-                    if isinstance(created_at, str):
-                        created_at = parse_datetime(created_at)  
-
-                    # Make sure to set the timezone to IST (Indian Standard Time)
-                    if timezone.is_naive(created_at):
-                        # Set the timezone explicitly to Asia/Kolkata (IST)
-                        kolkata_timezone = pytz.timezone("Asia/Kolkata")
-                        created_at = kolkata_timezone.localize(created_at)
-
-                else:
+                if not created_at:
                     created_at = timezone.now()
+                    
+                    
 
                 # Create a new TestDetail
                 test_detail = TestDetail.objects.create(
@@ -91,17 +82,7 @@ class UpdateTestAndMarksView(APIView):
                 data = serializer.validated_data
                 
                 created_at = data['created_at']
-                if created_at:
-                    if isinstance(created_at, str):
-                        created_at = parse_datetime(created_at)  
-
-                    # Make sure to set the timezone to IST (Indian Standard Time)
-                    if timezone.is_naive(created_at):
-                        # Set the timezone explicitly to Asia/Kolkata (IST)
-                        kolkata_timezone = pytz.timezone("Asia/Kolkata")
-                        created_at = kolkata_timezone.localize(created_at)
-
-                else:
+                if not created_at:
                     created_at = timezone.now()
 
                 # Fetch the TestDetail object based on ID
@@ -159,16 +140,7 @@ class GetTestAndMarksView(APIView):
             # Fetch the TestDetail by ID
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
 
-            # Get optional student filter from query params
-            student_name = request.query_params.get('student_name', None)
-
-            # Get all marks related to this test_detail
             marks_query = Marks.objects.filter(test_detail=test_detail)
-
-            # If student_name is provided, filter marks for that student
-            if student_name:
-                student = get_object_or_404(Students, name=student_name)
-                marks_query = marks_query.filter(student=student)
 
             # Prepare the response data
             marks_data = []

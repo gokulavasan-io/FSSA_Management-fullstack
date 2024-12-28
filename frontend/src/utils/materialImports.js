@@ -24,7 +24,10 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 
-// Export the grouped components
+import { MenuItem } from '@mui/material';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
+
 export {
   Drawer,
   List,
@@ -43,4 +46,8 @@ export {
   ArrowForwardIos,
   SaveIcon,
   RefreshIcon,
+  MenuItem,
+  PopupState,
+  bindMenu,
+  bindTrigger
 };

@@ -88,6 +88,7 @@ function MainTable(props) {
         licenseKey="non-commercial-and-evaluation"
         rowHeaders={true}
         stretchH="all"
+        fixedColumnsLeft={2}
         cells={(row, col) => {
           return { renderer: cellRendererForMainTable };
         }}

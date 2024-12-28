@@ -15,8 +15,8 @@ import API_PATHS from "../../../constants/apiPaths.js";
 
 function TestTable(props) {
   const {
-    data,
-    setData,
+    testTableData,
+    setTestTableData,
     testName,
     subject,
     setTestName,
@@ -34,6 +34,7 @@ function TestTable(props) {
     error,
     setError,
     testId,
+    setTestId,
     setIsUpdated,
     categoryMark,
     isUpdated,
@@ -42,18 +43,9 @@ function TestTable(props) {
     previousTestName,
     previousTotalMark,
     selectedDate,
-    setSelectedDate,
+    setSelectedDate,testTableColumns
   } = props;
 
-  const columns = useMemo(
-    () => [
-      { title: "Student", width: 200, readOnly: true },
-      { title: `Mark (out of ${totalMark})`, width: 100, editor: "text" },
-      { title: "Mark (out of 100)", width: 100, readOnly: true },
-      { title: "Remark", width: 100 },
-    ],
-    [totalMark]
-  );
 
   const calculateMarksOutOf100 = (marks) => {
     if (!marks) return "";
@@ -92,6 +84,7 @@ function TestTable(props) {
       .then((response) => {
         console.log("Marks data submitted successfully!", response.data);
         setIsSaved(true);
+        setTestId(response.data.test_detail_id)
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.response.data);
@@ -117,7 +110,7 @@ function TestTable(props) {
   const handleDataChange = useCallback(
     (changes) => {
       if (!changes) return;
-      setData((prevData) => {
+      setTestTableData((prevData) => {
         const updatedData = [...prevData];
         changes.forEach(([row, col, , newValue]) => {
           updatedData[row][col] = newValue;
@@ -180,7 +173,7 @@ function TestTable(props) {
   const handleReset = async () => {
     try {
       const initialData = await fetchData();
-      setData(initialData);
+      setTestTableData(initialData);
       setError("");
       setIsEdited(false);
     } catch (error) {
@@ -237,7 +230,7 @@ function TestTable(props) {
         return row;
       });
 
-      setData(updatedData);
+      setTestTableData(updatedData);
       event.target.blur();
     }
   };
@@ -261,8 +254,6 @@ function TestTable(props) {
 
       const response = await axios.get(apiUrl);
       if (testId) {
-        console.log(response.data.test_detail.created_at);
-        
         setTotalMark(response.data.test_detail.total_marks);
         setPreviousTotalMark(response.data.test_detail.total_marks);
         setTestName(response.data.test_detail.test_name);
@@ -285,7 +276,9 @@ function TestTable(props) {
         setPreviousTestName("");
         setIsArchived(false);
         setIsSaved(false);
-        setSelectedDate(null)
+        setSelectedDate( dayjs())
+        console.log(dayjs());
+        
         return response.data.map((name) => [name, "", "", ""]);
       }
     } catch (error) {
@@ -298,7 +291,7 @@ function TestTable(props) {
     (async () => {
       try {
         const initialData = await fetchData();
-        setData(initialData);
+        setTestTableData(initialData);
       } catch (error) {
         console.error("Error in useEffect:", error);
       }
@@ -307,7 +300,21 @@ function TestTable(props) {
 
   return (
     <>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        
+
+      <Typography
+        variant="h5"
+        sx={{
+          marginBottom: 1,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+        color="primary"
+      >
+        <div>{testName ? testName : "New Test Name"}</div>
+        <Box sx={{ display: "flex", alignItems: "center",gap:"5px" }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}  >
         <DemoContainer components={['DatePicker']}>
           <DatePicker
             label="Date"
@@ -323,58 +330,14 @@ function TestTable(props) {
               textField: {
                 size: 'small',
                 sx: {
-                  width: '10px', 
+                  width: 'auto',
                 },
               },
             }}
           />
         </DemoContainer>
       </LocalizationProvider>
-
-      <Typography
-        variant="h5"
-        sx={{
-          marginBottom: 1,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-        color="primary"
-      >
-        <div>{testName ? testName : "New Test Name"}</div>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Button
-            size="small"
-            startIcon={<RefreshIcon />}
-            variant="contained"
-            onClick={handleReset}
-            disabled={!isEdited}
-            sx={{
-              backgroundColor: "#ff4c4c",
-              "&:hover": { backgroundColor: "#ff0000" },
-            }}
-          >
-            Reset
-          </Button>
-
-          <Button
-            size="small"
-            color={isSaved ? "primary" : "success"}
-            startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
-            variant="contained"
-            onClick={isSaved ? handleUpdate : handleSave}
-            disabled={
-              !!error ||
-              !testName.trim() ||
-              !section ||
-              !month ||
-              !totalMark ||
-              !isEdited
-            }
-            sx={{ marginLeft: 1 }}
-          >
-            {isSaved ? "Update" : "Save"}
-          </Button>
+          
 
           <Box
             component="form"
@@ -413,12 +376,44 @@ function TestTable(props) {
               onKeyPress={handleKeyPress}
             />
           </Box>
+          <Button
+            size="small"
+            startIcon={<RefreshIcon />}
+            variant="contained"
+            onClick={handleReset}
+            disabled={!isEdited}
+            sx={{
+              backgroundColor: "#ff4c4c",
+              "&:hover": { backgroundColor: "#ff0000",marginLeft: 2 },
+            }}
+          >
+            Reset
+          </Button>
+
+          <Button
+            size="small"
+            color={isSaved ? "primary" : "success"}
+            startIcon={isSaved ? <SaveIcon /> : <SaveIcon />}
+            variant="contained"
+            onClick={isSaved ? handleUpdate : handleSave}
+            disabled={
+              !!error ||
+              !testName.trim() ||
+              !section ||
+              !month ||
+              !totalMark ||
+              !isEdited
+            }
+            sx={{ marginLeft: 1 }}
+          >
+            {isSaved ? "Update" : "Save"}
+          </Button>
         </Box>
       </Typography>
       <HotTable
-        data={data}
-        colHeaders={columns.map((col) => col.title)}
-        columns={columns}
+        data={testTableData}
+        colHeaders={testTableColumns.map((col) => col.title)}
+        columns={testTableColumns}
         width="100%"
         height="auto"
         autoRowSize={true}

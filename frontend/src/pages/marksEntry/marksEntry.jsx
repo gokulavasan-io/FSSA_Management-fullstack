@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 import axios from "axios";
 import "./marksEntry.css";
 import Sidebar from "./sidebar/sideBar.jsx";
@@ -9,13 +9,16 @@ import { categoryMark } from "../../constants/constValues.js";
 import {dayjs} from '../../utils/dateImports.js';
 import MainTable from "./table/mainTable.jsx";
 import TestTable from "./table/testTable.jsx";
+import Chart from "./chartAndCountTable/chart.jsx";
+import CountTable from "./chartAndCountTable/countTable.jsx";
 
 const MarkEntry = () => {
   const month = "January";
   const subject = "English";
   const section = "A";
 
-  const [data, setData] = useState([]);
+
+  const [testTableData, setTestTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [previousTotalMark, setPreviousTotalMark] = useState("");
@@ -34,6 +37,17 @@ const MarkEntry = () => {
   const [mainTableData, setMainTableData] = useState([]);
   const [mainTableColumns, setMainTableColumns] = useState([]);
   const [showMainTableColor, setShowMainTableColor] = useState(false);
+
+
+  const testTableColumns = useMemo(
+    () => [
+      { title: "Student", width: 200, readOnly: true },
+      { title: `Mark (out of ${totalMark})`, width: 100, editor: "text" },
+      { title: "Mark (out of 100)", width: 100, readOnly: true },
+      { title: "Remark", width: 100 },
+    ],
+    [totalMark]
+  );
 
   useEffect(() => {
     if (section && month) {
@@ -114,9 +128,9 @@ const MarkEntry = () => {
   };
 
   const testTableProps = {
-    data,
+    testTableData,
     subject,
-    setData,
+    setTestTableData,
     testName,
     setTestName,
     totalMark,
@@ -132,7 +146,7 @@ const MarkEntry = () => {
     setIsArchived,
     error,
     setError,
-    testId,
+    testId,setTestId,
     setIsUpdated,
     categoryMark,
     isUpdated,
@@ -140,13 +154,14 @@ const MarkEntry = () => {
     setPreviousTotalMark,
     previousTestName,
     previousTotalMark,
-    selectedDate,setSelectedDate
+    selectedDate,setSelectedDate,testTableColumns
   };
+  const exportDataProps={testTableData,testTableColumns,mainTableData,mainTableColumns,isMainTable,totalMark,testName,subject,month,section}
 
   return (
     <>
       <DndProvider backend={HTML5Backend}>
-        <Sidebar {...sidebarProps} />
+        <Sidebar {...sidebarProps} {...exportDataProps} />
       </DndProvider>
 
       {showStatus&& <Box
@@ -180,6 +195,7 @@ const MarkEntry = () => {
             </Typography>
           }
         </Paper>
+
       </Box>}
     </>
   );

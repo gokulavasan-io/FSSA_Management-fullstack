@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import API_PATHS from "../../../constants/apiPaths";
 import axios from "axios";
 import TestsSection from "./testsSection";
+import ExportData from "../exportsData.jsx";
+
 
 import {
   Drawer,
@@ -18,14 +20,17 @@ import {
   ArrowForwardIos,
 } from "../../../utils/materialImports.js";
 
-const Sidebar = ({
-  onOptionClick,
-  testDetails,
-  setTestDetails,
-  setIsMainTable,
-  setIsArchivedStatusChanged,
-}) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Sidebar visibility
+const Sidebar = (props) => {
+  const {
+    onOptionClick,
+    testDetails,
+    setTestDetails,
+    setIsMainTable,
+    setIsArchivedStatusChanged,
+  } =props;
+
+
+  const [sidebarOpen, setSidebarOpen] = useState(false); 
 
   // Toggles sidebar visibility
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -130,8 +135,9 @@ const Sidebar = ({
           Tests
         </Typography>
         <List>
+
           {/* mainTable Button */}
-          <ListItem sx={{ justifyContent: "center", marginBottom: 2 }}>
+          <ListItem sx={{ justifyContent: "center", marginBottom: 0 }}>
             <Button
               variant="contained"
               color="secondary"
@@ -150,7 +156,7 @@ const Sidebar = ({
             </Button>
           </ListItem>
           {/* New Button */}
-          <ListItem sx={{ justifyContent: "center", marginBottom: 2 }}>
+          <ListItem sx={{ justifyContent: "center", marginBottom: 1 }}>
             <Button
               variant="contained"
               color="success"
@@ -227,6 +233,10 @@ const Sidebar = ({
             handleDrop={handleDrop}
             target="archived"
           />
+
+<ListItem sx={{ justifyContent: "center", marginBottom: 0 }}>
+          <ExportData  {...props} />
+          </ListItem>
         </List>
       </Drawer>
     </>
