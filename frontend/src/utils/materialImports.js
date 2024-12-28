@@ -11,7 +11,10 @@ import {
   TextField,
   Box,
   Paper,
-  Stack,
+  Stack, Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle, Snackbar, Alert ,Badge,
 } from '@mui/material';
 
 // Material-UI Icons
@@ -27,6 +30,9 @@ import {
 
 import { MenuItem } from '@mui/material';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { styled } from "@mui/system";
+import { BsChatDots } from "react-icons/bs";
+
 
 export {
   Drawer,
@@ -50,6 +56,10 @@ export {
   PopupState,
   bindMenu,
   bindTrigger,Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle, Snackbar, Alert ,Badge,styled,BsChatDots
 };
 
 

@@ -8,6 +8,9 @@ const API_PATHS = {
     UPDATE_MARK: "http://127.0.0.1:8000/marks/update_mark/",
     UPDATE_ARCHIVE: "http://127.0.0.1:8000/marks/update_archive/",
     GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
+    GET_CHAT_DATA: "http://127.0.0.1:8000/ai/get_chat_data/",
+    CHAT_WITH_AI: "http://127.0.0.1:8000/ai/chat_with_ai/",
+    DELETE_CHAT:"http://127.0.0.1:8000/ai/delete_chat_data/"
 
   };
   

@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'corsheaders',
     # internal apps
     'students',
-    'marks'
+    'marks',
+    'AI'
 ]
 
 MIDDLEWARE = [

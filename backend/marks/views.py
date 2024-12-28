@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 from .models import *
 from .serializers import *
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 
 class AddTestAndMarksView(APIView):
     def post(self, request):
