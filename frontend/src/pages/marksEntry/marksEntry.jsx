@@ -9,8 +9,7 @@ import { categoryMark } from "../../constants/constValues.js";
 import {dayjs} from '../../utils/dateImports.js';
 import MainTable from "./table/mainTable.jsx";
 import TestTable from "./table/testTable.jsx";
-import Chart from "./chartAndCountTable/chart.jsx";
-import CountTable from "./chartAndCountTable/countTable.jsx";
+import ChartForCategory from "./chartAndCountTable/chart.jsx";
 
 const MarkEntry = () => {
   const month = "January";
@@ -157,6 +156,7 @@ const MarkEntry = () => {
     selectedDate,setSelectedDate,testTableColumns
   };
   const exportDataProps={testTableData,testTableColumns,mainTableData,mainTableColumns,isMainTable,totalMark,testName,subject,month,section}
+  const chartProps={testTableData,mainTableData,isMainTable}
 
   return (
     <>
@@ -164,39 +164,45 @@ const MarkEntry = () => {
         <Sidebar {...sidebarProps} {...exportDataProps} />
       </DndProvider>
 
-      {showStatus&& <Box
-        sx={{
-          padding: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{ padding: 2, width: "100%", maxWidth: "1000px" }}
+      {showStatus && (
+  <Box
+    sx={{
+      padding: 2,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "80%",
+      marginLeft: "10%",
+      gap: "3rem",
+      paddingBlock: "1rem",
+    }}
+  >
+    <Paper elevation={3} sx={{ padding: 2, width: "100%", maxWidth: "1000px" }}>
+      {!isMainTable && <TestTable {...testTableProps} />}
+      {isMainTable && mainTableColumns.length > 2 && <MainTable {...mainTableProps} />}
+      {isMainTable && mainTableColumns.length < 3 && (
+        <Typography
+          variant="h5"
+          sx={{
+            marginBottom: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          color="primary"
         >
-          {!isMainTable && <TestTable {...testTableProps} />}
-          {isMainTable && mainTableColumns.length > 2 && (
-            <MainTable {...mainTableProps} />
-          )}
-          {isMainTable && mainTableColumns.length < 3  && 
-            <Typography
-              variant="h5"
-              sx={{
-                marginBottom: 1,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              color="primary"
-            >
-              <div>No tests added yet</div>
-            </Typography>
-          }
-        </Paper>
+          <div>No tests added yet</div>
+        </Typography>
+      )}
+    </Paper>
+    
+    {/* Increase width of the chart container */}
+    <Box sx={{ width: "20%", marginTop: 2 }}>
+      <ChartForCategory {...chartProps} />
+    </Box>
+  </Box>
+)}
 
-      </Box>}
     </>
   );
 };

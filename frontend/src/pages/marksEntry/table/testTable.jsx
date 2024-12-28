@@ -76,7 +76,7 @@ function TestTable(props) {
       return;
     }
   
-    const formattedData = transformMarksData(data, month, subject);
+    const formattedData = transformMarksData(testTableData, month, subject);
     console.log(JSON.stringify(formattedData, null, 2));
   
     axios
@@ -92,7 +92,7 @@ function TestTable(props) {
   };
   
   const handleUpdate = () => {
-    const formattedData = transformMarksData(data, month, subject);
+    const formattedData = transformMarksData(testTableData, month, subject);
     console.log(JSON.stringify(formattedData, null, 2));
   
     axios
@@ -116,7 +116,7 @@ function TestTable(props) {
           updatedData[row][col] = newValue;
           if (col === 1) {
             updatedData[row][2] =
-              newValue === "A" ? "Absent" : calculateMarksOutOf100(newValue);
+              newValue === "Absent" ? "Absent" : calculateMarksOutOf100(newValue);
           }
         });
         setIsEdited(true);
@@ -132,12 +132,17 @@ function TestTable(props) {
       const [row, col, oldValue, newValue] = changes[i];
       if (col === 1) {
         if (newValue === "a" || newValue === "A") {
-          changes[i][3] = "A";
+          changes[i][3] = "Absent";
           continue;
         }
         if ( newValue !== "" && (isNaN(newValue) || parseFloat(newValue) > totalMark || newValue < 0) ) {
           return false;
         }
+        if (/^0\d+$/.test(newValue)) {
+          changes[i][3] = newValue.replace(/^0+/, ""); // Remove leading zeros
+          continue;
+        }
+  
       }
     }
   };
@@ -154,15 +159,13 @@ function TestTable(props) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     td.classList.remove("cell-red", "cell-yellow", "cell-green");
     if (col === 2 && value !== "" && !isNaN(value)) {
-      const numericValue = parseFloat(value);
+      const numericValue = Math.round(parseFloat(value));
       if (numericValue <= categoryMark.redEndValue) {
         td.classList.add("cell-red");
-      } else if (
-        numericValue >= categoryMark.yellowStartValue &&
-        numericValue <= categoryMark.yellowEndValue
+      } else if (numericValue <= categoryMark.yellowEndValue
       ) {
         td.classList.add("cell-yellow");
-      } else if (numericValue >= categoryMark.greenStartValue) {
+      } else  {
         td.classList.add("cell-green");
       }
     }
@@ -217,7 +220,7 @@ function TestTable(props) {
   const handleTotalMarkKeyPress = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      const updatedData = data.map((row) => {
+      const updatedData = testTableData.map((row) => {
         const marks = row[1];
         if (marks !== "" && !isNaN(marks) && parseFloat(marks) > totalMark) {
           row[1] = "";
