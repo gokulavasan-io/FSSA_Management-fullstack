@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     # internal apps
     'students',
     'marks',
-    'AI'
+    'attendance',
+    'AI',
 ]
 
 MIDDLEWARE = [

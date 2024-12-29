@@ -10,8 +10,9 @@ const API_PATHS = {
     GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
     GET_CHAT_DATA: "http://127.0.0.1:8000/ai/get_chat_data/",
     CHAT_WITH_AI: "http://127.0.0.1:8000/ai/chat_with_ai/",
-    DELETE_CHAT:"http://127.0.0.1:8000/ai/delete_chat_data/"
-
+    DELETE_CHAT:"http://127.0.0.1:8000/ai/delete_chat_data/",
+    ATTENDANCE_DATA:"http://127.0.0.1:8000/attendance/attendance_data/",
+    UPDATE_ATTENDANCE:"http://127.0.0.1:8000/attendance/update_data/",
   };
   
 export default API_PATHS;
