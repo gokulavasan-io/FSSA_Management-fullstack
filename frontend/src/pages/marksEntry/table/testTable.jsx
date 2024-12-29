@@ -12,6 +12,7 @@ import {
   RefreshIcon,
 } from "../../../utils/materialImports.js";
 import API_PATHS from "../../../constants/apiPaths.js";
+import { useSnackbar } from "../../UxComponents/snackbar.jsx";
 
 function TestTable(props) {
   const {
@@ -45,6 +46,8 @@ function TestTable(props) {
     selectedDate,
     setSelectedDate,testTableColumns
   } = props;
+    const { openSnackbar } = useSnackbar(); 
+  
 
 
   const calculateMarksOutOf100 = (marks) => {
@@ -88,6 +91,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.response.data);
+        openSnackbar('Something went wrong. Try again later.')
       });
   };
   
@@ -103,6 +107,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.message);
+        openSnackbar('Something went wrong. Try again later.')
       });
   };
   

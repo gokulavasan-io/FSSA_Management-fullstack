@@ -12,14 +12,11 @@ import {
   TextField,
   Button,
   Badge,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,Snackbar, Alert,styled,BsChatDots
-} from "../../utils/materialImports"
-import { dayjs,utc,timezone } from "../../utils/dateImports";
+  styled,
+} from "../../utils/materialImports";
+import { BsChatDots } from "react-icons/bs";
+import { dayjs, utc, timezone } from "../../utils/dateImports";
+import { useSnackbar } from "../UxComponents/snackbar";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -71,13 +68,13 @@ const MessageBubble = styled(Box)(({ theme, isResponse }) => ({
   marginRight: isResponse ? "auto" : "0",
   marginBottom: "2px",
   boxShadow: isResponse ? "none" : "0px 4px 6px rgba(0, 0, 0, 0.1)",
-  cursor:"pointer"
+  cursor: "pointer",
 }));
 
 const MessageTime = styled(Typography)(({ theme, isResponse }) => ({
   fontSize: "0.75rem",
   color: "#aaa",
-  textAlign: isResponse ? "left" : "right", 
+  textAlign: isResponse ? "left" : "right",
   marginTop: "4px",
 }));
 
@@ -91,7 +88,7 @@ const PromptContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   marginBottom: "2px",
-  justifyContent: "flex-end", 
+  justifyContent: "flex-end",
 }));
 
 const ResponseContainer = styled(Box)(({ theme }) => ({
@@ -109,28 +106,19 @@ const SenderName = styled(Typography)(({ theme, isResponse }) => ({
   color: "#000",
 }));
 
-
-
 const ChatUI = () => {
-
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [chatData, setChatData] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);  
-  const [selectedMessage, setSelectedMessage] = useState(null); 
-  const [openDialog, setOpenDialog] = useState(false);
   const messageEndRef = useRef(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { openSnackbar } = useSnackbar(); 
 
 
   useEffect(() => {
     axios
       .get(API_PATHS.GET_CHAT_DATA)
       .then((response) => {
-        setChatData(response.data)
-        console.log(response.data);
-
+        setChatData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching chat data:", error.message);
@@ -150,13 +138,13 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
   const handleSend = () => {
     if (message.trim()) {
       axios
-        .post(API_PATHS.CHAT_WITH_AI, { "prompt": message })
+        .post(API_PATHS.CHAT_WITH_AI, { prompt: message })
         .then((response) => {
           setChatData([...chatData, { prompt: message, response: response.data.answer }]);
-          
         })
         .catch((error) => {
           console.error("Error submitting message:", error.message);
+          openSnackbar('Something went wrong. Try again later.')
         });
       setMessage("");
     }
@@ -171,46 +159,6 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const convertISOtoIST = (timestamp) => {
     return dayjs(timestamp).tz('Asia/Kolkata').format('DD/MM/YY HH:mm A');
-  }
-
-  const handleLongPress = (event, message) => {
-    event.preventDefault();
-    setAnchorEl(event.currentTarget); 
-    setSelectedMessage(message);
-  };
-
-  const handleDeleteMessage = () => {
-    if (!selectedMessage) return;
-  
-    axios
-      .delete(`${API_PATHS.DELETE_CHAT}${selectedMessage.id}/`)
-      .then((response) => {
-        setChatData(chatData.filter(msg => msg.id !== selectedMessage.id));
-        setOpenDialog(false);
-        setSelectedMessage(null);
-        console.log("Message deleted successfully", response.data);
-      })
-      .catch((error) => {
-        console.error("Error deleting message:", error.message);
-        setSnackbarMessage("There was an error deleting the message. Please try again later.");
-        setSnackbarOpen(true); 
-      });
-  };
-  
-  
-  
-  
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleConfirmDelete = () => {
-    setOpenDialog(true);
-    handleCloseMenu();
-  };
-
-  const handleCancelDelete = () => {
-    setOpenDialog(false);
   };
 
   return (
@@ -220,20 +168,6 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
           <BsChatDots size={24} />
         </Badge>
       </FloatingButton>
-      <Snackbar
-  open={snackbarOpen}
-  autoHideDuration={6000}
-  onClose={() => setSnackbarOpen(false)}
->
-  <Alert
-    onClose={() => setSnackbarOpen(false)}
-    severity="error" // This gives the red color for the error
-    sx={{ width: '100%' }}
-  >
-    {snackbarMessage}
-  </Alert>
-</Snackbar>
-
 
 
       <StyledDrawer
@@ -257,10 +191,7 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
                       <PromptContainer>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
                           <SenderName isResponse={false}>You</SenderName>
-                          <MessageBubble
-                            isResponse={false}
-                            onContextMenu={(e) => handleLongPress(e, msg)}
-                          >
+                          <MessageBubble isResponse={false}>
                             <Typography component="span" variant="body2">
                               {msg.prompt}
                             </Typography>
@@ -272,10 +203,7 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
                       <ResponseContainer>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
                           <SenderName isResponse={true}>AI</SenderName>
-                          <MessageBubble
-                            isResponse={true}
-                            onContextMenu={(e) => handleLongPress(e, msg)}
-                          >
+                          <MessageBubble isResponse={true}>
                             <Typography component="span" variant="body2">
                               {msg.response}
                             </Typography>
@@ -288,7 +216,7 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
                 />
               </ListItem>
             ))}
-            <div ref={messageEndRef} /> 
+            <div ref={messageEndRef} />
           </MessageList>
 
           <InputContainer>
@@ -309,29 +237,6 @@ const [snackbarMessage, setSnackbarMessage] = useState("");
           </InputContainer>
         </ChatContainer>
       </StyledDrawer>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-      >
-        <MenuItem onClick={handleConfirmDelete}>Delete Message</MenuItem>
-      </Menu>
-
-      <Dialog
-        open={openDialog}
-        onClose={handleCancelDelete}
-        aria-labelledby="delete-confirmation-dialog"
-      >
-        <DialogTitle id="delete-confirmation-dialog">Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>Are you sure you want to delete this message?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">Cancel</Button>
-          <Button onClick={handleDeleteMessage} color="secondary">Delete</Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

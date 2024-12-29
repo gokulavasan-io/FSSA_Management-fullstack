@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
 import { categoryMark } from "../../../constants/constValues";
+import "highcharts/modules/accessibility";
 
 export default function PieChartWithClick(props) {
   const {testTableData,mainTableData,isMainTable}=props;
@@ -76,6 +77,9 @@ export default function PieChartWithClick(props) {
         data: data,
       },
     ],
+    accessibility: {
+      enabled: true, 
+    },
     credits: {
       enabled: false, 
     },
