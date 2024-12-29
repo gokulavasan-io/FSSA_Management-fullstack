@@ -32,7 +32,8 @@ class AddTestAndMarksView(APIView):
                     subject=subject,
                     total_marks=data['total_marks'],
                     isArchived=data.get('isArchived', False),
-                    created_at=created_at,  # Explicitly set the created_at field
+                    created_at=created_at,
+                    about_test=data.get('about_test',"Nothing about test.")
                 )
 
                 # Process students' marks (only create)
@@ -92,6 +93,8 @@ class UpdateTestAndMarksView(APIView):
                 test_detail.total_marks = data['total_marks']
                 test_detail.isArchived = data.get('isArchived', test_detail.isArchived)
                 test_detail.created_at = created_at
+                test_detail.about_test=data.get('about_test',"Nothing about test.")
+                
                 
                 
                 test_detail.save()
@@ -160,7 +163,8 @@ class GetTestAndMarksView(APIView):
                     "subject": test_detail.subject.subject_name,  # Include subject name
                     "section": test_detail.section.name,  # Include section name
                     "isArchived": test_detail.isArchived,
-                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    'about_test':test_detail.about_test,
                 },
                 "marks": marks_data
             }, status=status.HTTP_200_OK)
@@ -250,7 +254,8 @@ class GetAllTestDataView(APIView):
                     "total_marks": test_detail.total_marks,
                     "isArchived": test_detail.isArchived,
                     "subject": test_detail.subject.subject_name,
-                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    'about_test':test_detail.about_test
                 }
 
                 marks_query = Marks.objects.filter(test_detail=test_detail)

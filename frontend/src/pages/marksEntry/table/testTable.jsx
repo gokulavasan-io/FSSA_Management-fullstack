@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import axios from "axios";
 import { Handsontable, HotTable } from "../../../utils/handsOnTableImports";
 import {DemoContainer,AdapterDayjs,LocalizationProvider,DatePicker} from "../../../utils/dateImports.js"
@@ -13,6 +13,7 @@ import {
 } from "../../../utils/materialImports.js";
 import API_PATHS from "../../../constants/apiPaths.js";
 import { useSnackbar } from "../../UxComponents/snackbar.jsx";
+import TextArea from "./textArea.jsx";
 
 function TestTable(props) {
   const {
@@ -46,7 +47,9 @@ function TestTable(props) {
     selectedDate,
     setSelectedDate,testTableColumns
   } = props;
-    const { openSnackbar } = useSnackbar(); 
+    const { openSnackbar } = useSnackbar();
+    const [aboutTest, setAboutTest] = useState('');
+    const [previousAboutTest,setPreviousAboutTest]=useState('')
   
 
 
@@ -64,6 +67,7 @@ function TestTable(props) {
       total_marks: totalMark,
       isArchived: isArchived,
       created_at: selectedDate,
+      about_test:aboutTest.trim(),
       students: marksArray.map((item) => ({
         student_name: item[0],
         mark: item[1] !== "" ? item[1] : 0.0,
@@ -267,6 +271,8 @@ function TestTable(props) {
         setTestName(response.data.test_detail.test_name);
         setPreviousTestName(response.data.test_detail.test_name);
         setIsArchived(response.data.test_detail.isArchived);
+        setAboutTest(response.data.test_detail.about_test)
+        setPreviousAboutTest(response.data.test_detail.about_test)
         setIsSaved(true);
         const parsedDate = dayjs(response.data.test_detail.created_at, "YYYY-MM-DD HH:mm:ss");
         setSelectedDate(parsedDate);
@@ -285,6 +291,8 @@ function TestTable(props) {
         setIsArchived(false);
         setIsSaved(false);
         setSelectedDate( dayjs())
+        setAboutTest("");
+        setPreviousAboutTest("");
         console.log(dayjs());
         
         return response.data.map((name) => [name, "", "", ""]);
@@ -306,6 +314,7 @@ function TestTable(props) {
     })();
   }, [testId]);
 
+  const testAreaProps={aboutTest,setAboutTest,setIsEdited,previousAboutTest,isSaved}
   return (
     <>
         
@@ -345,6 +354,7 @@ function TestTable(props) {
           />
         </DemoContainer>
       </LocalizationProvider>
+
           
 
           <Box
@@ -434,6 +444,8 @@ function TestTable(props) {
           return { renderer: cellRenderer };
         }}
       />
+    <TextArea {...testAreaProps} />
+
     </>
   );
 }

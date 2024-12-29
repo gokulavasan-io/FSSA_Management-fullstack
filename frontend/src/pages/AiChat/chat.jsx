@@ -12,7 +12,7 @@ import {
   TextField,
   Button,
   Badge,
-  styled,
+  styled,Dialog,DialogTitle,DialogContent,DialogActions
 } from "../../utils/materialImports";
 import { BsChatDots } from "react-icons/bs";
 import { dayjs, utc, timezone } from "../../utils/dateImports";
@@ -104,15 +104,17 @@ const SenderName = styled(Typography)(({ theme, isResponse }) => ({
   marginBottom: "4px",
   marginLeft: isResponse ? '0rem' : '10rem',
   color: "#000",
+  cursor:"pointer"
 }));
 
 const ChatUI = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [chatData, setChatData] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
   const messageEndRef = useRef(null);
   const { openSnackbar } = useSnackbar(); 
-
 
   useEffect(() => {
     axios
@@ -122,6 +124,8 @@ const ChatUI = () => {
       })
       .catch((error) => {
         console.error("Error fetching chat data:", error.message);
+        openSnackbar("Something went wrong. Try again later.",'error');
+
       });
   }, [open]);
 
@@ -140,11 +144,16 @@ const ChatUI = () => {
       axios
         .post(API_PATHS.CHAT_WITH_AI, { prompt: message })
         .then((response) => {
-          setChatData([...chatData, { prompt: message, response: response.data.answer }]);
+          setChatData([...chatData, { 
+            id: response.data.id, 
+            prompt: message, 
+            response: response.data.response, 
+            time: response.data.time 
+          }]);
         })
         .catch((error) => {
           console.error("Error submitting message:", error.message);
-          openSnackbar('Something went wrong. Try again later.')
+          openSnackbar("Something went wrong. Try again later.",'error');
         });
       setMessage("");
     }
@@ -157,8 +166,35 @@ const ChatUI = () => {
     }
   };
 
+  const handleOpenDeleteDialog = (id) => {
+    setSelectedMessageId(id);
+    setOpenDialog(true);
+  };
+
+  const handleCancelDelete = () => {
+    setOpenDialog(false);
+    setSelectedMessageId(null);
+  };
+
+  const handleDeleteMessage = () => {
+    if (!selectedMessageId) return;
+
+    axios
+      .delete(`${API_PATHS.DELETE_CHAT}/${selectedMessageId}/`)
+      .then(() => {
+        setChatData(chatData.filter((msg) => msg.id !== selectedMessageId));
+        setOpenDialog(false);
+        setSelectedMessageId(null);
+        openSnackbar("Message deleted successfully.",'success');
+      })
+      .catch((error) => {
+        console.error("Error deleting message:", error.message);
+        openSnackbar("Failed to delete the message. Try again later.",'error');
+      });
+  };
+
   const convertISOtoIST = (timestamp) => {
-    return dayjs(timestamp).tz('Asia/Kolkata').format('DD/MM/YY HH:mm A');
+    return dayjs(timestamp).tz("Asia/Kolkata").format("DD/MM/YY HH:mm A");
   };
 
   return (
@@ -168,7 +204,6 @@ const ChatUI = () => {
           <BsChatDots size={24} />
         </Badge>
       </FloatingButton>
-
 
       <StyledDrawer
         anchor="right"
@@ -190,13 +225,20 @@ const ChatUI = () => {
                     <PromptResponseContainer>
                       <PromptContainer>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
-                          <SenderName isResponse={false}>You</SenderName>
+                          <SenderName
+                            isResponse={false}
+                            onClick={() => handleOpenDeleteDialog(msg.id)}
+                          >
+                            You
+                          </SenderName>
                           <MessageBubble isResponse={false}>
                             <Typography component="span" variant="body2">
                               {msg.prompt}
                             </Typography>
                           </MessageBubble>
-                          <MessageTime isResponse={false}>{convertISOtoIST(msg.time)}</MessageTime>
+                          <MessageTime isResponse={false}>
+                            {convertISOtoIST(msg.time)}
+                          </MessageTime>
                         </Box>
                       </PromptContainer>
 
@@ -208,7 +250,9 @@ const ChatUI = () => {
                               {msg.response}
                             </Typography>
                           </MessageBubble>
-                          <MessageTime isResponse={true}>{convertISOtoIST(msg.time)}</MessageTime>
+                          <MessageTime isResponse={true}>
+                            {convertISOtoIST(msg.time)}
+                          </MessageTime>
                         </Box>
                       </ResponseContainer>
                     </PromptResponseContainer>
@@ -237,6 +281,25 @@ const ChatUI = () => {
           </InputContainer>
         </ChatContainer>
       </StyledDrawer>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCancelDelete}
+        aria-labelledby="delete-confirmation-dialog"
+      >
+        <DialogTitle id="delete-confirmation-dialog">Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this message?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteMessage} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

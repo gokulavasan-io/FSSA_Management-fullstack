@@ -14,7 +14,7 @@ import {
   Stack, Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle, Snackbar, Alert ,Badge,
+  DialogTitle, Snackbar, Alert ,Badge,Slide
 } from '@mui/material';
 
 // Material-UI Icons
@@ -33,6 +33,7 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { styled } from "@mui/system";
 import { BsChatDots } from "react-icons/bs";
 
+import { TextareaAutosize  } from '@mui/base/TextareaAutosize';
 
 export {
   Drawer,
@@ -59,7 +60,7 @@ export {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle, Snackbar, Alert ,Badge,styled,BsChatDots
+  DialogTitle, Snackbar, Alert ,Badge,styled,BsChatDots,TextareaAutosize,Slide
 };
 
 

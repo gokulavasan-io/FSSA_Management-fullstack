@@ -20,8 +20,9 @@ class TestDetail(models.Model):
     test_name = models.CharField(max_length=100)  # Name of the test
     month = models.ForeignKey(Month, on_delete=models.CASCADE)  # Relationship to Month
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)  # Relationship to Subject
-    total_marks = models.PositiveIntegerField()  # Maximum marks of the test
+    total_marks = models.PositiveIntegerField() 
     created_at = models.DateTimeField() 
+    about_test = models.CharField(max_length=500,null=True) 
     isArchived = models.BooleanField(default=False)
 
     def __str__(self):
@@ -29,7 +30,7 @@ class TestDetail(models.Model):
         return f"{self.test_name} - {month_str} ({self.subject})"
 
 class Marks(models.Model):
-    student = models.ForeignKey(Students, on_delete=models.CASCADE)  # Relationship to School (Student)
+    student = models.ForeignKey(Students, on_delete=models.CASCADE) 
     mark = models.CharField(max_length=255, blank=True, null=True)  # Marks scored in the test
     average_mark = models.CharField(max_length=255, blank=True, null=True) # Average marks of the student
     remark = models.CharField(max_length=255, blank=True, null=True)  # Optional remark about the student

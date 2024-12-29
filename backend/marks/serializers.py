@@ -5,7 +5,7 @@ class StudentMarkSerializer(serializers.Serializer):
     student_name = serializers.CharField(max_length=100)
     mark = serializers.CharField(max_length=255, required=False, allow_blank=True)
     average_mark = serializers.CharField(max_length=255, required=False, allow_blank=True)
-    remark = serializers.CharField(max_length=255, required=False, allow_blank=True)  # Allow blank remarks
+    remark = serializers.CharField(max_length=255, required=False, allow_blank=True)  
 
 
 class AddTestAndMarksSerializer(serializers.Serializer):
@@ -16,4 +16,5 @@ class AddTestAndMarksSerializer(serializers.Serializer):
     total_marks = serializers.IntegerField()
     students = StudentMarkSerializer(many=True)
     isArchived = serializers.BooleanField(default=False)
-    created_at = serializers.DateTimeField(required=False)  
+    about_test = serializers.CharField(max_length=500,allow_blank=True,required=False)  
+    created_at = serializers.DateTimeField(required=False)
