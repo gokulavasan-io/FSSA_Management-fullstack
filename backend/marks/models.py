@@ -32,7 +32,6 @@ class TestDetail(models.Model):
 class Marks(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE)
     mark = models.CharField(max_length=255, blank=True, null=True)
-    average_mark = models.CharField(max_length=255, blank=True, null=True)
     remark = models.CharField(max_length=255, blank=True, null=True)
     test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE)
 

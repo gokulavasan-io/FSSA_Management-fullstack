@@ -7,7 +7,7 @@ class TestDetailAdmin(admin.ModelAdmin):
     list_filter = ('section', 'month', 'subject')  
 
 class MarksAdmin(admin.ModelAdmin):
-    list_display = ('student', 'test_detail', 'mark', 'average_mark', 'remark')
+    list_display = ('student', 'test_detail', 'mark', 'remark')
     search_fields = ('students__name', 'test_detail__test_name', 'test_detail__subject__subject_name')
     list_filter = ('test_detail__section', 'test_detail__subject','test_detail')
 

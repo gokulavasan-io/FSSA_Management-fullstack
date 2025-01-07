@@ -4,7 +4,6 @@ from .models import *
 class StudentMarkSerializer(serializers.Serializer):
     student_name = serializers.CharField(max_length=100)
     mark = serializers.CharField(max_length=255, required=False, allow_blank=True)
-    average_mark = serializers.CharField(max_length=255, required=False, allow_blank=True)
     remark = serializers.CharField(max_length=255, required=False, allow_blank=True)  
 
 
