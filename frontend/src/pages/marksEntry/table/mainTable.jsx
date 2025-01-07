@@ -25,12 +25,11 @@ function MainTable(props) {
     td.classList.remove("cell-red", "cell-yellow", "cell-green");
     if (showMainTableColor) {
       if (col > 0 && value !== "" && !isNaN(value)) {
-        const numericValue = parseFloat(value);
+        const numericValue = Math.round(parseFloat(value));
         if (numericValue <= categoryMark.redEndValue) {
           td.classList.add("cell-red");
         } else if (
-          numericValue >= categoryMark.yellowStartValue &&
-          numericValue <= categoryMark.yellowEndValue
+          numericValue <= categoryMark.yellowEndValue 
         ) {
           td.classList.add("cell-yellow");
         } else if (numericValue >= categoryMark.greenStartValue) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState,useRef } from "react";
 import axios from "axios";
 import { Handsontable, HotTable } from "../../../utils/handsOnTableImports";
 import {DemoContainer,AdapterDayjs,LocalizationProvider,DatePicker} from "../../../utils/dateImports.js"
@@ -50,7 +50,7 @@ function TestTable(props) {
     const { openSnackbar } = useSnackbar();
     const [aboutTest, setAboutTest] = useState('');
     const [previousAboutTest,setPreviousAboutTest]=useState('')
-  
+    const hotTableRef = useRef(null);
 
 
   const calculateMarksOutOf100 = (marks) => {
@@ -71,7 +71,6 @@ function TestTable(props) {
       students: marksArray.map((item) => ({
         student_name: item[0],
         mark: item[1] !== "" ? item[1] : 0.0,
-        average_mark: item[2] !== "" ? item[2] : 0.0,
         remark: item[3] || "",
       })),
     };
@@ -95,7 +94,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.response.data);
-        openSnackbar('Something went wrong. Try again later.')
+        openSnackbar('Something went wrong. Try again later.','error')
       });
   };
   
@@ -111,7 +110,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.message);
-        openSnackbar('Something went wrong. Try again later.')
+        openSnackbar('Something went wrong. Try again later.',"error")
       });
   };
   
@@ -135,26 +134,48 @@ function TestTable(props) {
     [calculateMarksOutOf100]
   );
 
-  const handleBeforeChange = (changes) => {
+  const handleBeforeChange = (changes, source) => {
     if (!changes) return;
+    let shouldCancelChange = false; // Flag to track whether to cancel the change
+  
     for (let i = 0; i < changes.length; i++) {
       const [row, col, oldValue, newValue] = changes[i];
+  
       if (col === 1) {
         if (newValue === "a" || newValue === "A") {
           changes[i][3] = "Absent";
           continue;
         }
-        if ( newValue !== "" && (isNaN(newValue) || parseFloat(newValue) > totalMark || newValue < 0) ) {
+        if (parseFloat(newValue) > totalMark) {
+          openSnackbar('Enter mark less than or equal to total mark', 'error');
+          shouldCancelChange = true;
+        } else if (newValue < 0) {
+          openSnackbar('Enter a positive number', 'error');
+          shouldCancelChange = true;
+        } else if (newValue !== "" && isNaN(newValue)) {
+          openSnackbar('Only "a" or "A" are allowed!', 'error');
+          shouldCancelChange = true;
+        }
+  
+        if (shouldCancelChange) {
+          // Cancel the change
+          setTimeout(() => {
+            const instance = hotTableRef.current.hotInstance;
+            instance.selectCell(row, col); // Refocus the problematic cell
+            instance.setDataAtCell(row, col, oldValue); // Reset to the old value
+          }, 0);
           return false;
         }
+  
         if (/^0\d+$/.test(newValue)) {
           changes[i][3] = newValue.replace(/^0+/, ""); // Remove leading zeros
           continue;
         }
-  
       }
     }
   };
+  
+  
 
   const cellRenderer = function (
     instance,
@@ -429,6 +450,7 @@ function TestTable(props) {
         </Box>
       </Typography>
       <HotTable
+      ref={hotTableRef}
         data={testTableData}
         colHeaders={testTableColumns.map((col) => col.title)}
         columns={testTableColumns}
