@@ -3,7 +3,7 @@ from students.models import *
 
 class Status(models.Model):
     status = models.CharField(max_length=20, unique=True)
-    short_form=models.CharField(max_length=5,unique=True,null=True)
+    short_form=models.CharField(max_length=8,unique=True,null=True)
 
     def __str__(self):
         return self.status

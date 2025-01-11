@@ -4,10 +4,11 @@ from rest_framework.views import APIView
 from .models import Attendance, Status
 from students.models import Students
 from datetime import datetime
-from calendar import monthrange
+from calendar import monthrange,weekday
 
 class AttendanceView(APIView):
     def get(self, request):
+
         year = request.query_params.get('year', None)
         month = request.query_params.get('month', None)
         section_id = request.query_params.get('section_id', None)
@@ -39,7 +40,8 @@ class AttendanceView(APIView):
                 grouped_data[student_id] = {
                     "student_id": student_id,  # Include student ID
                     "name": student_name,
-                    **{str(day): {"status": "", "remark": ""} for day in range(1, days_in_month + 1)}  # Initialize days
+                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else "", "remark": ""}
+                    for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
                 }
 
             # Get the day of the month for the attendance record and set the status and remark
@@ -55,7 +57,8 @@ class AttendanceView(APIView):
                 grouped_data[student.id] = {
                     "student_id": student.id,  # Include student ID
                     "name": student.name,
-                    **{str(day): {"status": "", "remark": ""} for day in range(1, days_in_month + 1)}  # Initialize empty days
+                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else "", "remark": ""}
+                    for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
                 }
 
         # Convert grouped data to a list and sort by student_id
@@ -76,6 +79,7 @@ class AttendanceView(APIView):
         # Return both the attendance data and the status options
         return Response({"columns": columns, "data": formatted_data, "status": status_options})
 
+    
 class BulkUpdateAttendanceView(APIView):
     def put(self, request):
         records = request.data.get("records", [])
@@ -98,13 +102,15 @@ class BulkUpdateAttendanceView(APIView):
                     remark = attendance.get("remark", "")
                     date = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
 
-                    if status_short_form:
+                    if status_short_form:  # Update or create if status is provided
                         status_obj = Status.objects.get(short_form=status_short_form)
                         Attendance.objects.update_or_create(
                             student=student,
                             date=date,
                             defaults={"status": status_obj, "remark": remark},
                         )
+                    else:  # Handle case where status is empty (clearing a day)
+                        Attendance.objects.filter(student=student, date=date).delete()
 
             return Response({"message": "Attendance updated successfully"}, status=status.HTTP_200_OK)
         except Exception as e:

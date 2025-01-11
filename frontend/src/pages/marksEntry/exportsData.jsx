@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import { MenuItem, Menu, Button } from '../../utils/materialImports';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const ExportData = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -95,6 +97,23 @@ const ExportData = (props) => {
     doc.save(fileName);
   };
 
+  const exportToExcel = () => {
+    
+    let sheetData= [columns.map((col) => col.title),...data]
+    
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData); 
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Create a file and trigger download
+    const fileName = `${docName}.xlsx`; // Set filename dynamically
+    const fileData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    // Use FileSaver to save the file locally
+    const blob = new Blob([fileData], { type: 'application/octet-stream' });
+    saveAs(blob, fileName);
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       <Button
@@ -123,15 +142,19 @@ const ExportData = (props) => {
             width: '100%',
           }}
         >
+          <div onClick={exportToExcel} style={{ padding: '10px', cursor: 'pointer' }}>
+            Excel
+          </div>
+          <div onClick={exportToPDF} style={{ padding: '10px', cursor: 'pointer' }}>
+            PDF
+          </div>
           <div onClick={exportToCSV} style={{ padding: '10px', cursor: 'pointer' }}>
             CSV
           </div>
           <div onClick={exportToJSON} style={{ padding: '10px', cursor: 'pointer' }}>
             JSON
           </div>
-          <div onClick={exportToPDF} style={{ padding: '10px', cursor: 'pointer' }}>
-            PDF
-          </div>
+          
         </div>
       )}
     </div>

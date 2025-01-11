@@ -16,4 +16,17 @@ const API_PATHS = {
   };
   
 export default API_PATHS;
-  
+
+
+
+
+// API Security  
+// 
+  // Containerization
+  // CI/CD Pipeline
+  // TDD - test driven 
+  // Service Discovery
+  // Micro Service
+
+  // Load balancing
+// enum -- enumeration 

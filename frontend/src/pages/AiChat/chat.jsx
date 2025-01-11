@@ -180,7 +180,7 @@ const ChatUI = () => {
     if (!selectedMessageId) return;
 
     axios
-      .delete(`${API_PATHS.DELETE_CHAT}/${selectedMessageId}/`)
+      .delete(`${API_PATHS.DELETE_CHAT}${selectedMessageId}/`)
       .then(() => {
         setChatData(chatData.filter((msg) => msg.id !== selectedMessageId));
         setOpenDialog(false);
