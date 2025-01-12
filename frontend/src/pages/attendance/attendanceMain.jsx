@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/en"; // Optional: Set the locale to en (English)
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'; 
 import Handsontable from "handsontable";
+import ConfirmationDialog from "../uxComponents/confimationDailog";
 
 const Attendance = ({ year, month, sectionId }) => {
   const [tableData, setTableData] = useState([]);
@@ -103,22 +104,29 @@ const Attendance = ({ year, month, sectionId }) => {
       (row) => row[selectedHolidayDay] === "Holiday"
     );
   
-    if (!isCurrentlyHoliday) {
+    if (isCurrentlyHoliday) {
+      // Prompt confirmation dialog for removing a holiday
+      setOpenDialog(true);
+      setIsHoliday(true); // Set state to indicate we are removing a holiday
+      return;
+    } else {
       // Check if the day contains any values other than "Holiday"
       const dayContainsValue = newData.some(
         (row) => row[selectedHolidayDay] && row[selectedHolidayDay] !== "Holiday"
       );
   
       if (dayContainsValue) {
-        // Open confirmation dialog if the day contains any value other than "Holiday"
+        // Prompt confirmation dialog for marking a holiday
         setOpenDialog(true);
+        setIsHoliday(false); // Set state to indicate we are marking a holiday
         return;
       }
     }
   
-    // Toggle holiday directly
+    // Directly toggle holiday if no confirmation is required
     toggleHoliday(newData, isCurrentlyHoliday);
   };
+  
   
   const toggleHoliday = (newData, isCurrentlyHoliday) => {
     if (isCurrentlyHoliday) {
@@ -136,16 +144,26 @@ const Attendance = ({ year, month, sectionId }) => {
     setTableData(newData);
   };
   
+  
 
-  // Handle closing the confirmation dialog
   const handleCloseDialog = (confirm) => {
     setOpenDialog(false);
+  
     if (confirm) {
-      // Proceed with marking the day as Holiday
       const newData = [...tableData];
-      toggleHoliday(newData);
+  
+      // Perform the appropriate action based on the current state
+      if (isHoliday) {
+        // Remove Holiday
+        toggleHoliday(newData, true);
+      } else {
+        // Mark as Holiday
+        toggleHoliday(newData, false);
+      }
     }
   };
+  
+  
 
   // Check if the selected day is marked as Holiday
   const isHolidayDay = tableData.some((row) => row[selectedHolidayDay] === "Holiday");
@@ -233,23 +251,21 @@ const Attendance = ({ year, month, sectionId }) => {
       <Sidebar />
 
       {/* Confirmation Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-      >
-        <DialogTitle>Confirm Holiday</DialogTitle>
-        <DialogContent>
-          <p>This day already contains some values. Do you want to mark it as a holiday and remove the existing values?</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleCloseDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => handleCloseDialog(true)} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+  open={openDialog}
+  onClose={(confirm) => {
+    handleCloseDialog(confirm);
+  }}
+  title={isHoliday ? "Remove Holiday" : "Confirm Holiday"}
+  content={
+    isHoliday
+      ? "Are you sure you want to mark this day as a working day?"
+      : "This day already contains some values. Do you want to mark it as a holiday and remove the existing values?"
+  }
+  confirmText={isHoliday ? "Yes, Mark as Working Day" : "Yes, Confirm"}
+  cancelText="No, Cancel"
+/>
+
     </div>
   );
 };

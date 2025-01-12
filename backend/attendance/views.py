@@ -115,3 +115,33 @@ class BulkUpdateAttendanceView(APIView):
             return Response({"message": "Attendance updated successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class AddOrUpdateRemarkView(APIView):
+    def post(self, request, *args, **kwargs):
+        student_id = request.POST.get('student_id')
+        date = request.POST.get('date')
+        remark = request.POST.get('remark')
+
+        if not student_id or not date or not remark:
+            return Response({"error": "Missing required fields."}, status=400)
+
+        try:
+            # Fetch or create an attendance record for the student and date
+            attendance, created = Attendance.objects.get_or_create(
+                student_id=student_id, date=date
+            )
+
+            # Update the remark field
+            attendance.remark = remark
+            attendance.save()
+
+            action = "added" if created else "updated"
+            return Response(
+                {"message": f"Remark {action} successfully."}
+            )
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

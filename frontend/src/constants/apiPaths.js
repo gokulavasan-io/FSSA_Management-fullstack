@@ -13,6 +13,7 @@ const API_PATHS = {
     DELETE_CHAT:"http://127.0.0.1:8000/ai/delete_chat_data/",
     ATTENDANCE_DATA:"http://127.0.0.1:8000/attendance/attendance_data/",
     UPDATE_ATTENDANCE:"http://127.0.0.1:8000/attendance/update_data/",
+    ADD_REMARK:'http://127.0.0.1:8000/attendance/add_remark/'
   };
   
 export default API_PATHS;
@@ -30,3 +31,7 @@ export default API_PATHS;
 
   // Load balancing
 // enum -- enumeration 
+
+
+
+// add_remark
