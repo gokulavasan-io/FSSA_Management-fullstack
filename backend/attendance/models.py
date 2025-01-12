@@ -13,7 +13,7 @@ class Status(models.Model):
 class Attendance(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE, related_name='attendances')
     date = models.DateField()
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, blank=True)
     remark = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -22,4 +22,4 @@ class Attendance(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.student.name} - {self.date} - {self.status.status}"
+        return f"{self.student.name} - {self.date} - {self.status.status if self.status else 'No Status'}"

@@ -14,7 +14,6 @@ const AttendanceTable = ({ tableData, hotColumns, handleAfterChange }) => {
       licenseKey="non-commercial-and-evaluation"
       fixedColumnsLeft={1}
       afterChange={handleAfterChange}
-      handleCellSelection={handleCellSelection}
     />
   );
 };

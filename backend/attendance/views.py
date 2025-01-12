@@ -40,15 +40,14 @@ class AttendanceView(APIView):
                 grouped_data[student_id] = {
                     "student_id": student_id,  # Include student ID
                     "name": student_name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else "", "remark": ""}
+                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
                     for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
                 }
 
-            # Get the day of the month for the attendance record and set the status and remark
+            # Get the day of the month for the attendance record and set the status 
             day = record.date.day
             grouped_data[student_id][str(day)] = {
-                "status": record.status.short_form if record.status else None,
-                "remark": record.remark if record.remark else ""
+                "status": record.status.short_form if record.status else None
             }
 
         # Make sure that all students are in the response, even those without attendance data
@@ -57,7 +56,7 @@ class AttendanceView(APIView):
                 grouped_data[student.id] = {
                     "student_id": student.id,  # Include student ID
                     "name": student.name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else "", "remark": ""}
+                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
                     for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
                 }
 
@@ -89,28 +88,44 @@ class BulkUpdateAttendanceView(APIView):
                 if not student_id:
                     return Response({"error": "Missing 'student_id' in record"}, status=status.HTTP_400_BAD_REQUEST)
 
-                student = Students.objects.get(id=student_id)
+                student = Students.objects.filter(id=student_id).first()
+                if not student:
+                    return Response({"error": f"Student with ID {student_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+
                 year = record.get("year")
                 month = record.get("month")
-
                 if not year or not month:
                     return Response({"error": "Missing 'year' or 'month' in record"}, status=status.HTTP_400_BAD_REQUEST)
 
                 for attendance in record.get("attendance", []):
                     day = attendance.get("day")
                     status_short_form = attendance.get("status")
-                    remark = attendance.get("remark", "")
+                    remark = attendance.get("remark", None)  # May or may not be present
                     date = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
 
-                    if status_short_form:  # Update or create if status is provided
-                        status_obj = Status.objects.get(short_form=status_short_form)
-                        Attendance.objects.update_or_create(
-                            student=student,
-                            date=date,
-                            defaults={"status": status_obj, "remark": remark},
-                        )
-                    else:  # Handle case where status is empty (clearing a day)
-                        Attendance.objects.filter(student=student, date=date).delete()
+                    # Fetch or create the attendance record
+                    attendance_record, created = Attendance.objects.get_or_create(
+                        student=student,
+                        date=date,
+                        defaults={"status": None, "remark": ""}  # Set defaults
+                    )
+
+                    if status_short_form:  # If status is provided, update it
+                        status_obj = Status.objects.filter(short_form=status_short_form).first()
+                        if not status_obj:
+                            return Response({"error": f"Invalid status '{status_short_form}'."}, status=status.HTTP_400_BAD_REQUEST)
+
+                        # Update the status
+                        attendance_record.status = status_obj
+
+                    elif status_short_form == "":  # If status is empty, retain the remark but don't delete it
+                        attendance_record.status = None  # Remove the status, but do not delete the remark
+
+                    # Only update the remark if provided explicitly
+                    if remark is not None:
+                        attendance_record.remark = remark
+
+                    attendance_record.save()
 
             return Response({"message": "Attendance updated successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -118,30 +133,139 @@ class BulkUpdateAttendanceView(APIView):
 
 
 
-
 class AddOrUpdateRemarkView(APIView):
     def post(self, request, *args, **kwargs):
-        student_id = request.POST.get('student_id')
-        date = request.POST.get('date')
-        remark = request.POST.get('remark')
+        student_id = request.data.get("student_id")
+        date = request.data.get("date")
+        remark = request.data.get("remark")
 
-        if not student_id or not date or not remark:
-            return Response({"error": "Missing required fields."}, status=400)
+        if not student_id:
+            return Response({"error": "Missing 'student_id' in request."}, status=400)
+        if not date:
+            return Response({"error": "Missing 'date' in request."}, status=400)
+        if remark is None:  # Explicitly check for None to allow empty strings if needed
+            return Response({"error": "Missing 'remark' in request."}, status=400)
 
         try:
-            # Fetch or create an attendance record for the student and date
+            # Verify if the student exists
+            student = Students.objects.filter(id=student_id).first()
+            if not student:
+                return Response({"error": "Student not found."}, status=404)
+
+            # Convert date string to a Date object
+            try:
+                date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=400)
+
+            # Fetch or create the attendance record for the student and date
             attendance, created = Attendance.objects.get_or_create(
-                student_id=student_id, date=date
+                student=student,
+                date=date_obj,
+                defaults={'status': None}  # Do not set default remark
             )
 
             # Update the remark field
             attendance.remark = remark
             attendance.save()
 
-            action = "added" if created else "updated"
-            return Response(
-                {"message": f"Remark {action} successfully."}
-            )
+            message = "Remark updated successfully."
+            if created:
+                message += " (New attendance record created.)"
+
+            return Response({"message": message}, status=200)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
+        
+        
+    def delete(self, request):
+        
+        student_id = request.data.get("student_id")
+        date = request.data.get("date")
+        
+        if not student_id or not date:
+            return Response({"error": "Both 'student_id' and 'date' are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert date to datetime object
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            
+            # Fetch student and attendance record
+            student = Students.objects.filter(id=student_id).first()
+            if not student:
+                return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            attendance = Attendance.objects.filter(student=student, date=date_obj).first()
+            if not attendance:
+                return Response({"error": "Attendance record not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Delete the remark but keep the status unchanged
+            attendance.remark = None
+            attendance.save()
+
+            return Response({"message": "Remark deleted successfully."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+        
+class FetchStudentsWithRemarksView(APIView):
+    def get(self, request):
+        # Get 'month', 'year', and optionally 'section_id' from query parameters
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+        section_id = request.query_params.get('section_id', None)
+
+        # Validate the input parameters
+        if not month or not year:
+            return Response({"error": "Missing 'month' or 'year' in request"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert to integer to validate
+            month = int(month)
+            year = int(year)
+            
+            # Validate month and year ranges
+            if month < 1 or month > 12:
+                return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=status.HTTP_400_BAD_REQUEST)
+            if year < 1000 or year > 9999:
+                return Response({"error": "Invalid year."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ValueError:
+            return Response({"error": "Invalid input. Month and Year should be integers."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter students by section if section_id is provided
+        if section_id:
+            students = Students.objects.filter(section_id=section_id)
+        else:
+            students = Students.objects.all()
+
+        result = []
+
+        for student in students:
+            # Filter attendance records for the student for the specific month and year
+            attendance_records = Attendance.objects.filter(
+                student=student,
+                date__year=year,
+                date__month=month
+            ).values('date', 'status', 'remark')
+
+            if attendance_records.exists():
+                # Remove any attendance records with empty, None, or null remarks
+                filtered_attendance = [
+                    record for record in attendance_records if record['remark'] not in (None, '', 'null')
+                ]
+                
+                # Only append student data if there are valid attendance records
+                if filtered_attendance:
+                    student_data = {
+                        "student_id": student.id,
+                        "student_name": student.name,  # Assuming the student model has a 'name' field
+                        "attendance": filtered_attendance
+                    }
+                    result.append(student_data)
+
+        # Return the response with the list of students and their attendance with remarks and status
+        return Response(result, status=status.HTTP_200_OK)

@@ -1,11 +1,9 @@
-# admin.py
-
 from django.contrib import admin
 from .models import Attendance, Status
 from students.models import Students
 
 
-@admin.register(Attendance)
+
 class AttendanceAdmin(admin.ModelAdmin):
     # Fields to display in the admin list view
     list_display = ('student_name', 'date', 'status', 'remark')
@@ -21,15 +19,20 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # Custom method to display the student's name
     def student_name(self, obj):
-        return obj.student.name  # Fixed: Accessing the correct field in the Student model
+        return obj.student.name  # Accessing the correct field in the Student model
     student_name.short_description = "Student Name"  # Label for the column
+    
+    # Custom method to display the status, handling None values
+    def status(self, obj):
+        return obj.status.status if obj.status else 'No Status'
+    status.short_description = 'Status'
 
-    # Optional: Ordering by date
+    # Optional: Ordering by date (descending)
     ordering = ('-date',)  # Descending order
 
 
-@admin.register(Status)
+
 class StatusAdmin(admin.ModelAdmin):
     # Fields to display in the admin list view
-    list_display = ('id', 'status','short_form')
+    list_display = ('id', 'status', 'short_form')
     search_fields = ('status',)

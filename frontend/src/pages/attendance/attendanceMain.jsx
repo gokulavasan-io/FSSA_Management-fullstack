@@ -6,9 +6,9 @@ import Sidebar from "./sideBar";
 import { DemoContainer, AdapterDayjs, LocalizationProvider, DatePicker } from "../../utils/dateImports";
 import dayjs from "dayjs";
 import "dayjs/locale/en"; // Optional: Set the locale to en (English)
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'; 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle,TextField,MenuItem } from '@mui/material'; 
 import Handsontable from "handsontable";
-import ConfirmationDialog from "../uxComponents/confimationDailog";
+import ConfirmationDialog from "../uxComponents/confirmationDialog";
 
 const Attendance = ({ year, month, sectionId }) => {
   const [tableData, setTableData] = useState([]);
@@ -18,6 +18,10 @@ const Attendance = ({ year, month, sectionId }) => {
   const [isHoliday, setIsHoliday] = useState(false); // State to track if the selected day is already marked as Holiday
   const [selectedDate, setSelectedDate] = useState(null); // Define the selectedDate state as null initially
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
+  const [remarkDialogOpen, setRemarkDialogOpen] = useState(false);
+  const [remark, setRemark] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
+  
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -69,7 +73,7 @@ const Attendance = ({ year, month, sectionId }) => {
         .filter((key) => !isNaN(Number(key)))
         .map((day) => ({
           day: Number(day),
-          status: row[day] || "",
+          status: row[day] || ""
         }));
 
       return {
@@ -97,36 +101,23 @@ const Attendance = ({ year, month, sectionId }) => {
       return;
     }
   
-    const newData = [...tableData];
-  
-    // Check if the selected day is already marked as Holiday
-    const isCurrentlyHoliday = newData.every(
+    const isCurrentlyHoliday = tableData.every(
       (row) => row[selectedHolidayDay] === "Holiday"
     );
   
-    if (isCurrentlyHoliday) {
-      // Prompt confirmation dialog for removing a holiday
-      setOpenDialog(true);
-      setIsHoliday(true); // Set state to indicate we are removing a holiday
-      return;
-    } else {
-      // Check if the day contains any values other than "Holiday"
-      const dayContainsValue = newData.some(
-        (row) => row[selectedHolidayDay] && row[selectedHolidayDay] !== "Holiday"
-      );
-  
-      if (dayContainsValue) {
-        // Prompt confirmation dialog for marking a holiday
-        setOpenDialog(true);
-        setIsHoliday(false); // Set state to indicate we are marking a holiday
-        return;
-      }
-    }
-  
-    // Directly toggle holiday if no confirmation is required
-    toggleHoliday(newData, isCurrentlyHoliday);
+    // Always prompt the confirmation dialog
+    setOpenDialog(true);
+    setIsHoliday(isCurrentlyHoliday);
   };
   
+  const handleCloseDialog = (confirm) => {
+    setOpenDialog(false);
+  
+    if (confirm) {
+      const newData = [...tableData];
+      toggleHoliday(newData, isHoliday); // Toggle holiday state based on the dialog response
+    }
+  };
   
   const toggleHoliday = (newData, isCurrentlyHoliday) => {
     if (isCurrentlyHoliday) {
@@ -144,24 +135,6 @@ const Attendance = ({ year, month, sectionId }) => {
     setTableData(newData);
   };
   
-  
-
-  const handleCloseDialog = (confirm) => {
-    setOpenDialog(false);
-  
-    if (confirm) {
-      const newData = [...tableData];
-  
-      // Perform the appropriate action based on the current state
-      if (isHoliday) {
-        // Remove Holiday
-        toggleHoliday(newData, true);
-      } else {
-        // Mark as Holiday
-        toggleHoliday(newData, false);
-      }
-    }
-  };
   
   
 
@@ -198,9 +171,87 @@ const Attendance = ({ year, month, sectionId }) => {
     })),
   ];
 
+
+
+  const handleAddRemark = () => {
+    if (!selectedStudent || !selectedDate) {
+      alert("Please select both student and date.");
+      return;
+    }
+    setRemarkDialogOpen(true);
+  };
+
+  // Handle remark submission
+  const handleRemarkSubmit = async () => {
+    try {
+      await axios.post(API_PATHS.ADD_REMARK, {
+        student_id: selectedStudent,
+        date: selectedDate.format("YYYY-MM-DD"),
+        remark,
+      });
+
+      alert("Remark added successfully!");
+      setRemarkDialogOpen(false);
+      setRemark(""); // Clear the remark field
+    } catch (error) {
+      console.error("Error adding remark:", error);
+      alert("Failed to add remark.");
+    }
+  };
+
+
+
+
+  const sideBarProps={year,month,sectionId}
   return (
     <div>
       <h2>Attendance for {month}/{year}</h2>
+
+       {/* Dropdown for selecting student */}
+       <TextField
+        select
+        label="Select Student"
+        value={selectedStudent}
+        onChange={(e) => setSelectedStudent(e.target.value)}
+        fullWidth
+        variant="outlined"
+      >
+        {tableData.map((student) => (
+          <MenuItem key={student.student_id} value={student.student_id}>
+            {student.name}
+          </MenuItem>
+        ))}
+      </TextField>
+       {/* Button to open the remark dialog */}
+       <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddRemark}
+      >
+        Add Remark
+      </Button>
+       {/* Remark Dialog */}
+       <Dialog open={remarkDialogOpen} onClose={() => setRemarkDialogOpen(false)}>
+        <DialogTitle>Add Remark</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Remark"
+            multiline
+            rows={4}
+            value={remark}
+            onChange={(e) => setRemark(e.target.value)}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRemarkDialogOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleRemarkSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Calendar input for selecting day (using Material-UI DatePicker with Day.js formatting) */}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -248,7 +299,7 @@ const Attendance = ({ year, month, sectionId }) => {
       <button onClick={handleUpdateAttendance} disabled={loading}>
         {loading ? "Updating..." : "Update Attendance"}
       </button>
-      <Sidebar />
+      <Sidebar {...sideBarProps} />
 
       {/* Confirmation Dialog */}
       <ConfirmationDialog
@@ -256,15 +307,16 @@ const Attendance = ({ year, month, sectionId }) => {
   onClose={(confirm) => {
     handleCloseDialog(confirm);
   }}
-  title={isHoliday ? "Remove Holiday" : "Confirm Holiday"}
+  title={isHoliday ? "Remove Holiday" : "Mark as Holiday"}
   content={
     isHoliday
       ? "Are you sure you want to mark this day as a working day?"
-      : "This day already contains some values. Do you want to mark it as a holiday and remove the existing values?"
+      : "Do you want to mark this day as a holiday?"
   }
-  confirmText={isHoliday ? "Yes, Mark as Working Day" : "Yes, Confirm"}
+  confirmText={isHoliday ? "Yes, Mark as Working Day" : "Yes, Mark as Holiday"}
   cancelText="No, Cancel"
 />
+
 
     </div>
   );
