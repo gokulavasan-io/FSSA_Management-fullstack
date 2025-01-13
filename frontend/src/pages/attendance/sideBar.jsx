@@ -12,6 +12,7 @@ import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
 import ConfirmationDialog from "../uxComponents/confirmationDialog";
 import { useSnackbar } from "../UxComponents/snackbar";
+import { validRemarkRegex } from "../../utils/regex";
 
 const Sidebar = (props) => {
   const { openSnackbar } = useSnackbar();
@@ -23,7 +24,7 @@ const Sidebar = (props) => {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false); // Manage dialog visibility
   const [selectedRow, setSelectedRow] = useState(null); // Store the row to delete
-  
+  const [editedRemarks, setEditedRemarks] = useState([]);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -132,6 +133,82 @@ const Sidebar = (props) => {
       }
     }
   };
+
+
+  const handleProcessRowUpdate = (newRow, oldRow) => {
+  
+    if (newRow.remark !== oldRow.remark) {
+      if (!validRemarkRegex.test(newRow.remark)) {
+        openSnackbar("Remark must contain valid characters (letters, numbers, spaces only).", "error");
+        return oldRow; // Reject the update and keep the old value
+      }
+  
+      setEditedRemarks((prev) => {
+        const existing = prev.find(
+          (row) =>
+            row.student_id === newRow.student_id && row.date === newRow.date
+        );
+        if (existing) {
+          return prev.map((row) =>
+            row.student_id === newRow.student_id && row.date === newRow.date
+              ? { ...row, remark: newRow.remark }
+              : row
+          );
+        }
+        return [
+          ...prev,
+          { student_id: newRow.student_id, date: newRow.date, remark: newRow.remark },
+        ];
+      });
+    }
+    return newRow;
+  };
+  
+
+  const handleUpdateRemarks = async () => {
+    if (editedRemarks.length === 0) {
+      openSnackbar("No changes to update.", "info");
+      return;
+    }
+  
+    try {
+      const updatePromises = editedRemarks.map((row) =>
+        axios.post(API_PATHS.ADD_REMARK, {
+          student_id: row.student_id,
+          date: row.date,
+          remark: row.remark,
+        })
+      );
+  
+      await Promise.all(updatePromises);
+  
+      openSnackbar("Remarks updated successfully.", "success");
+  
+      // Update the students state in the UI
+      setStudents((prevStudents) =>
+        prevStudents.map((student) => ({
+          ...student,
+          attendance: student.attendance.map((attendance) => {
+            const updatedRemark = editedRemarks.find(
+              (edit) =>
+                edit.student_id === student.student_id &&
+                edit.date === attendance.date
+            );
+            return updatedRemark
+              ? { ...attendance, remark: updatedRemark.remark }
+              : attendance;
+          }),
+        }))
+      );
+  
+      // Clear edited remarks after successful update
+      setEditedRemarks([]);
+    } catch (error) {
+      console.error("Error updating remarks:", error);
+      openSnackbar("Failed to update remarks.", "error");
+    }
+  };
+  
 
   return (
     <div>
@@ -243,8 +320,8 @@ const Sidebar = (props) => {
               right: 8,
               backgroundColor: "#d32f2f",  // Red color
               color: "#fff",
-              width: 20,  // Smaller button size
-              height: 20,  // Smaller button size
+              width: 25,  // Smaller button size
+              height: 25,  // Smaller button size
               "&:hover": { backgroundColor: "#b71c1c" },  // Darker red on hover
             }}
           >
@@ -254,18 +331,29 @@ const Sidebar = (props) => {
           {loading ? (
             <CircularProgress />
           ) : (
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10, 20]}
-              sx={{
-                width: "100%",
-                height: "100%",
-                overflow: "hidden",
-                marginTop: "1rem",
-              }}
-            />
+            <><DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            processRowUpdate={handleProcessRowUpdate}
+            experimentalFeatures={{ newEditingApi: true }}
+            sx={{
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+              marginTop: "1rem",
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUpdateRemarks}
+            disabled={editedRemarks.length === 0} 
+            sx={{ marginTop: 2 }}
+          >
+            Update Remarks
+          </Button></>
           )}
         </Box>
       )}

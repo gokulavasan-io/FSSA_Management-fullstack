@@ -14,6 +14,7 @@ import {
 import API_PATHS from "../../../constants/apiPaths.js";
 import { useSnackbar } from "../../UxComponents/snackbar.jsx";
 import TextArea from "./textArea.jsx";
+import { testNameRegex } from "../../../utils/regex.js";
 
 function TestTable(props) {
   const {
@@ -225,21 +226,24 @@ function TestTable(props) {
     }
   };
 
-  const handleTestNameChange = (event) => {
+  const handleTestNameChange = (event) => { 
     const input = event.target.value;
     const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
-    setTestName(formattedInput);
-    if (
-      testNames.includes(formattedInput) &&
-      (!isSaved || (isSaved && formattedInput !== previousTestName))
-    ) {
+  
+  
+    if (!testNameRegex.test(formattedInput)) {
+      setError("Invalid test name. It must be alphanumeric and can include spaces, underscores, or dashes.");
+    } else if (testNames.includes(formattedInput) && (!isSaved || (isSaved && formattedInput !== previousTestName))) {
       setError("Test name already exists.");
     } else {
       setError("");
+      setTestName(formattedInput);
       setIsEdited(true);
     }
-    if (previousTestName == formattedInput && isSaved) setIsEdited(false);
+  
+    if (previousTestName === formattedInput && isSaved) setIsEdited(false);
   };
+  
 
   const handleStartEditingTestName = () => {
     if (isSaved) {
