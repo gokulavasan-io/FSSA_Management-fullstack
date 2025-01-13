@@ -16,6 +16,7 @@ const API_PATHS = {
     ADD_REMARK:'http://127.0.0.1:8000/attendance/add_remark/',
     FETCH_REMARKS:'http://127.0.0.1:8000/attendance/fetch_remarks/',
     ADD_HOLIDAY:'http://127.0.0.1:8000/attendance/add_holiday/',
+    FETCH_HOLIDAYS:'http://127.0.0.1:8000/attendance/fetch_holidays/',
   };
   
 export default API_PATHS;

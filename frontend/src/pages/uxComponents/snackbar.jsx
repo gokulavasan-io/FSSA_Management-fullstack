@@ -13,10 +13,10 @@ export const SnackbarProvider = ({ children }) => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('info'); 
 
 
-  const successSound = new Audio('/assets/audio/success_alert_sound.wav');
-  successSound.preload = 'auto';
-  // const errorSound = new Audio('/assets/audio/error_alert_sound.mp3');
-  // errorSound.preload = 'auto';
+  // const successSound = new Audio('/assets/audio/success_alert_sound.wav');
+  // successSound.preload = 'auto';
+  const errorSound = new Audio('/assets/audio/error_alert_sound.mp3');
+  errorSound.preload = 'auto';
 
 const openSnackbar = (message, severity = 'info') => {
   setSnackbarMessage(message);

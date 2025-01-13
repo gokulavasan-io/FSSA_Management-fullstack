@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
 import AttendanceTable from "./attendanceTable";
-import Sidebar from "./sideBar";
+import Sidebar from "./remark";
 import { DemoContainer, AdapterDayjs, LocalizationProvider, DatePicker } from "../../utils/dateImports";
 import dayjs from "dayjs";
 import "dayjs/locale/en"; // Optional: Set the locale to en (English)
@@ -265,7 +265,7 @@ const Attendance = ({ year, month, sectionId }) => {
         label="Select Student"
         value={selectedStudent}
         onChange={(e) => setSelectedStudent(e.target.value)}
-        fullWidth
+        sx={{ width: 200 }}
         variant="outlined"
       >
         {tableData.map((student) => (

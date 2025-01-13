@@ -350,61 +350,52 @@ class AddOrUpdateHolidayView(APIView):
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 class FetchHolidaysView(APIView):
     def get(self, request):
-        # Get 'month', 'year', and optionally 'section_id' from query parameters
         month = request.query_params.get("month")
         year = request.query_params.get("year")
         section_id = request.query_params.get('section_id', None)
 
-        # Validate the input parameters
         if not month or not year:
             return Response({"error": "Missing 'month' or 'year' in request"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Convert to integer to validate
             month = int(month)
             year = int(year)
-            
-            # Validate month and year ranges
             if month < 1 or month > 12:
                 return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=status.HTTP_400_BAD_REQUEST)
             if year < 1000 or year > 9999:
                 return Response({"error": "Invalid year."}, status=status.HTTP_400_BAD_REQUEST)
-
         except ValueError:
             return Response({"error": "Invalid input. Month and Year should be integers."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Filter holidays by section if section_id is provided
-        if section_id:
-            holidays = Holiday.objects.filter(
-                section_id=section_id,
-                date__year=year,
-                date__month=month
-            )
-        else:
-            holidays = Holiday.objects.filter(
-                date__year=year,
-                date__month=month
-            )
+        # Initial filter
+        holidays = Holiday.objects.filter(date__year=year, date__month=month)
 
-        # Filter out weekends (Saturdays and Sundays)
+        # Add section filter if provided
+        if section_id:
+            holidays = holidays.filter(section_id=section_id)
+
+        # Debug: Print holidays before excluding weekends
+        print("Holidays before exclusion:", holidays)
+
+        # Adjust weekend exclusion based on database's week day mapping
         holidays = holidays.exclude(
-            Q(date__week_day=6) | Q(date__week_day=7)
+            Q(date__week_day=1) | Q(date__week_day=7)  # Assuming 1 = Sunday, 7 = Saturday
         )
 
-        # Prepare the response data with day of the week (e.g., Monday, Tuesday)
+        # Debug: Print holidays after exclusion
+        print("Holidays after exclusion:", holidays)
+
+        # Prepare response
         holiday_data = [
             {
                 "date": holiday.date,
-                "day_of_week": holiday.date.strftime("%A"),  # Get the day of the week (Monday, Tuesday, etc.)
-                "section": holiday.section.name,
+                "day_of_week": holiday.date.strftime("%A"),
+                "section": holiday.section.name if holiday.section else None,
                 "reason": holiday.reason
             }
             for holiday in holidays
         ]
 
-        # Return the response with the list of holidays
         return Response(holiday_data, status=status.HTTP_200_OK)

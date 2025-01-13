@@ -22,9 +22,8 @@ const Sidebar = (props) => {
   const [tableVisible, setTableVisible] = useState(false);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false); // Manage dialog visibility
-  const [selectedRow, setSelectedRow] = useState(null); // Store the row to delete
-  const [editedRemarks, setEditedRemarks] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -32,7 +31,9 @@ const Sidebar = (props) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${API_PATHS.FETCH_REMARKS}?year=${year || ""}&month=${month || ""}&section_id=${sectionId || ""}`
+        `${API_PATHS.FETCH_REMARKS}?year=${year || ""}&month=${
+          month || ""
+        }&section_id=${sectionId || ""}`
       );
       setStudents(response.data);
     } catch (error) {
@@ -47,9 +48,24 @@ const Sidebar = (props) => {
   }, [tableVisible]);
 
   const columns = [
-    { field: "student_name", headerName: "Name", width: 280, disableColumnResize: true },
-    { field: "date", headerName: "Date", width: 130, disableColumnResize: true },
-    { field: "status", headerName: "Status", width: 120, disableColumnResize: true },
+    {
+      field: "student_name",
+      headerName: "Name",
+      width: 280,
+      disableColumnResize: true,
+    },
+    {
+      field: "date",
+      headerName: "Date",
+      width: 130,
+      disableColumnResize: true,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 120,
+      disableColumnResize: true,
+    },
     {
       field: "remark",
       headerName: "Remark",
@@ -96,11 +112,11 @@ const Sidebar = (props) => {
 
   const handleDeleteRemark = (row) => {
     setSelectedRow(row); // Store the selected row to delete
-    setDialogOpen(true);  // Open the confirmation dialog
+    setDialogOpen(true); // Open the confirmation dialog
   };
 
   const handleConfirmDelete = async (confirmed) => {
-    setDialogOpen(false);  // Close the dialog
+    setDialogOpen(false); // Close the dialog
 
     if (confirmed && selectedRow) {
       const { student_id, date } = selectedRow;
@@ -113,100 +129,81 @@ const Sidebar = (props) => {
           },
         });
 
-        openSnackbar((response.data.message || "Remark deleted successfully."),"success")
-        
+        openSnackbar(
+          response.data.message || "Remark deleted successfully.",
+          "success"
+        );
+
         // Remove the row from the students array
-        setStudents((prevStudents) =>
-          prevStudents.map((student) => {
-            if (student.student_id === student_id) {
-              student.attendance = student.attendance.filter(
-                (attendance) => attendance.date !== date
-              );
-            }
-            return student;
-          }).filter(student => student.attendance.length > 0) // Remove student if they have no attendance
+        setStudents(
+          (prevStudents) =>
+            prevStudents
+              .map((student) => {
+                if (student.student_id === student_id) {
+                  student.attendance = student.attendance.filter(
+                    (attendance) => attendance.date !== date
+                  );
+                }
+                return student;
+              })
+              .filter((student) => student.attendance.length > 0) // Remove student if they have no attendance
         );
       } catch (error) {
         console.error("Error deleting remark:", error);
-        openSnackbar("Failed to delete remark.","error")
-
+        openSnackbar("Failed to delete remark.", "error");
       }
     }
   };
 
-
-  const handleProcessRowUpdate = (newRow, oldRow) => {
+  const handleProcessRowUpdate = async (newRow, oldRow) => {
+    // Trim the remark before any processing
+    const trimmedRemark = newRow.remark.trim();
   
-    if (newRow.remark !== oldRow.remark) {
-      if (!validRemarkRegex.test(newRow.remark)) {
-        openSnackbar("Remark must contain valid characters (letters, numbers, spaces only).", "error");
+    if (trimmedRemark !== oldRow.remark) {
+      if (!validRemarkRegex.test(trimmedRemark)) {
+        openSnackbar(
+          "Remark must contain valid characters (letters, numbers, spaces only).",
+          "error"
+        );
         return oldRow; // Reject the update and keep the old value
       }
   
-      setEditedRemarks((prev) => {
-        const existing = prev.find(
-          (row) =>
-            row.student_id === newRow.student_id && row.date === newRow.date
+      try {
+        // Make an API call to update the remark
+        await axios.post(API_PATHS.ADD_REMARK, {
+          student_id: newRow.student_id,
+          date: newRow.date,
+          remark: trimmedRemark, // Send the trimmed remark
+        });
+  
+        openSnackbar("Remark updated successfully.", "success");
+  
+        // Update the students state locally
+        setStudents((prevStudents) =>
+          prevStudents.map((student) => {
+            if (student.student_id === newRow.student_id) {
+              return {
+                ...student,
+                attendance: student.attendance.map((attendance) =>
+                  attendance.date === newRow.date
+                    ? { ...attendance, remark: trimmedRemark } // Update with trimmed remark
+                    : attendance
+                ),
+              };
+            }
+            return student;
+          })
         );
-        if (existing) {
-          return prev.map((row) =>
-            row.student_id === newRow.student_id && row.date === newRow.date
-              ? { ...row, remark: newRow.remark }
-              : row
-          );
-        }
-        return [
-          ...prev,
-          { student_id: newRow.student_id, date: newRow.date, remark: newRow.remark },
-        ];
-      });
-    }
-    return newRow;
-  };
   
-
-  const handleUpdateRemarks = async () => {
-    if (editedRemarks.length === 0) {
-      openSnackbar("No changes to update.", "info");
-      return;
+        return newRow; // Accept the updated row
+      } catch (error) {
+        console.error("Error updating remark:", error);
+        openSnackbar("Failed to update remark.", "error");
+        return oldRow; // Revert to the old value in case of an error
+      }
     }
   
-    try {
-      const updatePromises = editedRemarks.map((row) =>
-        axios.post(API_PATHS.ADD_REMARK, {
-          student_id: row.student_id,
-          date: row.date,
-          remark: row.remark,
-        })
-      );
-  
-      await Promise.all(updatePromises);
-  
-      openSnackbar("Remarks updated successfully.", "success");
-  
-      // Update the students state in the UI
-      setStudents((prevStudents) =>
-        prevStudents.map((student) => ({
-          ...student,
-          attendance: student.attendance.map((attendance) => {
-            const updatedRemark = editedRemarks.find(
-              (edit) =>
-                edit.student_id === student.student_id &&
-                edit.date === attendance.date
-            );
-            return updatedRemark
-              ? { ...attendance, remark: updatedRemark.remark }
-              : attendance;
-          }),
-        }))
-      );
-  
-      // Clear edited remarks after successful update
-      setEditedRemarks([]);
-    } catch (error) {
-      console.error("Error updating remarks:", error);
-      openSnackbar("Failed to update remarks.", "error");
-    }
+    return newRow; // If remark is unchanged, simply accept the new row
   };
   
 
@@ -238,7 +235,7 @@ const Sidebar = (props) => {
             backgroundColor: "#f9f9f9",
             padding: "16px",
             borderLeft: "1px solid #ddd",
-            zIndex: 10000001,  // Ensure sidebar is above overlay
+            zIndex: 10000001, // Ensure sidebar is above overlay
           },
         }}
         anchor="right"
@@ -262,17 +259,16 @@ const Sidebar = (props) => {
 
         {/* Remarks Button */}
         <Box sx={{ marginTop: 8, textAlign: "center" }}>
-        <Button
-  variant="contained"
-  color="primary"
-  onClick={() => {
-    setTableVisible((prev) => !prev);  // Toggle remarks table visibility
-    setSidebarOpen(false);  // Close the sidebar
-  }}
->
-  {tableVisible ? "Hide Remarks" : "Show Remarks"}
-</Button>
-
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setTableVisible((prev) => !prev); // Toggle remarks table visibility
+              setSidebarOpen(false); // Close the sidebar
+            }}
+          >
+            {tableVisible ? "Hide Remarks" : "Show Remarks"}
+          </Button>
         </Box>
       </Drawer>
 
@@ -285,8 +281,8 @@ const Sidebar = (props) => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",  // Semi-transparent grey
-            zIndex: 999,  // Ensure overlay is below the sidebar
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent grey
+            zIndex: 999, // Ensure overlay is below the sidebar
           }}
         />
       )}
@@ -309,20 +305,20 @@ const Sidebar = (props) => {
             boxShadow: 3,
             padding: 3,
             borderRadius: 2,
-            zIndex: 1000,  // Ensure above overlay
+            zIndex: 1000, // Ensure above overlay
           }}
         >
           <IconButton
-            onClick={() => setTableVisible(false)}  // Close the table
+            onClick={() => setTableVisible(false)} // Close the table
             sx={{
               position: "absolute",
               top: 8,
               right: 8,
-              backgroundColor: "#d32f2f",  // Red color
+              backgroundColor: "#d32f2f", // Red color
               color: "#fff",
-              width: 25,  // Smaller button size
-              height: 25,  // Smaller button size
-              "&:hover": { backgroundColor: "#b71c1c" },  // Darker red on hover
+              width: 25, // Smaller button size
+              height: 25, // Smaller button size
+              "&:hover": { backgroundColor: "#b71c1c" }, // Darker red on hover
             }}
           >
             <Close />
@@ -331,29 +327,29 @@ const Sidebar = (props) => {
           {loading ? (
             <CircularProgress />
           ) : (
-            <><DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            processRowUpdate={handleProcessRowUpdate}
-            experimentalFeatures={{ newEditingApi: true }}
-            sx={{
-              width: "100%",
-              height: "100%",
-              overflow: "hidden",
-              marginTop: "1rem",
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpdateRemarks}
-            disabled={editedRemarks.length === 0} 
-            sx={{ marginTop: 2 }}
-          >
-            Update Remarks
-          </Button></>
+            <>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5, 10, 20]}
+                processRowUpdate={handleProcessRowUpdate}
+                experimentalFeatures={{ newEditingApi: true }}
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  overflow: "hidden",
+                  marginTop: "1rem",
+                }}
+                onProcessRowUpdateError={(error) => {
+                  console.error("Error processing row update:", error);
+                  openSnackbar(
+                    "Error updating remark. Please try again.",
+                    "error"
+                  );
+                }}
+              />
+            </>
           )}
         </Box>
       )}
