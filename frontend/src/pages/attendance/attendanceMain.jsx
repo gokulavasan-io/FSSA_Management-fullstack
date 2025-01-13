@@ -201,27 +201,39 @@ const Attendance = ({ year, month, sectionId }) => {
       data: "name",
       title: "Student Name",
       readOnly: true,
-      width: 200,
+      width: 250,
     },
     ...daysInMonth.map((day) => ({
       data: `${day}`,
-      title: `Day ${day}`,
+      title: `${day}/${month}`,
       type: "dropdown",
       source: statusOptions.filter(status => status !== "Holiday"),
       allowInvalid: false,
-      readOnly: tableData.some(row => row[day] === "Holiday"), 
+      readOnly: tableData.some(row => row[day] === "Holiday"),
       renderer: function (instance, td, row, col, prop, value, cellProperties) {
         const isHoliday = tableData[row]?.[day] === "Holiday";
-        if (isHoliday) {
-          td.style.backgroundColor = "red"; 
-          td.innerHTML = value; 
+        const isWeekend = [0, 6].includes(new Date(year, month-1, day).getDay());
+ 
+        
+        if (isHoliday && !isWeekend) {
+          td.innerHTML = value;
           td.classList.remove("handsontableDropdown");
+          td.classList.add("holidayCell");
+        } else if (isWeekend) {
+          td.innerHTML = value;
+          td.classList.remove("handsontableDropdown");
+          td.classList.add("weekendCell");
+          
         } else {
           Handsontable.renderers.DropdownRenderer.apply(this, arguments); // Default dropdown renderer
         }
       },
+
     })),
   ];
+  
+ 
+  
 
 
 

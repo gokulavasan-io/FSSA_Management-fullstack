@@ -17,6 +17,8 @@ const API_PATHS = {
     FETCH_REMARKS:'http://127.0.0.1:8000/attendance/fetch_remarks/',
     ADD_HOLIDAY:'http://127.0.0.1:8000/attendance/add_holiday/',
     FETCH_HOLIDAYS:'http://127.0.0.1:8000/attendance/fetch_holidays/',
+    FETCH_STUDENTSTATISTICS:'http://127.0.0.1:8000/attendance/fetch_students_status_count/',
+    FETCH_DAILYsTATISTICS:'http://127.0.0.1:8000/attendance/fetch_daily_statistics/',
   };
   
 export default API_PATHS;
