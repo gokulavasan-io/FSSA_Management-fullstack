@@ -12,7 +12,7 @@ import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
 import ConfirmationDialog from "../uxComponents/confirmationDialog";
 import { useSnackbar } from "../UxComponents/snackbar";
-import { validRemarkRegex } from "../../utils/regex";
+import { validRemarkRegex } from "../../constants/regex";
 
 const Sidebar = (props) => {
   const { openSnackbar } = useSnackbar();

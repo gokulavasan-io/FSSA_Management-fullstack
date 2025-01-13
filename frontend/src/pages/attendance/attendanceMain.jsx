@@ -9,8 +9,10 @@ import "dayjs/locale/en"; // Optional: Set the locale to en (English)
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle,TextField,MenuItem } from '@mui/material'; 
 import Handsontable from "handsontable";
 import ConfirmationDialog from "../uxComponents/confirmationDialog";
+import { useSnackbar } from "../UxComponents/snackbar";
 
 const Attendance = ({ year, month, sectionId }) => {
+    const { openSnackbar } = useSnackbar();
   const [tableData, setTableData] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,8 @@ const Attendance = ({ year, month, sectionId }) => {
   const [remarkDialogOpen, setRemarkDialogOpen] = useState(false);
   const [remark, setRemark] = useState("");
   const [selectedStudent, setSelectedStudent] = useState("");
+  const [holidayReason, setHolidayReason] = useState(""); // State to store holiday reason
+  const [holidayReasonDialogOpen, setHolidayReasonDialogOpen] = useState(false); // State to manage dialog visibility
   
 
   useEffect(() => {
@@ -86,7 +90,7 @@ const Attendance = ({ year, month, sectionId }) => {
 
     try {
       await axios.put(API_PATHS.UPDATE_ATTENDANCE, { records: updatedRecords });
-      alert("Attendance updated successfully!");
+      openSnackbar("Attendance updated successfully!",'success');
     } catch (error) {
       console.error("Error updating attendance:", error);
       alert("Failed to update attendance.");
@@ -101,40 +105,88 @@ const Attendance = ({ year, month, sectionId }) => {
       return;
     }
   
-    const isCurrentlyHoliday = tableData.every(
+    const isCurrentlyHoliday = tableData.some(
       (row) => row[selectedHolidayDay] === "Holiday"
     );
   
-    // Always prompt the confirmation dialog
-    setOpenDialog(true);
-    setIsHoliday(isCurrentlyHoliday);
+    setIsHoliday(isCurrentlyHoliday); // Update the state to reflect the current status
+    setOpenDialog(true); // Open the confirmation dialog
   };
   
-  const handleCloseDialog = (confirm) => {
-    setOpenDialog(false);
+  
+  const handleHolidayConfirmation = async (confirm) => {
+    setOpenDialog(false); // Close the dialog
   
     if (confirm) {
-      const newData = [...tableData];
-      toggleHoliday(newData, isHoliday); // Toggle holiday state based on the dialog response
+      if (isHoliday) {
+        // Remove holiday - no reason needed
+        try {
+          await axios.delete(API_PATHS.ADD_HOLIDAY, {
+            data: {
+              date: selectedDate.format("YYYY-MM-DD"),
+              section_id: sectionId,
+            },
+          });
+          openSnackbar("Holiday removed successfully!",'success');
+          toggleHolidayInTable(false); // Remove holiday status
+        } catch (error) {
+          console.error("Error removing holiday:", error);
+          alert("Failed to remove holiday.");
+        }
+      } else {
+        // Mark as holiday with a reason if necessary
+        setHolidayReasonDialogOpen(true); // Open the reason dialog
+      }
     }
   };
   
-  const toggleHoliday = (newData, isCurrentlyHoliday) => {
-    if (isCurrentlyHoliday) {
-      // Remove Holiday
-      newData.forEach((row) => {
-        row[selectedHolidayDay] = ""; // Clear the Holiday value
-      });
-    } else {
-      // Mark as Holiday
-      newData.forEach((row) => {
-        row[selectedHolidayDay] = "Holiday"; // Set to Holiday
-      });
+  
+  
+  
+
+  
+  const handleHolidayReasonSubmit = async () => {
+    if (!holidayReason) {
+      alert("Please provide a reason for the holiday.");
+      return;
     }
   
-    setTableData(newData);
+    try {
+      // Save the holiday and reason in the backend
+      await axios.post(API_PATHS.ADD_HOLIDAY, {
+        date: selectedDate.format("YYYY-MM-DD"),
+        section_id: sectionId,
+        reason: holidayReason,
+      });
+  
+      openSnackbar("Holiday marked successfully!",'success');
+      setHolidayReasonDialogOpen(false);  // Close the holiday reason dialog
+      setHolidayReason("");  // Clear the holiday reason field
+  
+      // Mark the day as a holiday in the table
+      toggleHolidayInTable(true);  // Update this function call to toggle the holiday status
+    } catch (error) {
+      console.error("Error marking holiday:", error);
+      alert("Failed to mark holiday.");
+    }
   };
   
+  
+  
+  
+  const toggleHolidayInTable = (markAsHoliday) => {
+    const newData = [...tableData];
+    newData.forEach((row) => {
+      if (markAsHoliday) {
+        row[selectedHolidayDay] = "Holiday"; // Mark as holiday
+      } else {
+        row[selectedHolidayDay] = ""; // Remove the holiday
+      }
+    });
+  
+    setTableData(newData); // Update table data
+    handleUpdateAttendance()
+  };
   
   
 
@@ -190,7 +242,7 @@ const Attendance = ({ year, month, sectionId }) => {
         remark,
       });
 
-      alert("Remark added successfully!");
+      openSnackbar("Remark added successfully!",'success');
       setRemarkDialogOpen(false);
       setRemark(""); // Clear the remark field
     } catch (error) {
@@ -304,18 +356,37 @@ const Attendance = ({ year, month, sectionId }) => {
       {/* Confirmation Dialog */}
       <ConfirmationDialog
   open={openDialog}
-  onClose={(confirm) => {
-    handleCloseDialog(confirm);
-  }}
+  onClose={handleHolidayConfirmation}  // Handle confirmation of holiday action
   title={isHoliday ? "Remove Holiday" : "Mark as Holiday"}
-  content={
-    isHoliday
-      ? "Are you sure you want to mark this day as a working day?"
-      : "Do you want to mark this day as a holiday?"
-  }
+  content={isHoliday
+    ? "Are you sure you want to mark this day as a working day?"
+    : "Do you want to mark this day as a holiday?"}
   confirmText={isHoliday ? "Yes, Mark as Working Day" : "Yes, Mark as Holiday"}
   cancelText="No, Cancel"
 />
+
+
+<Dialog open={holidayReasonDialogOpen} onClose={() => setHolidayReasonDialogOpen(false)}>
+  <DialogTitle>Enter Holiday Reason</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Reason"
+      value={holidayReason}
+      onChange={(e) => setHolidayReason(e.target.value)}
+      fullWidth
+      multiline
+      rows={4}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setHolidayReasonDialogOpen(false)} color="secondary">
+      Cancel
+    </Button>
+    <Button onClick={handleHolidayReasonSubmit} color="primary">
+      Submit
+    </Button>
+  </DialogActions>
+</Dialog>
 
 
     </div>

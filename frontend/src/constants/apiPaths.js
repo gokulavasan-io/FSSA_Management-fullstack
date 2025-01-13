@@ -14,7 +14,8 @@ const API_PATHS = {
     ATTENDANCE_DATA:"http://127.0.0.1:8000/attendance/attendance_data/",
     UPDATE_ATTENDANCE:"http://127.0.0.1:8000/attendance/update_data/",
     ADD_REMARK:'http://127.0.0.1:8000/attendance/add_remark/',
-    FETCH_REMARKS:'http://127.0.0.1:8000/attendance/fetch_remarks/'
+    FETCH_REMARKS:'http://127.0.0.1:8000/attendance/fetch_remarks/',
+    ADD_HOLIDAY:'http://127.0.0.1:8000/attendance/add_holiday/',
   };
   
 export default API_PATHS;
@@ -33,6 +34,3 @@ export default API_PATHS;
   // Load balancing
 // enum -- enumeration 
 
-
-
-// add_remark

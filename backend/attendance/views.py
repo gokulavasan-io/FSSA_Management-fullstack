@@ -1,8 +1,9 @@
 from rest_framework import status
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Attendance, Status
-from students.models import Students
+from .models import *
+from students.models import *
 from datetime import datetime
 from calendar import monthrange,weekday
 
@@ -269,3 +270,141 @@ class FetchStudentsWithRemarksView(APIView):
 
         # Return the response with the list of students and their attendance with remarks and status
         return Response(result, status=status.HTTP_200_OK)
+
+
+
+
+class AddOrUpdateHolidayView(APIView):
+    def post(self, request, *args, **kwargs):
+        date = request.data.get("date")
+        section_id = request.data.get("section_id")
+        reason = request.data.get("reason")
+
+        # Validate required fields
+        if not date:
+            return Response({"error": "Missing 'date' in request."}, status=400)
+        if not section_id:
+            return Response({"error": "Missing 'section_id' in request."}, status=400)
+        if not reason:
+            return Response({"error": "Missing 'reason' in request."}, status=400)
+
+        try:
+            # Verify if the section exists
+            section = Section.objects.filter(id=section_id).first()
+            if not section:
+                return Response({"error": "Section not found."}, status=404)
+
+            # Convert date string to a Date object
+            try:
+                date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=400)
+
+            # Fetch or create the holiday record
+            holiday, created = Holiday.objects.get_or_create(
+                date=date_obj,
+                section=section,
+                defaults={'reason': reason}  # Set default reason for new holiday
+            )
+
+            # Update the reason field
+            if not created:
+                holiday.reason = reason
+                holiday.save()
+
+            message = "Holiday updated successfully."
+            if created:
+                message += " (New holiday record created.)"
+
+            return Response({"message": message}, status=200)
+
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
+
+    def delete(self, request):
+        date = request.data.get("date")
+        section_id = request.data.get("section_id")
+
+        # Validate required fields
+        if not date or not section_id:
+            return Response({"error": "Both 'date' and 'section_id' are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert date to datetime object
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+
+            # Fetch section and holiday record
+            section = Section.objects.filter(id=section_id).first()
+            if not section:
+                return Response({"error": "Section not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            holiday = Holiday.objects.filter(section=section, date=date_obj).first()
+            if not holiday:
+                return Response({"error": "Holiday record not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Delete the holiday record
+            holiday.delete()
+
+            return Response({"message": "Holiday deleted successfully."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class FetchHolidaysView(APIView):
+    def get(self, request):
+        # Get 'month', 'year', and optionally 'section_id' from query parameters
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+        section_id = request.query_params.get('section_id', None)
+
+        # Validate the input parameters
+        if not month or not year:
+            return Response({"error": "Missing 'month' or 'year' in request"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert to integer to validate
+            month = int(month)
+            year = int(year)
+            
+            # Validate month and year ranges
+            if month < 1 or month > 12:
+                return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=status.HTTP_400_BAD_REQUEST)
+            if year < 1000 or year > 9999:
+                return Response({"error": "Invalid year."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ValueError:
+            return Response({"error": "Invalid input. Month and Year should be integers."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter holidays by section if section_id is provided
+        if section_id:
+            holidays = Holiday.objects.filter(
+                section_id=section_id,
+                date__year=year,
+                date__month=month
+            )
+        else:
+            holidays = Holiday.objects.filter(
+                date__year=year,
+                date__month=month
+            )
+
+        # Filter out weekends (Saturdays and Sundays)
+        holidays = holidays.exclude(
+            Q(date__week_day=6) | Q(date__week_day=7)
+        )
+
+        # Prepare the response data with day of the week (e.g., Monday, Tuesday)
+        holiday_data = [
+            {
+                "date": holiday.date,
+                "day_of_week": holiday.date.strftime("%A"),  # Get the day of the week (Monday, Tuesday, etc.)
+                "section": holiday.section.name,
+                "reason": holiday.reason
+            }
+            for holiday in holidays
+        ]
+
+        # Return the response with the list of holidays
+        return Response(holiday_data, status=status.HTTP_200_OK)

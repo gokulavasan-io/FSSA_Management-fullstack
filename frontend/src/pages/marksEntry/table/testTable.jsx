@@ -14,7 +14,7 @@ import {
 import API_PATHS from "../../../constants/apiPaths.js";
 import { useSnackbar } from "../../UxComponents/snackbar.jsx";
 import TextArea from "./textArea.jsx";
-import { testNameRegex } from "../../../utils/regex.js";
+import { testNameRegex } from "../../../constants/regex.js";
 
 function TestTable(props) {
   const {
