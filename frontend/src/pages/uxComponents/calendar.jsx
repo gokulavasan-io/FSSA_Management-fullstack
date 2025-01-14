@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { IconButton, Popper, ClickAwayListener } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { calendarBgImg } from '../../../public/assets/images/imagePaths';
 import CalendarIcon from '../../../public/assets/icons/ic_calendar.jsx';
 

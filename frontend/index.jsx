@@ -4,14 +4,12 @@ import './index.css'
 import MarkEntry from './src/pages/marksEntry/marksEntry'
 import 'handsontable/dist/handsontable.full.css';
 import ChatUI from './src/pages/AiChat/chat'
-import { SnackbarProvider } from './src/pages/UxComponents/snackbar'; 
 import Attendance from './src/pages/attendance/attendanceMain';
 import DailyStatisticsTable from './src/pages/attendance/dailyStatisticts';
 import AttendanceStatsTable from './src/pages/attendance/studentStatistics';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <SnackbarProvider>
       {/* <MarkEntry />
       // <ChatUI /> */}
        <Attendance year={2024} month={12} sectionId={1} />
@@ -23,6 +21,5 @@ createRoot(document.getElementById('root')).render(
   {/* <AttendanceStatsTable sectionId={1}  
         month={12}  
         year={2024} /> */}
-    </SnackbarProvider>
   </StrictMode>
 )

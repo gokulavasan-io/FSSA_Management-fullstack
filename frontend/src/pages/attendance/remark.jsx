@@ -11,11 +11,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
 import ConfirmationDialog from "../uxComponents/confirmationDialog";
-import { useSnackbar } from "../UxComponents/snackbar";
 import { validRemarkRegex } from "../../constants/regex";
 
 const Sidebar = (props) => {
-  const { openSnackbar } = useSnackbar();
   const { year, month, sectionId } = props;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,6 +34,8 @@ const Sidebar = (props) => {
         }&section_id=${sectionId || ""}`
       );
       setStudents(response.data);
+      console.log(response.data);
+      
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -129,7 +129,7 @@ const Sidebar = (props) => {
           },
         });
 
-        openSnackbar(
+        alert(
           response.data.message || "Remark deleted successfully.",
           "success"
         );
@@ -150,7 +150,7 @@ const Sidebar = (props) => {
         );
       } catch (error) {
         console.error("Error deleting remark:", error);
-        openSnackbar("Failed to delete remark.", "error");
+        alert("Failed to delete remark.", "error");
       }
     }
   };
@@ -161,7 +161,7 @@ const Sidebar = (props) => {
   
     if (trimmedRemark !== oldRow.remark) {
       if (!validRemarkRegex.test(trimmedRemark)) {
-        openSnackbar(
+        alert(
           "Remark must contain valid characters (letters, numbers, spaces only).",
           "error"
         );
@@ -176,7 +176,7 @@ const Sidebar = (props) => {
           remark: trimmedRemark, // Send the trimmed remark
         });
   
-        openSnackbar("Remark updated successfully.", "success");
+        alert("Remark updated successfully.", "success");
   
         // Update the students state locally
         setStudents((prevStudents) =>
@@ -198,7 +198,7 @@ const Sidebar = (props) => {
         return newRow; // Accept the updated row
       } catch (error) {
         console.error("Error updating remark:", error);
-        openSnackbar("Failed to update remark.", "error");
+        alert("Failed to update remark.", "error");
         return oldRow; // Revert to the old value in case of an error
       }
     }
@@ -343,7 +343,7 @@ const Sidebar = (props) => {
                 }}
                 onProcessRowUpdateError={(error) => {
                   console.error("Error processing row update:", error);
-                  openSnackbar(
+                  alert(
                     "Error updating remark. Please try again.",
                     "error"
                   );

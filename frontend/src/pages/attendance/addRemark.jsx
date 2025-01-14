@@ -3,20 +3,34 @@ import axios from "axios";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from "@mui/material";
 import dayjs from "dayjs";
 import API_PATHS from "../../constants/apiPaths";
-import { useSnackbar } from "../UxComponents/snackbar";
 import { AdapterDayjs, LocalizationProvider, DatePicker } from "../../utils/dateImports";
 
-
-
-const AddRemark = ({ students, year, month }) => {
-  const { openSnackbar } = useSnackbar();
+const AddRemark = ({ students, year, month, sectionId }) => {
   const [remarkDialogOpen, setRemarkDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [remark, setRemark] = useState("");
+  const [existingRemarks, setExistingRemarks] = useState([]); // To store remarks for the month
+
+  // Fetch existing remarks for the selected month and section
+  const fetchStudentRemarks = async () => {
+    try {
+      const response = await axios.get(
+        `${API_PATHS.FETCH_REMARKS}?year=${year || ""}&month=${month || ""}&section_id=${sectionId || ""}`
+      );
+      setExistingRemarks(response.data); // Store existing remarks
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks:", error);
+    }
+  };
 
   // Handle the dialog open/close state
-  const handleOpenRemarkDialog = () => setRemarkDialogOpen(true);
+  const handleOpenRemarkDialog = async () => {
+    setRemarkDialogOpen(true);
+    await fetchStudentRemarks(); // Fetch remarks whenever the dialog opens
+  };
+
   const handleCloseRemarkDialog = () => {
     setRemarkDialogOpen(false);
     setSelectedStudent("");
@@ -31,14 +45,26 @@ const AddRemark = ({ students, year, month }) => {
       return;
     }
 
+    // Check if the student already has a remark for this date
+    const existingRemark = existingRemarks.find((student) => 
+      student.student_id === selectedStudent &&
+      student.attendance.some((attendance) => 
+        dayjs(attendance.date).isSame(selectedDate, "day")
+      )
+    );
+
+    const finalRemark = existingRemark
+      ? existingRemark.attendance[0].remark + " || " + remark // Append if remark already exists
+      : remark; // Otherwise, use the new remark
+
     try {
       await axios.post(API_PATHS.ADD_REMARK, {
         student_id: selectedStudent,
         date: selectedDate.format("YYYY-MM-DD"),
-        remark,
+        remark: finalRemark,
       });
 
-      openSnackbar("Remark added successfully!", "success");
+      alert("Remark added successfully!"); // Use alert instead of Snackbar
       handleCloseRemarkDialog(); // Close the dialog after submission
     } catch (error) {
       console.error("Error adding remark:", error);

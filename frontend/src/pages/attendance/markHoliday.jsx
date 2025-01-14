@@ -16,12 +16,11 @@ import {
 } from "../../utils/dateImports";
 import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
-import { useSnackbar } from "../UxComponents/snackbar";
 
 
 
 const HolidayManager = ({ year, month, sectionId, tableData, setTableData }) => {
-  const { openSnackbar } = useSnackbar();
+  
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHoliday, setIsHoliday] = useState(false);
@@ -67,11 +66,11 @@ const HolidayManager = ({ year, month, sectionId, tableData, setTableData }) => 
             data: { date: formattedDate, section_id: sectionId },
           });
           toggleHolidayInTable(day, false);
-          openSnackbar("Holiday removed successfully!", "success");
+          alert("Holiday removed successfully!", "success");
           setSelectedDate(null)
         } catch (error) {
           console.error("Error removing holiday:", error);
-          openSnackbar("Failed to remove holiday.", "error");
+          alert("Failed to remove holiday.", "error");
         }
       }
       else {
@@ -97,12 +96,12 @@ const HolidayManager = ({ year, month, sectionId, tableData, setTableData }) => 
           reason: holidayReason,
         });
         toggleHolidayInTable(day, true);
-        openSnackbar("Holiday marked successfully!", "success");
+        alert("Holiday marked successfully!", "success");
         setSelectedDate(null); // Reset the selected date
         setHolidayReason("");  // Reset the holiday reason
       } catch (error) {
         console.error("Error marking holiday:", error);
-        openSnackbar("Failed to mark holiday.", "error");
+        alert("Failed to mark holiday.", "error");
       } finally {
         setHolidayReasonDialogOpen(false);
       }

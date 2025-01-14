@@ -12,7 +12,6 @@ import {
   RefreshIcon,
 } from "../../../utils/materialImports.js";
 import API_PATHS from "../../../constants/apiPaths.js";
-import { useSnackbar } from "../../UxComponents/snackbar.jsx";
 import TextArea from "./textArea.jsx";
 import { testNameRegex } from "../../../constants/regex.js";
 
@@ -48,7 +47,6 @@ function TestTable(props) {
     selectedDate,
     setSelectedDate,testTableColumns
   } = props;
-    const { openSnackbar } = useSnackbar();
     const [aboutTest, setAboutTest] = useState('');
     const [previousAboutTest,setPreviousAboutTest]=useState('')
     const hotTableRef = useRef(null);
@@ -95,7 +93,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.response.data);
-        openSnackbar('Something went wrong. Try again later.','error')
+        alert('Something went wrong. Try again later.','error')
       });
   };
   
@@ -111,7 +109,7 @@ function TestTable(props) {
       })
       .catch((error) => {
         console.error("Error submitting marks data:", error.message);
-        openSnackbar('Something went wrong. Try again later.',"error")
+        alert('Something went wrong. Try again later.',"error")
       });
   };
   
@@ -148,13 +146,13 @@ function TestTable(props) {
           continue;
         }
         if (parseFloat(newValue) > totalMark) {
-          openSnackbar('Enter mark less than or equal to total mark', 'error');
+          alert('Enter mark less than or equal to total mark', 'error');
           shouldCancelChange = true;
         } else if (newValue < 0) {
-          openSnackbar('Enter a positive number', 'error');
+          alert('Enter a positive number', 'error');
           shouldCancelChange = true;
         } else if (newValue !== "" && isNaN(newValue)) {
-          openSnackbar('Only "a" or "A" are allowed!', 'error');
+          alert('Only "a" or "A" are allowed!', 'error');
           shouldCancelChange = true;
         }
   

@@ -16,7 +16,6 @@ import {
 } from "../../utils/materialImports";
 import { BsChatDots } from "react-icons/bs";
 import { dayjs, utc, timezone } from "../../utils/dateImports";
-import { useSnackbar } from "../UxComponents/snackbar";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -114,7 +113,7 @@ const ChatUI = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const messageEndRef = useRef(null);
-  const { openSnackbar } = useSnackbar(); 
+
 
   useEffect(() => {
     axios
@@ -124,7 +123,7 @@ const ChatUI = () => {
       })
       .catch((error) => {
         console.error("Error fetching chat data:", error.message);
-        openSnackbar("Something went wrong. Try again later.",'error');
+        alert("Something went wrong. Try again later.",'error');
 
       });
   }, [open]);
@@ -153,7 +152,7 @@ const ChatUI = () => {
         })
         .catch((error) => {
           console.error("Error submitting message:", error.message);
-          openSnackbar("Something went wrong. Try again later.",'error');
+          alert("Something went wrong. Try again later.",'error');
         });
       setMessage("");
     }
@@ -185,11 +184,11 @@ const ChatUI = () => {
         setChatData(chatData.filter((msg) => msg.id !== selectedMessageId));
         setOpenDialog(false);
         setSelectedMessageId(null);
-        openSnackbar("Message deleted successfully.",'success');
+        alert("Message deleted successfully.",'success');
       })
       .catch((error) => {
         console.error("Error deleting message:", error.message);
-        openSnackbar("Failed to delete the message. Try again later.",'error');
+        alert("Failed to delete the message. Try again later.",'error');
       });
   };
 

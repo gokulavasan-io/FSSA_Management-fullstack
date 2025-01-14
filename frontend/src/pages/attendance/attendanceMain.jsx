@@ -2,20 +2,36 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
 import AttendanceTable from "./attendanceTable";
-import Sidebar from "./holidayReson";
+import Sidebar from "./remark";
 import "dayjs/locale/en";
 import Handsontable from "handsontable";
-import { useSnackbar } from "../UxComponents/snackbar";
 import AddRemark from "./addRemark";
 import HolidayManager from "./markHoliday";
+
 import { Button } from "@mui/material";
 import CalendarPopup from "../uxComponents/calendar";
 
 const Attendance = ({ year, month, sectionId }) => {
-  const { openSnackbar } = useSnackbar();
   const [tableData, setTableData] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [remarks, setRemarks] = useState([]); // State variable to store fetched remarks
+
+
+   const fetchStudentRemarks = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${API_PATHS.FETCH_REMARKS}?year=${year || ""}&month=${month || ""}&section_id=${sectionId || ""}`
+      );
+      return response.data; // Return fetched remarks data
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
   useEffect(() => {
@@ -23,13 +39,15 @@ const Attendance = ({ year, month, sectionId }) => {
       try {
         const daysCount = new Date(year, month, 0).getDate();
         const daysInMonth = Array.from({ length: daysCount }, (_, i) => i + 1);
-
+  
         const response = await axios.get(
           `${API_PATHS.ATTENDANCE_DATA}?year=${year || ""}&month=${month || ""}&section_id=${sectionId || ""}`
         );
-
+  
         const { data, status } = response.data;
-
+        const fetchedRemarks = await fetchStudentRemarks(); // Fetch remarks
+        setRemarks(fetchedRemarks); // Store fetched remarks in the state
+  
         const modifiedData = data.map((student) => {
           const row = { name: student.name, student_id: student.student_id };
           daysInMonth.forEach((day) => {
@@ -37,16 +55,17 @@ const Attendance = ({ year, month, sectionId }) => {
           });
           return row;
         });
-
+  
         setTableData(modifiedData);
         setStatusOptions(status); // E.g., ["P", "A", "L"]
       } catch (error) {
         console.error("Error fetching attendance data:", error);
       }
     };
-
+  
     fetchAttendance();
   }, [year, month, sectionId]);
+  
 
   const handleAfterChange = (changes, source) => {
     if (source === "edit" && changes) {
@@ -81,7 +100,7 @@ const Attendance = ({ year, month, sectionId }) => {
 
     try {
       await axios.put(API_PATHS.UPDATE_ATTENDANCE, { records: updatedRecords });
-      openSnackbar("Attendance updated successfully!",'success');
+      alert("Attendance updated successfully!");
     } catch (error) {
       console.error("Error updating attendance:", error);
       alert("Failed to update attendance.");
@@ -104,15 +123,27 @@ const Attendance = ({ year, month, sectionId }) => {
       data: `${day}`,
       title: `${day}/${month}`,
       type: "dropdown",
-      source: statusOptions.filter(status => status !== "Holiday"),
+      source: statusOptions.filter((status) => status !== "Holiday"),
       allowInvalid: false,
-      readOnly: tableData.some(row => row[day] === "Holiday"),
+      readOnly: tableData.some((row) => row[day] === "Holiday"),
       renderer: function (instance, td, row, col, prop, value, cellProperties) {
         const isHoliday = tableData[row]?.[day] === "Holiday";
-        const isWeekend = [0, 6].includes(new Date(year, month-1, day).getDay());
- 
-        
-        if (isHoliday && !isWeekend) {
+        const isWeekend = [0, 6].includes(new Date(year, month - 1, day).getDay());
+        const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        // Check if there's a remark for the student on this day
+        const studentId = tableData[row]?.student_id;
+        const remarkForThisDay = remarks.find((remark) =>
+          remark.attendance.some(
+            (attendance) =>
+              attendance.date === date && remark.student_id === studentId
+          )
+        );    
+  
+        // If remark exists, highlight the cell
+        if (remarkForThisDay) {
+          td.classList.add("remarkCell");
+        } else if (isHoliday && !isWeekend) {
           td.innerHTML = value;
           td.classList.remove("handsontableDropdown");
           td.classList.add("holidayCell");
@@ -120,16 +151,16 @@ const Attendance = ({ year, month, sectionId }) => {
           td.innerHTML = value;
           td.classList.remove("handsontableDropdown");
           td.classList.add("weekendCell");
-          
         } else {
           Handsontable.renderers.DropdownRenderer.apply(this, arguments); // Default dropdown renderer
         }
       },
-
     })),
   ];
   
-
+  
+ 
+  
 
 
 

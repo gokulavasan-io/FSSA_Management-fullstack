@@ -10,12 +10,10 @@ import { Menu, Close } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import API_PATHS from "../../constants/apiPaths";
-import { useSnackbar } from "../UxComponents/snackbar";
 import { validReasonRegex } from "../../constants/regex";
 
 
 const Sidebar = (props) => {
-  const { openSnackbar } = useSnackbar();
   const { year, month, sectionId } = props;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,7 +35,7 @@ const Sidebar = (props) => {
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      openSnackbar("Failed to fetch holidays.", "error");
+      alert("Failed to fetch holidays.", "error");
     } finally {
       setLoading(false);
     }
@@ -65,7 +63,7 @@ const Sidebar = (props) => {
 const trimmedReason = newRow.reason.trim();
 
 if (!validReasonRegex.test(trimmedReason)) {
-  openSnackbar(
+  alert(
     "Reason must include at least one letter and can contain spaces, numbers, and common punctuation.",
     "error"
   );
@@ -89,10 +87,10 @@ if (trimmedReason !== oldRow.reason) {
       )
     );
 
-    openSnackbar("Holiday updated successfully.", "success");
+    alert("Holiday updated successfully.", "success");
   } catch (error) {
     console.error("Error updating holiday:", error);
-    openSnackbar("Failed to update holiday.", "error");
+    alert("Failed to update holiday.", "error");
     return oldRow; // Revert the change if update fails
   }
 }
