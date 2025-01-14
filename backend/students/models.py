@@ -19,6 +19,7 @@ class Students(models.Model):
     category = models.CharField(max_length=2, null=True, blank=True) 
     medium = models.CharField(max_length=50, null=True, blank=True) 
     school = models.CharField(max_length=50, null=True, blank=True) 
+    batch =  models.IntegerField(null=True) 
     
     class Meta:
         ordering = ['name']
