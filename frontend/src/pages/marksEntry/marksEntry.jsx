@@ -9,7 +9,9 @@ import { categoryMark } from "../../constants/constValues.js";
 import {dayjs} from '../../utils/dateImports.js';
 import MainTable from "./table/mainTable.jsx";
 import TestTable from "./table/testTable.jsx";
-import ChartForCategory from "./chartAndCountTable/chart.jsx";
+import ChartForCategory from "./charts/chartForNormalTable.jsx";
+import ChartForLevel from "./charts/chartForLevelTable.jsx";
+import LevelTestTable from "./table/testTable(level).jsx";
 
 const MarkEntry = () => {
   const month = "January";
@@ -27,6 +29,7 @@ const MarkEntry = () => {
   const [testNames, setTestNames] = useState([]);
   const [error, setError] = useState("");
   const [isArchived, setIsArchived] = useState(false);
+  const [isLevelTable, setIsLevelTable] = useState(false);
   const [isArchivedStatusChanged, setIsArchivedStatusChanged] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -71,9 +74,15 @@ const MarkEntry = () => {
     }
   }, [isSaved, isMainTable, isArchivedStatusChanged, isUpdated]);
 
-  const handleOptionClick = (testId) => {
+  const handleOptionClick = (testId,levelTable) => {
     setTestId(testId);
     setIsMainTable(false);
+    if(levelTable){
+      setIsLevelTable(true)
+    }else{
+      setIsLevelTable(false)
+
+    }
   };
 
   function mainTableCreate(fullData) {
@@ -84,7 +93,7 @@ const MarkEntry = () => {
       ];
 
       fullData.test_details.forEach((test) => {
-        if (!test.test_detail.isArchived) {
+        if (!test.test_detail.isArchived && !test.test_detail.isLevelTest) {
           columnData.push({
             title: test.test_detail.test_name,
             width: 100,
@@ -158,6 +167,7 @@ const MarkEntry = () => {
   };
   const exportDataProps={testTableData,testTableColumns,mainTableData,mainTableColumns,isMainTable,totalMark,testName,subject,month,section}
   const chartProps={testTableData,mainTableData,isMainTable}
+  const levelTableProps={testId,section,month,subject,setTestId}
 
   return (
     <>
@@ -179,8 +189,9 @@ const MarkEntry = () => {
     }}
   >
     <Paper elevation={3} sx={{ padding: 2, width: "100%", maxWidth: "1000px" }}>
-      {!isMainTable && <TestTable {...testTableProps} />}
+      {!isMainTable && !isLevelTable &&<TestTable {...testTableProps} />}
       {isMainTable && mainTableColumns.length > 2 && <MainTable {...mainTableProps} />}
+      {!isMainTable && isLevelTable && <LevelTestTable {...levelTableProps} /> }
       {isMainTable && mainTableColumns.length < 3 && (
         <Typography
           variant="h5"
@@ -198,9 +209,9 @@ const MarkEntry = () => {
     </Paper>
     
     {/* Increase width of the chart container */}
-    <Box sx={{ width: "20%", marginTop: 2 }}>
+    {!isLevelTable && <Box sx={{ width: "20%", marginTop: 2 }}>
       <ChartForCategory {...chartProps} />
-    </Box>
+    </Box>}
   </Box>
 )}
 

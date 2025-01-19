@@ -3,7 +3,7 @@ import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
 import { categoryMark } from "../../../constants/constValues";
 import "highcharts/modules/accessibility";
 
-export default function PieChartWithClick(props) {
+export default function Chart(props) {
   const {testTableData,mainTableData,isMainTable}=props;
 
   const [data, setData] = useState([]);

@@ -3,8 +3,6 @@ import API_PATHS from "../../../constants/apiPaths";
 import axios from "axios";
 import TestsSection from "./testsSection";
 import ExportData from "../exportsData.jsx";
-
-
 import {
   Drawer,
   List,
@@ -19,6 +17,7 @@ import {
   TableChartRounded,
   ArrowForwardIos,
 } from "../../../utils/materialImports.js";
+import LevelSection from "./levelSection.jsx";
 
 const Sidebar = (props) => {
   const {
@@ -174,6 +173,25 @@ const Sidebar = (props) => {
               New
             </Button>
           </ListItem>
+
+          {/* Marks Section */}
+          <ListItem
+            sx={{
+              backgroundColor: "#e3f2fd",
+              borderRadius: "8px",
+              marginBottom: 1,
+            }}
+          >
+            <ListItemText
+              primary="Levels"
+              sx={{ fontWeight: "bolder", color: "#333" }}
+            />
+          </ListItem>
+          <LevelSection
+            testDetails={testDetails}
+            onOptionClick={onOptionClick}
+            target="levels"
+          />
 
           {/* Marks Section */}
           <ListItem

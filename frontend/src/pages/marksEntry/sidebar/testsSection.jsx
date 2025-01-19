@@ -14,8 +14,8 @@ const TestsSection = ({ testDetails, onOptionClick, handleDrop, target }) => {
       {/* Show message when no items available */}
       {testDetails.filter(
         (item) =>
-          (target === "marks" && !item.test_detail.isArchived) ||
-          (target === "archived" && item.test_detail.isArchived),
+          (target === "marks" && !item.test_detail.isArchived &&!item.test_detail.isLevelTest) ||
+          (target === "archived" && item.test_detail.isArchived && !item.test_detail.isLevelTest) 
       ).length === 0 ? (
         <ListItem sx={{ textAlign: "center", padding: "10px", color: "#000" }}>
           No tests available
@@ -23,8 +23,8 @@ const TestsSection = ({ testDetails, onOptionClick, handleDrop, target }) => {
       ) : (
         testDetails.map((item, index) => {
           if (
-            (target === "marks" && !item.test_detail.isArchived) ||
-            (target === "archived" && item.test_detail.isArchived)
+            (target === "marks" && !item.test_detail.isArchived && !item.test_detail.isLevelTest) ||
+            (target === "archived" && item.test_detail.isArchived && !item.test_detail.isLevelTest)
           ) {
             return (
               <DraggableTestItem

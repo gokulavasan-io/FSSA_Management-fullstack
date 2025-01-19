@@ -88,6 +88,7 @@ function MainTable(props) {
         rowHeaders={true}
         stretchH="all"
         fixedColumnsLeft={2}
+        columnSorting={true}
         cells={(row, col) => {
           return { renderer: cellRendererForMainTable };
         }}

@@ -19,7 +19,6 @@ class TestDetail(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     test_name = models.CharField(max_length=100)
     month = models.ForeignKey(Month, on_delete=models.CASCADE)
-    batch =  models.IntegerField(null=True) 
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     total_marks = models.PositiveIntegerField()
     created_at = models.DateTimeField()
@@ -43,6 +42,7 @@ class Marks(models.Model):
 class TestLevels(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE)
     level = models.CharField(max_length=10, blank=True, null=True)
+    remark = models.CharField(max_length=255, blank=True, null=True)
     test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE)
 
     def __str__(self):

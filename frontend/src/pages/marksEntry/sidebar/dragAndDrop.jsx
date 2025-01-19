@@ -2,7 +2,7 @@ import { useDrag } from "../../../utils/dragAndDropImports";
 import { ListItem, ListItemText } from "../../../utils/materialImports";
 import { format } from "../../../utils/dateImports";
 
-const DraggableTestItem = ({ item, onOptionClick }) => {
+const   DraggableTestItem = ({ item, onOptionClick }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "test",
     item: item.test_detail,
@@ -16,7 +16,7 @@ const DraggableTestItem = ({ item, onOptionClick }) => {
       ref={drag}
       button
       onClick={() => {
-        onOptionClick(item.test_detail.id);
+        onOptionClick(item.test_detail.id,false);
       }}
       sx={{
         pl: 4,

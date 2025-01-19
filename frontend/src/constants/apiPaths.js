@@ -3,9 +3,18 @@ const API_PATHS = {
     GET_STUDENTS_NAME: 'http://localhost:8000/students/studentsName/',
     GET_STUDENTS_DATA: "http://localhost:8000/students/studentsData/",
     POST_STUDENTS_DATA: "http://localhost:8000/students/studentsData/",
+
+    // for normal tests
     POST_MARK: "http://127.0.0.1:8000/marks/add_mark/",
     GET_MARK: "http://127.0.0.1:8000/marks/get_mark/",
     UPDATE_MARK: "http://127.0.0.1:8000/marks/update_mark/",
+
+  // for level test 
+    POST_LEVEL: "http://127.0.0.1:8000/marks/add_level_mark/",
+    GET_LEVEL: "http://127.0.0.1:8000/marks/get_level_mark/",
+    UPDATE_LEVEL: "http://127.0.0.1:8000/marks/update_level_mark/",
+
+
     UPDATE_ARCHIVE: "http://127.0.0.1:8000/marks/update_archive/",
     GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
     GET_CHAT_DATA: "http://127.0.0.1:8000/ai/get_chat_data/",

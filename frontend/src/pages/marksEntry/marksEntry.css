@@ -30,12 +30,6 @@
 
 /* hot styles */
 
-.handsontable td:nth-child(3) {
-  text-align: center !important;
-}
-.handsontable td:nth-child(4) {
-  text-align: center !important;
-}
 
 .handsontable td {
   padding: 1px 7px;
