@@ -143,7 +143,8 @@ const Attendance = ({ year, month, sectionId }) => {
         // If remark exists, highlight the cell
         if (remarkForThisDay) {
           td.classList.add("remarkCell");
-        } else if (isHoliday && !isWeekend) {
+        } 
+         if (isHoliday && !isWeekend) {
           td.innerHTML = value;
           td.classList.remove("handsontableDropdown");
           td.classList.add("holidayCell");

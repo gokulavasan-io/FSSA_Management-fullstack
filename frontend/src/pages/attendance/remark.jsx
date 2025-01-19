@@ -101,7 +101,7 @@ const Sidebar = (props) => {
               student_id: student.student_id,
               student_name: student.student_name,
               date: attendance.date,
-              status: attendance.status,
+              status: attendance.status__status||"No status",
               remark: attendance.remark || "No remark",
             });
           });

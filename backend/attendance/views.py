@@ -251,7 +251,7 @@ class FetchStudentsWithRemarksView(APIView):
                 student=student,
                 date__year=year,
                 date__month=month
-            ).values('date', 'status', 'remark')
+            ).values('date', 'status__status', 'remark')
 
             if attendance_records.exists():
                 # Remove any attendance records with empty, None, or null remarks
@@ -267,7 +267,7 @@ class FetchStudentsWithRemarksView(APIView):
                         "attendance": filtered_attendance
                     }
                     result.append(student_data)
-
+        print(result)
         # Return the response with the list of students and their attendance with remarks and status
         return Response(result, status=http_status.HTTP_200_OK)
 
