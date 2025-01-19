@@ -5,11 +5,11 @@ import AttendanceTable from "./attendanceTable";
 import Sidebar from "./remark";
 import "dayjs/locale/en";
 import Handsontable from "handsontable";
-import AddRemark from "./addRemark";
 import HolidayManager from "./markHoliday";
 
 import { Button } from "@mui/material";
 import CalendarPopup from "../uxComponents/calendar";
+
 
 const Attendance = ({ year, month, sectionId }) => {
   const [tableData, setTableData] = useState([]);
@@ -159,10 +159,6 @@ const Attendance = ({ year, month, sectionId }) => {
     })),
   ];
   
-  
- 
-  
-
 
 
   return (
@@ -178,7 +174,6 @@ const Attendance = ({ year, month, sectionId }) => {
         >
           {loading ? "Updating..." : "Update Attendance"}
         </Button>
-        <AddRemark students={tableData} year={year} month={month} />
         <HolidayManager
           tableData={tableData}
           setTableData={setTableData}
@@ -195,7 +190,9 @@ const Attendance = ({ year, month, sectionId }) => {
         tableData={tableData}
         hotColumns={hotColumns}
         handleAfterChange={handleAfterChange}
+        remarksData={remarks}
       />
+  
       
       <Sidebar year={year} month={month} sectionId={sectionId} />
     </div>
