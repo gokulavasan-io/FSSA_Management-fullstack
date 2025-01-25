@@ -36,3 +36,6 @@ class StatusAdmin(admin.ModelAdmin):
     # Fields to display in the admin list view
     list_display = ('id', 'status', 'short_form')
     search_fields = ('status',)
+
+admin.site.register(Attendance, AttendanceAdmin)
+admin.site.register(Status, StatusAdmin)

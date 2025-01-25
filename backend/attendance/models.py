@@ -27,8 +27,7 @@ class Attendance(models.Model):
 
 class Holiday(models.Model):
     date = models.DateField()
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
     reason = models.TextField()
 
     def __str__(self):
-        return f"Holiday on {self.date} for Section {self.section.name}"
+        return f"Holiday on {self.date}"

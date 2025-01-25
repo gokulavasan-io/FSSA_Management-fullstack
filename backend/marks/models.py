@@ -16,9 +16,9 @@ class Subject(models.Model):
 
 
 class TestDetail(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
     test_name = models.CharField(max_length=100)
     month = models.ForeignKey(Month, on_delete=models.CASCADE)
+    year=models.IntegerField(null=True,blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     total_marks = models.PositiveIntegerField()
     created_at = models.DateTimeField()
