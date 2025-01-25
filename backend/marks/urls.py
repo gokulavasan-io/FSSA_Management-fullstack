@@ -6,7 +6,6 @@ urlpatterns = [
     path('add_mark/', AddTestAndMarksView.as_view()),
     path('get_mark/<int:test_detail_id>/', GetTestAndMarksView.as_view()),
     path('update_mark/<int:test_detail_id>/', UpdateTestAndMarksView.as_view()),
-    path('update_archive/<int:test_detail_id>/', UpdateArchiveStatusView.as_view()),
     
     # for levels - tests
     path('add_level_mark/', AddLevelTestView.as_view()),

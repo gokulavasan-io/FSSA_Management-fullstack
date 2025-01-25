@@ -23,7 +23,6 @@ class TestDetail(models.Model):
     total_marks = models.PositiveIntegerField()
     created_at = models.DateTimeField()
     about_test = models.CharField(max_length=500, null=True)
-    isArchived = models.BooleanField(default=False)
     isLevelTest = models.BooleanField(default=False)
 
     def __str__(self):

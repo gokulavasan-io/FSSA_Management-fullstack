@@ -14,7 +14,6 @@ class AddTestAndMarksSerializer(serializers.Serializer):
     year = serializers.IntegerField()
     subject = serializers.CharField(max_length=50)
     total_marks = serializers.IntegerField()
-    isArchived = serializers.BooleanField(default=False)
     about_test = serializers.CharField(max_length=500, allow_blank=True, required=False)
     created_at = serializers.DateTimeField(required=False)
     isLevelTest = serializers.BooleanField(default=False)

@@ -24,7 +24,6 @@ class AddTestAndMarksView(APIView):
                     month=month,
                     subject=subject,
                     total_marks=data['total_marks'],
-                    isArchived=data.get('isArchived', False),
                     created_at=created_at,
                     about_test=data.get('about_test', "Nothing about test."),
                     isLevelTest=data['isLevelTest']
@@ -70,7 +69,6 @@ class UpdateTestAndMarksView(APIView):
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 test_detail.test_name = data['test_name']
                 test_detail.total_marks = data['total_marks']
-                test_detail.isArchived = data.get('isArchived', test_detail.isArchived)
                 test_detail.created_at = created_at
                 test_detail.about_test = data.get('about_test', "Nothing about test.")
                 test_detail.isLevelTest=data['isLevelTest']
@@ -131,26 +129,11 @@ class GetTestAndMarksView(APIView):
                     "total_marks": total_marks,
                     "subject": test_detail.subject.subject_name,
                     "section": test_detail.section.name,
-                    "isArchived": test_detail.isArchived,
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                     "about_test": test_detail.about_test
                 },
                 "marks": marks_data
             }, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-class UpdateArchiveStatusView(APIView):
-    def put(self, request, test_detail_id):
-        try:
-            test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-            is_archived = request.data.get('isArchived', None)
-            if is_archived is None or not isinstance(is_archived, bool):
-                return Response({"error": "'isArchived' must be provided and must be a boolean."}, status=status.HTTP_400_BAD_REQUEST)
-            test_detail.isArchived = is_archived
-            test_detail.save()
-            return Response({"message": f"Archive status updated to {test_detail.isArchived}.", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -178,7 +161,6 @@ class GetAllTestDataView(APIView):
                     "id": test_detail.id,
                     "test_name": test_detail.test_name,
                     "total_marks": test_detail.total_marks,
-                    "isArchived": test_detail.isArchived,
                     "subject": test_detail.subject.subject_name,
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                     "about_test": test_detail.about_test,
@@ -206,10 +188,9 @@ class GetAllTestDataView(APIView):
                         "remark": remark
                     })
 
-                    if not test_detail.isArchived:
-                        if student_name not in student_marks:
-                            student_marks[student_name] = []
-                            student_avg_marks[student_name] = 0.0
+                    if student_name not in student_marks:
+                        student_marks[student_name] = []
+                        student_avg_marks[student_name] = 0.0
                         student_marks[student_name].append(average_mark)
                         student_avg_marks[student_name] = round(
                             (student_avg_marks[student_name] * (len(student_marks[student_name]) - 1) + average_mark)
@@ -250,7 +231,6 @@ class AddLevelTestView(APIView):
                     month=month,
                     subject=subject,
                     total_marks=data['total_marks'],
-                    isArchived=data.get('isArchived', False),
                     created_at=created_at,
                     about_test=data.get('about_test', "Nothing about test."),
                     isLevelTest=data['isLevelTest']
@@ -283,7 +263,6 @@ class UpdateLevelTestView(APIView):
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 test_detail.test_name = data['test_name']
                 test_detail.total_marks = data['total_marks']
-                test_detail.isArchived = data.get('isArchived', test_detail.isArchived)
                 test_detail.created_at = created_at
                 test_detail.about_test = data.get('about_test', "Nothing about test.")
                 test_detail.isLevelTest=data['isLevelTest']
@@ -331,7 +310,6 @@ class GetLevelTestView(APIView):
                     "total_marks": total_marks,
                     "subject": test_detail.subject.subject_name,
                     "section": test_detail.section.name,
-                    "isArchived": test_detail.isArchived,
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                     "about_test": test_detail.about_test,
                     'isLevelTest':test_detail.isLevelTest,
