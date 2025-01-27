@@ -13,7 +13,6 @@ import {
   IconButton,
   Add,
   Menu,
-  Archive,
   TableChartRounded,
   ArrowForwardIos,
 } from "../../../utils/materialImports.js";
@@ -25,7 +24,6 @@ const Sidebar = (props) => {
     testDetails,
     setTestDetails,
     setIsMainTable,
-    setIsArchivedStatusChanged,
   } =props;
 
 
@@ -34,38 +32,7 @@ const Sidebar = (props) => {
   // Toggles sidebar visibility
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
-  // Handle dropping a test into the Archived section
-  const handleDrop = (item, target) => {
-    // If dropped into Archived section, mark as archived
-    if (target === "archived") {
-      item.isArchived = true;
-    } else {
-      item.isArchived = false;
-    }
 
-    setTestDetails((prevDetails) =>
-      prevDetails.map((test) =>
-        test.id === item.id
-          ? {
-              ...test,
-              test_detail: { ...test.test_detail, isArchived: item.isArchived },
-            }
-          : test,
-      ),
-    );
-
-    axios
-      .put(`${API_PATHS.UPDATE_ARCHIVE}${item.id}/`, {
-        isArchived: item.isArchived,
-      })
-      .then((response) => {
-        console.log("Marks data updated successfully!", response.data);
-        setIsArchivedStatusChanged(true);
-      })
-      .catch((error) => {
-        console.error("Error submitting marks data:", error.message);
-      });
-  };
 
   return (
     <>
@@ -209,48 +176,12 @@ const Sidebar = (props) => {
           <TestsSection
             testDetails={testDetails}
             onOptionClick={onOptionClick}
-            handleDrop={handleDrop}
             target="marks"
           />
 
-          {/* Archived Section */}
-          <ListItem
-            sx={{
-              backgroundColor: "#e3f2fd",
-              borderRadius: "8px",
-              marginBottom: 1,
-              display: "flex",
-              alignItems: "center",
-              padding: 1,
-            }}
-          >
-            <IconButton
-              sx={{
-                marginRight: 2,
-                backgroundColor: "#1976d2",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#115293",
-                },
-              }}
-            >
-              <Archive />
-            </IconButton>
-            <ListItemText
-              primary="Archived"
-              sx={{
-                fontWeight: "bold",
-                color: "#333",
-              }}
-            />
-          </ListItem>
+         
 
-          <TestsSection
-            testDetails={testDetails}
-            onOptionClick={onOptionClick}
-            handleDrop={handleDrop}
-            target="archived"
-          />
+         
 
 <ListItem sx={{ justifyContent: "center", marginBottom: 0 }}>
           <ExportData  {...props} />

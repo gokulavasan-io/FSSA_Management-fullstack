@@ -3,11 +3,14 @@ import { HotTable } from "@handsontable/react";
 import Handsontable from "handsontable";
 import "handsontable/dist/handsontable.full.css";
 import "./attendanceMain.css";
-import {addRemarkAction} from './addRemark'
-import RemarkPopup from "./showCommentsPopup";
-import Notification from '../uxComponents/Notification'; 
+import {addRemarkAction} from '../Comments/addRemark'
+import RemarkPopup from "../Comments/showCommentsPopup";
+import Notification from '../../uxComponents/Notification'; 
+
 
 const AttendanceTable = ({ tableData, hotColumns, handleAfterChange,remarksData }) => {
+  
+
   const { showMessage } = Notification();
   let month = 12;
   let year = 2024;

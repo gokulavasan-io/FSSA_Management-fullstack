@@ -16,8 +16,7 @@ import LevelTestTable from "./table/testTable(level).jsx";
 const MarkEntry = () => {
   const month = "January";
   const subject = "English";
-  const section = "A";
-
+  const section = null;
 
   const [testTableData, setTestTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
@@ -28,9 +27,7 @@ const MarkEntry = () => {
   const [testId, setTestId] = useState(null);
   const [testNames, setTestNames] = useState([]);
   const [error, setError] = useState("");
-  const [isArchived, setIsArchived] = useState(false);
   const [isLevelTable, setIsLevelTable] = useState(false);
-  const [isArchivedStatusChanged, setIsArchivedStatusChanged] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
@@ -53,12 +50,14 @@ const MarkEntry = () => {
   );
 
   useEffect(() => {
-    if (section && month) {
+    if ( month) {
       axios
         .get(
-          `${API_PATHS.GET_ALL_DATA}?section=${section}&month=${month}&subject=${subject}`,
+          `${API_PATHS.GET_ALL_DATA}?section_id=${section}&month=${month}&subject=${subject}`,
         )
         .then((response) => {
+          console.log(response.data);
+          
           setTestDetails(response.data.test_details || []);
           setTestNames(
             response.data.test_details.map(
@@ -66,13 +65,12 @@ const MarkEntry = () => {
             ),
           );
           mainTableCreate(response.data);
-          setIsArchivedStatusChanged(false);
         })
         .catch((error) => {
           console.error("Error fetching test names:", error);
         });
     }
-  }, [isSaved, isMainTable, isArchivedStatusChanged, isUpdated]);
+  }, [isSaved, isMainTable, isUpdated]);
 
   const handleOptionClick = (testId,levelTable) => {
     setTestId(testId);
@@ -93,7 +91,7 @@ const MarkEntry = () => {
       ];
 
       fullData.test_details.forEach((test) => {
-        if (!test.test_detail.isArchived && !test.test_detail.isLevelTest) {
+        if (!test.test_detail.isLevelTest) {
           columnData.push({
             title: test.test_detail.test_name,
             width: 100,
@@ -123,7 +121,6 @@ const MarkEntry = () => {
     testDetails,
     setTestDetails,
     setIsMainTable,
-    setIsArchivedStatusChanged,
   };
 
   const mainTableProps = {
@@ -151,8 +148,6 @@ const MarkEntry = () => {
     setIsSaved,
     isEdited,
     setIsEdited,
-    isArchived,
-    setIsArchived,
     error,
     setError,
     testId,setTestId,

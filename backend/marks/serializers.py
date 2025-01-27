@@ -10,10 +10,22 @@ class StudentMarkSerializer(serializers.Serializer):
 
 class AddTestAndMarksSerializer(serializers.Serializer):
     test_name = serializers.CharField(max_length=100)
-    month = serializers.CharField(max_length=20)
-    year = serializers.IntegerField()
+    batch = serializers.IntegerField()
     subject = serializers.CharField(max_length=50)
     total_marks = serializers.IntegerField()
     about_test = serializers.CharField(max_length=500, allow_blank=True, required=False)
     created_at = serializers.DateTimeField(required=False)
     isLevelTest = serializers.BooleanField(default=False)
+
+
+class UpdateTestAndMarksSerializer(serializers.Serializer):
+    test_name = serializers.CharField(max_length=100)
+    batch = serializers.IntegerField()
+    subject = serializers.CharField(max_length=50)
+    total_marks = serializers.IntegerField()
+    about_test = serializers.CharField(max_length=500, allow_blank=True, required=False)
+    created_at = serializers.DateTimeField(required=False)
+    isLevelTest = serializers.BooleanField(default=False)
+    students = StudentMarkSerializer(many=True)
+    
+    

@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
-import API_PATHS from "../../constants/apiPaths";
+import API_PATHS from "../../../constants/apiPaths";
+import AttendanceContext from "../AttendanceContext";
 
-const AttendanceStatsTable = ({ sectionId, month, year }) => {
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [totalWorkingDays, setTotalWorkingDays] = useState(0);
+const AttendanceStatsTable = () => {
+  const { sectionId,month,year,loading,setLoading,attendanceData,setAttendanceData,totalWorkingDays,setTotalWorkingDays} = useContext(AttendanceContext);
+
+  // let { sectionId, month, year }=props
+
+  // const [attendanceData, setAttendanceData] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [totalWorkingDays, setTotalWorkingDays] = useState(0);
 
   useEffect(() => {
     // Fetch data from the API

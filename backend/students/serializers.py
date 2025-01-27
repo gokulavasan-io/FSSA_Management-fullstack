@@ -10,6 +10,6 @@ class SectionSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Students
-        fields = ['id', 'name', 'section', 'age', 'gender', 'category', 'medium', 'school']
+        fields = ['id', 'name', 'section', 'age', 'gender', 'category', 'medium', 'school',"batch"]
         
         

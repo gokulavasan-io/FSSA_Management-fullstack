@@ -1,16 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef,useContext } from "react";
 import axios from "axios";
-import API_PATHS from "../../constants/apiPaths";
+import API_PATHS from "../../../constants/apiPaths";
+import AttendanceContext from "../AttendanceContext";
 
-let year = 2024;
-let month = 12;
-let sectionId = 1;
+// let year = 2024;
+// let month = 12;
+// let sectionId = 1;
 
 const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
-  const [remark, setRemark] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  const tooltipRef = useRef(null);
+  const { sectionId,month,year,remark,setRemark,tooltipPosition,setTooltipPosition,isTooltipVisible,setIsTooltipVisible,tooltipRef} = useContext(AttendanceContext);
+
+  // const [remark, setRemark] = useState(null);
+  // const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  // const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  // const tooltipRef = useRef(null);
 
   async function showRemarks(studentId, date) {
     const student = remarksData.find((item) => item.student_id === studentId);

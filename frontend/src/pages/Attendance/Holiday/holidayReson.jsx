@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import {
   Drawer,
   IconButton,
@@ -9,17 +9,18 @@ import {
 import { Menu, Close } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
-import API_PATHS from "../../constants/apiPaths";
-import { validReasonRegex } from "../../constants/regex";
+import API_PATHS from "../../../constants/apiPaths";
+import { validReasonRegex } from "../../../constants/regex";
+import AttendanceContext from "../AttendanceContext";
 
 
-const Sidebar = (props) => {
-  const { year, month, sectionId } = props;
+const SideBarForHoliday = () => {
+  const { sectionId,month,year,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,holidays,setHolidays,loading,setLoading} = useContext(AttendanceContext);
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [tableVisible, setTableVisible] = useState(false);
-  const [holidays, setHolidays] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [sidebarOpen, setSidebarOpen] = useState(false);
+  // const [tableVisible, setTableVisible] = useState(false);
+  // const [holidays, setHolidays] = useState([]);
+  // const [loading, setLoading] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -232,4 +233,4 @@ if (trimmedReason !== oldRow.reason) {
   );
 };
 
-export default Sidebar;
+export default SideBarForHoliday;

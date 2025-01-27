@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import axios from "axios";
-import API_PATHS from "../../constants/apiPaths";
+import API_PATHS from "../../../constants/apiPaths";
 import AttendanceTable from "./attendanceTable";
-import Sidebar from "./remark";
+import Sidebar from "../Comments/remark";
+import SideBarForHoliday from "../Holiday/holidayReson";
 import "dayjs/locale/en";
 import Handsontable from "handsontable";
-import HolidayManager from "./markHoliday";
-
+import HolidayManager from "../Holiday/markHoliday";
 import { Button } from "@mui/material";
-import CalendarPopup from "../uxComponents/calendar";
+import CalendarPopup from "../../uxComponents/calendar";
+import AttendanceContext, {AttendanceContextProvider} from "../AttendanceContext";
 
 
-const Attendance = ({ year, month, sectionId }) => {
-  const [tableData, setTableData] = useState([]);
-  const [statusOptions, setStatusOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [remarks, setRemarks] = useState([]); // State variable to store fetched remarks
+const Attendance = () => {
+  const { sectionId,month,year,tableData,setTableData,statusOptions,setStatusOptions,loading,setLoading,remarks,setRemarks } = useContext(AttendanceContext);
 
 
    const fetchStudentRemarks = async () => {
@@ -39,7 +37,6 @@ const Attendance = ({ year, month, sectionId }) => {
       try {
         const daysCount = new Date(year, month, 0).getDate();
         const daysInMonth = Array.from({ length: daysCount }, (_, i) => i + 1);
-  
         const response = await axios.get(
           `${API_PATHS.ATTENDANCE_DATA}?year=${year || ""}&month=${month || ""}&section_id=${sectionId || ""}`
         );
@@ -163,6 +160,7 @@ const Attendance = ({ year, month, sectionId }) => {
 
   return (
     <div>
+      <AttendanceContextProvider>
       <h2>Attendance for {month}/{year}</h2>
       {/* Flex container for the three components */}
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
@@ -194,7 +192,10 @@ const Attendance = ({ year, month, sectionId }) => {
       />
   
       
-      <Sidebar year={year} month={month} sectionId={sectionId} />
+      {/* <Sidebar year={year} month={month} sectionId={sectionId} /> */}
+      <SideBarForHoliday year={year} month={month} sectionId={sectionId} />
+
+      </AttendanceContextProvider>
     </div>
   );
   

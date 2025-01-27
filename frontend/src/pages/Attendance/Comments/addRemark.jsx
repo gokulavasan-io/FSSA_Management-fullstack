@@ -1,5 +1,5 @@
 import axios from "axios";
-import API_PATHS from '../../constants/apiPaths';
+import API_PATHS from '../../../constants/apiPaths';
 import dayjs from 'dayjs';
 
 

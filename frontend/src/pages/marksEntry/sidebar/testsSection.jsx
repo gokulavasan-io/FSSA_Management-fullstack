@@ -1,44 +1,54 @@
-import { useDrop } from "../../../utils/dragAndDropImports.js";
-import { List, ListItem } from "../../../utils/materialImports.js";
-import DraggableTestItem from "./dragAndDrop.jsx";
+import { List, ListItem ,ListItemText} from "../../../utils/materialImports.js";
+import { format } from "../../../utils/dateImports";
 
-const TestsSection = ({ testDetails, onOptionClick, handleDrop, target }) => {
-  const [, drop] = useDrop(() => ({
-    accept: "test",
-    drop: (item) => handleDrop(item, target),
-    canDrop: () => true, // Allow drop even if there are no items
-  }));
+const LevelSection = ({ testDetails, onOptionClick }) => {
+
 
   return (
-    <List ref={drop} component="div" disablePadding>
+    <List component="div" disablePadding>
       {/* Show message when no items available */}
       {testDetails.filter(
-        (item) =>
-          (target === "marks" && !item.test_detail.isArchived &&!item.test_detail.isLevelTest) ||
-          (target === "archived" && item.test_detail.isArchived && !item.test_detail.isLevelTest) 
-      ).length === 0 ? (
+        (item) =>!item.test_detail.isLevelTest).length === 0 ? (
         <ListItem sx={{ textAlign: "center", padding: "10px", color: "#000" }}>
           No tests available
         </ListItem>
       ) : (
-        testDetails.map((item, index) => {
-          if (
-            (target === "marks" && !item.test_detail.isArchived && !item.test_detail.isLevelTest) ||
-            (target === "archived" && item.test_detail.isArchived && !item.test_detail.isLevelTest)
-          ) {
-            return (
-              <DraggableTestItem
-                key={index}
-                item={item}
-                onOptionClick={onOptionClick}
-              />
-            );
-          }
-          return null;
-        })
+        testDetails.filter(
+          (item) =>!item.test_detail.isLevelTest).map((item, index) => {
+              return (
+                <ListItem
+                      button
+                      onClick={() => {
+                        onOptionClick(item.test_detail.id,false);
+                      }}
+                      sx={{
+                        pl: 4,
+                        borderRadius: "8px",
+                        "&:hover": { backgroundColor: "#e3f2fd" },
+                        marginBottom: 0.5,
+                        cursor: "pointer",
+                        opacity:1,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <>
+                            <span style={{ fontWeight: "bold" }}>
+                              {" "}
+                              {item.test_detail.test_name}{" "}
+                            </span>
+                            {format(new Date(item.test_detail.created_at), "dd/MMM/yy")}
+                          </>
+                        }
+                        sx={{ color: "#555", cursor: "pointer" }}
+                      />
+                    </ListItem>
+              );
+            
+          })
       )}
     </List>
   );
 };
 
-export default TestsSection;
+export default LevelSection;

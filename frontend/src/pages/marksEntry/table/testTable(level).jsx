@@ -46,11 +46,11 @@ function LevelTestTable(props) {
       subject: subject,
       test_name: testName.trim(),
       section: section,
-      isArchived: false,
       total_marks: 0,
       created_at: selectedDate,
       about_test:aboutTest.trim(),
       isLevelTest:true,
+      batch:4,
       students: marksArray.map((item) => ({
         student_name: item[0],
         level:item[1]!==""?item[1]:null,

@@ -6,26 +6,30 @@ class TestDetailAdmin(admin.ModelAdmin):
     search_fields = ('test_name', 'subject__subject_name', 'month__month_name')
     list_filter = ( 'month', 'subject')  
 
+
 class MarksAdmin(admin.ModelAdmin):
-    list_display = ('student', 'test_detail', 'mark','average_mark', 'remark')
-    search_fields = ('students__name', 'test_detail__test_name', 'test_detail__subject__subject_name')
-    list_filter = ( 'test_detail__subject','test_detail')
+    list_display = ('student_name', 'test_detail', 'mark', 'average_mark', 'remark')
+    search_fields = ('student__name', 'test_detail__test_name', 'test_detail__subject__subject_name')
+    list_filter = ('test_detail__subject', 'test_detail')
+
+    @admin.display(description='Student Name')
+    def student_name(self, obj):
+        return obj.student.name  # Decrypted name
 
     @admin.display(description='Mark (100)')
     def average_mark(self, obj):
-        if obj.mark == 'Absent':
+        decrypted_mark = obj.mark  # Decrypted mark
+        if decrypted_mark == 'Absent':
             return 'Absent'
 
-        # Check if mark is empty or not a valid number
-        if not obj.mark or not obj.mark.strip().isdigit():
+        if not decrypted_mark or not decrypted_mark.strip().isdigit():
             return "N/A"
 
         if obj.test_detail.total_marks:  
-            return round((float(obj.mark) / float(obj.test_detail.total_marks)) * 100)  
+            return round((float(decrypted_mark) / float(obj.test_detail.total_marks)) * 100)  
         return "N/A"
 
-    
-    
+
     
 admin.site.register(Month)
 admin.site.register(Subject)

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import {
   Dialog,
   DialogActions,
@@ -13,21 +13,17 @@ import {
   AdapterDayjs,
   LocalizationProvider,
   DatePicker,
-} from "../../utils/dateImports";
+} from "../../../utils/dateImports";
 import axios from "axios";
-import API_PATHS from "../../constants/apiPaths";
+import API_PATHS from "../../../constants/apiPaths";
+import AttendanceContext from "../AttendanceContext";
 
 
 
-const HolidayManager = ({ year, month, sectionId, tableData, setTableData }) => {
+const HolidayManager = () => {
   
-
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [isHoliday, setIsHoliday] = useState(false);
-  const [holidayReason, setHolidayReason] = useState("");
-  const [holidayReasonDialogOpen, setHolidayReasonDialogOpen] = useState(false);
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
+  const { sectionId,month,year,tableData,setTableData,selectedDate,setSelectedDate,isHoliday,setIsHoliday,holidayReason,setHolidayReason,holidayReasonDialogOpen,setHolidayReasonDialogOpen,confirmationDialogOpen,setConfirmationDialogOpen} = useContext(AttendanceContext);
+  
   const daysCount = new Date(year, month, 0).getDate();
 
   const checkIfHoliday = (date) => {

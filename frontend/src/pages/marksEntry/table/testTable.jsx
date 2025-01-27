@@ -31,8 +31,6 @@ function TestTable(props) {
     setIsSaved,
     isEdited,
     setIsEdited,
-    isArchived,
-    setIsArchived,
     error,
     setError,
     testId,
@@ -59,15 +57,16 @@ function TestTable(props) {
   };
   const transformMarksData = (marksArray, month, subject) => {
     return {
+      year:2024,
       month: month,
       subject: subject,
       test_name: testName.trim(),
       section: section,
       total_marks: totalMark,
-      isArchived: isArchived,
       created_at: selectedDate,
       about_test:aboutTest.trim(),
       isLevelTest:false,
+      batch:4,
       students: marksArray.map((item) => ({
         student_name: item[0],
         mark: item[1] !== "" ? item[1] : null,
@@ -309,7 +308,6 @@ function TestTable(props) {
         setPreviousTotalMark(response.data.test_detail.total_marks);
         setTestName(response.data.test_detail.test_name);
         setPreviousTestName(response.data.test_detail.test_name);
-        setIsArchived(response.data.test_detail.isArchived);
         setAboutTest(response.data.test_detail.about_test)
         setPreviousAboutTest(response.data.test_detail.about_test)
         setIsSaved(true);
@@ -327,7 +325,6 @@ function TestTable(props) {
         setPreviousTotalMark("");
         setTestName("");
         setPreviousTestName("");
-        setIsArchived(false);
         setIsSaved(false);
         setSelectedDate( dayjs())
         setAboutTest("");
@@ -456,7 +453,6 @@ function TestTable(props) {
             disabled={
               !!error ||
               !testName.trim() ||
-              !section ||
               !month ||
               !totalMark ||
               !isEdited

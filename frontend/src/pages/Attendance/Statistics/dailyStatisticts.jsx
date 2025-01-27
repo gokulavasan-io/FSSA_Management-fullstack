@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { HotTable } from '@handsontable/react';
 import { registerAllModules } from 'handsontable/registry';
 import { format } from 'date-fns';
-import API_PATHS from '../../constants/apiPaths';
+import API_PATHS from '../../../constants/apiPaths';
+import AttendanceContext from "../AttendanceContext";
+
 
 // Register all Handsontable modules
 registerAllModules();
 
-const DailyStatisticsTable = ({ sectionId, month, year }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [columns, setColumns] = useState([]);
+const DailyStatisticsTable = () => {
+  const { sectionId,month,year,data,setData,loading,setLoading,columns,setColumns} = useContext(AttendanceContext);
 
   // Fetch data from the API
   const fetchData = async () => {

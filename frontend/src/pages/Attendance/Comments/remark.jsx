@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import {
   Drawer,
   IconButton,
@@ -9,20 +9,14 @@ import {
 import { Menu, Close, Delete } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
-import API_PATHS from "../../constants/apiPaths";
-import ConfirmationDialog from "../uxComponents/confirmationDialog";
-import { validRemarkRegex } from "../../constants/regex";
+import API_PATHS from "../../../constants/apiPaths";
+import ConfirmationDialog from "../../uxComponents/confirmationDialog";
+import { validRemarkRegex } from "../../../constants/regex";
+import AttendanceContext from "../AttendanceContext";
 
-const Sidebar = (props) => {
-  const { year, month, sectionId } = props;
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [tableVisible, setTableVisible] = useState(false);
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-
+const Sidebar = () => {
+  const { month,year,loading,setLoading,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,students,setStudents,dialogOpen,setDialogOpen,selectedRow,setSelectedRow } = useContext(AttendanceContext);
+  
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   const fetchStudentRemarks = async () => {
