@@ -12,10 +12,10 @@ import axios from "axios";
 import API_PATHS from "../../../constants/apiPaths";
 import ConfirmationDialog from "../../uxComponents/confirmationDialog";
 import { validRemarkRegex } from "../../../constants/regex";
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 const Sidebar = () => {
-  const { month,year,loading,setLoading,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,students,setStudents,dialogOpen,setDialogOpen,selectedRow,setSelectedRow } = useContext(AttendanceContext);
+  const { month,year,loading,setLoading,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,students,setStudents,dialogOpen,setDialogOpen,selectedRow,setSelectedRow } = useAttendanceContext();
   
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 

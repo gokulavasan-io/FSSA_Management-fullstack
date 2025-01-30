@@ -16,13 +16,13 @@ import {
 } from "../../../utils/dateImports";
 import axios from "axios";
 import API_PATHS from "../../../constants/apiPaths";
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 
 
 const HolidayManager = () => {
   
-  const { sectionId,month,year,tableData,setTableData,selectedDate,setSelectedDate,isHoliday,setIsHoliday,holidayReason,setHolidayReason,holidayReasonDialogOpen,setHolidayReasonDialogOpen,confirmationDialogOpen,setConfirmationDialogOpen} = useContext(AttendanceContext);
+  const { sectionId,month,year,tableData,setTableData,selectedDate,setSelectedDate,isHoliday,setIsHoliday,holidayReason,setHolidayReason,holidayReasonDialogOpen,setHolidayReasonDialogOpen,confirmationDialogOpen,setConfirmationDialogOpen} = useAttendanceContext();
   
   const daysCount = new Date(year, month, 0).getDate();
 

@@ -82,9 +82,11 @@ export const AttendanceContextProvider = ({ children }) => {
   }}
 >
   {children}
-</AttendanceContext.Provider>
+  </AttendanceContext.Provider>
 
   );
 };
 
-export default AttendanceContext;
+export const useAttendanceContext = () => {
+  return useContext(AttendanceContext);
+};

@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useRef,useContext } from "react";
 import axios from "axios";
 import API_PATHS from "../../../constants/apiPaths";
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 // let year = 2024;
 // let month = 12;
 // let sectionId = 1;
 
 const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
-  const { sectionId,month,year,remark,setRemark,tooltipPosition,setTooltipPosition,isTooltipVisible,setIsTooltipVisible,tooltipRef} = useContext(AttendanceContext);
+  const { sectionId,month,year,remark,setRemark,tooltipPosition,setTooltipPosition,isTooltipVisible,setIsTooltipVisible,tooltipRef} = useAttendanceContext();
 
   // const [remark, setRemark] = useState(null);
   // const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });

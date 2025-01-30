@@ -11,11 +11,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import API_PATHS from "../../../constants/apiPaths";
 import { validReasonRegex } from "../../../constants/regex";
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 
 const SideBarForHoliday = () => {
-  const { sectionId,month,year,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,holidays,setHolidays,loading,setLoading} = useContext(AttendanceContext);
+  const { sectionId,month,year,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,holidays,setHolidays,loading,setLoading} = useAttendanceContext();
 
   // const [sidebarOpen, setSidebarOpen] = useState(false);
   // const [tableVisible, setTableVisible] = useState(false);

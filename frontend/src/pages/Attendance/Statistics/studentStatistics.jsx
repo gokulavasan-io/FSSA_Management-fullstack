@@ -2,12 +2,13 @@ import React, { useEffect, useState,useContext } from "react";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
 import API_PATHS from "../../../constants/apiPaths";
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 const AttendanceStatsTable = () => {
-  const { sectionId,month,year,loading,setLoading,attendanceData,setAttendanceData,totalWorkingDays,setTotalWorkingDays} = useContext(AttendanceContext);
+  const {sectionId,month,year,loading,setLoading,attendanceData,setAttendanceData,totalWorkingDays,setTotalWorkingDays} = useAttendanceContext();
 
   // let { sectionId, month, year }=props
+
 
   // const [attendanceData, setAttendanceData] = useState([]);
   // const [loading, setLoading] = useState(true);

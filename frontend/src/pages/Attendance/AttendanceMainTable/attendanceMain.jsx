@@ -9,11 +9,11 @@ import Handsontable from "handsontable";
 import HolidayManager from "../Holiday/markHoliday";
 import { Button } from "@mui/material";
 import CalendarPopup from "../../uxComponents/calendar";
-import AttendanceContext, {AttendanceContextProvider} from "../AttendanceContext";
+import useAttendanceContext, {AttendanceContextProvider} from "../AttendanceContext";
 
 
 const Attendance = () => {
-  const { sectionId,month,year,tableData,setTableData,statusOptions,setStatusOptions,loading,setLoading,remarks,setRemarks } = useContext(AttendanceContext);
+  const { sectionId,month,year,tableData,setTableData,statusOptions,setStatusOptions,loading,setLoading,remarks,setRemarks } = useAttendanceContext();
 
 
    const fetchStudentRemarks = async () => {

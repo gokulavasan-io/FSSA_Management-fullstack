@@ -3,14 +3,14 @@ import { HotTable } from '@handsontable/react';
 import { registerAllModules } from 'handsontable/registry';
 import { format } from 'date-fns';
 import API_PATHS from '../../../constants/apiPaths';
-import AttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../AttendanceContext";
 
 
 // Register all Handsontable modules
 registerAllModules();
 
 const DailyStatisticsTable = () => {
-  const { sectionId,month,year,data,setData,loading,setLoading,columns,setColumns} = useContext(AttendanceContext);
+  const { sectionId,month,year,data,setData,loading,setLoading,columns,setColumns} = useAttendanceContext();
 
   // Fetch data from the API
   const fetchData = async () => {
