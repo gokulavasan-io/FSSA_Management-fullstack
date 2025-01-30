@@ -1,8 +1,10 @@
 import { List, ListItem ,ListItemText} from "../../../utils/materialImports.js";
 import { format } from "../../../utils/dateImports";
+import { useMarksContext } from "../contextFile";
 
-const LevelSection = ({ testDetails, onOptionClick }) => {
 
+const TestSection = () => {
+  const {handleOptionClick,testDetails}=useMarksContext()
 
   return (
     <List component="div" disablePadding>
@@ -17,9 +19,10 @@ const LevelSection = ({ testDetails, onOptionClick }) => {
           (item) =>!item.test_detail.isLevelTest).map((item, index) => {
               return (
                 <ListItem
-                      button
+                      key={index}
+                      button={index.toString()}
                       onClick={() => {
-                        onOptionClick(item.test_detail.id,false);
+                        handleOptionClick(item.test_detail.id,false);
                       }}
                       sx={{
                         pl: 4,
@@ -42,7 +45,7 @@ const LevelSection = ({ testDetails, onOptionClick }) => {
                         }
                         sx={{ color: "#555", cursor: "pointer" }}
                       />
-                    </ListItem>
+                  </ListItem>
               );
             
           })
@@ -51,4 +54,4 @@ const LevelSection = ({ testDetails, onOptionClick }) => {
   );
 };
 
-export default LevelSection;
+export default TestSection;

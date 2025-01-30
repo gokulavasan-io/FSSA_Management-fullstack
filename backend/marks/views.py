@@ -84,7 +84,7 @@ class UpdateTestAndMarksView(APIView):
                 test_detail.save()
                 students = data['students']
                 for student_data in students:
-                    student = get_object_or_404(Students, name=student_data['student_name'])
+                    student = get_object_or_404(Students, id=student_data['student_id'])
                     Marks.objects.update_or_create(
                         student=student,
                         test_detail=test_detail,
@@ -113,7 +113,7 @@ class GetTestAndMarksView(APIView):
             if section_id:
                 marks_query = Marks.objects.filter(test_detail=test_detail, student__section__id=section_id)
             else:
-                marks_query = Marks.objects.filter(test_detail=test_detail)
+                marks_query = Marks.objects.filter(test_detail=test_detail).order_by('student__id')
 
             marks_data = []
             total_marks = float(test_detail.total_marks)
@@ -133,6 +133,7 @@ class GetTestAndMarksView(APIView):
                         average_mark = ""
 
                 marks_data.append({
+                    "student_id":mark.student.id,
                     "student_name": mark.student.name,
                     "mark": mark.mark,  # Retain original value for display
                     "average_mark": average_mark,
@@ -197,14 +198,14 @@ class GetAllTestDataView(APIView):
                 }
 
                 # Get marks for the test detail and filter by section if section_id is provided
-                marks_query = Marks.objects.filter(test_detail=test_detail)
+                marks_query = Marks.objects.filter(test_detail=test_detail).order_by('student__id')
 
                 # If section_id is provided, filter marks for that specific section
                 if section_id:
                     marks_query = marks_query.filter(student__section_id=section_id)
                 for mark in marks_query:
                     student_name = mark.student.name
-                    if mark.mark == "Absent" or  mark.mark == "" or mark.mark is None:
+                    if mark.mark == "Absent" or mark.mark=="a" or mark.mark=="A" or  mark.mark == "" or mark.mark is None:
                         mark_value = 0.0  
                     else:
                         mark_value = float(mark.mark)  # Convert to float if it's not 'Absent'
@@ -239,7 +240,6 @@ class GetAllTestDataView(APIView):
             for student_name, marks in student_marks.items():
                 avg_marks = student_avg_marks[student_name]
                 student_avg_marks_list.append([student_name, avg_marks] + marks)
-                print(marks)
                 
 
             return Response({"test_details": response_data, "student_avg_marks": student_avg_marks_list},
@@ -288,8 +288,8 @@ class AddLevelTestView(APIView):
                         TestLevels.objects.create(
                             student=student,
                             test_detail=test_detail,
-                            level="",  # or you can leave it as an empty string or another default value
-                            remark=""  # or use None or a default value if applicable
+                            level="",  
+                            remark="" 
                         )
 
                 return Response({

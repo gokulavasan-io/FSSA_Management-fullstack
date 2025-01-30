@@ -1,5 +1,5 @@
 // MyContext.js
-import React, { createContext, useState,useRef } from 'react';
+import React, { createContext, useState,useRef,useContext } from 'react';
 
 // Create the context
 const AttendanceContext = createContext();
@@ -87,6 +87,8 @@ export const AttendanceContextProvider = ({ children }) => {
   );
 };
 
-export const useAttendanceContext = () => {
+const useAttendanceContext = () => {
   return useContext(AttendanceContext);
 };
+
+export default  useAttendanceContext;

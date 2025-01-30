@@ -12,77 +12,50 @@ import TestTable from "./table/testTable.jsx";
 import ChartForCategory from "./charts/chartForNormalTable.jsx";
 import ChartForLevel from "./charts/chartForLevelTable.jsx";
 import LevelTestTable from "./table/testTable(level).jsx";
+import AdminTestForm from "./adminTestForm.jsx";
+import { fetchAllMarks } from "../../api/marksAPI.js";
+import { useMarksContext } from "./contextFile";
+
 
 const MarkEntry = () => {
-  const month = "January";
-  const subject = "English";
-  const section = null;
+  
 
-  const [testTableData, setTestTableData] = useState([]);
-  const [totalMark, setTotalMark] = useState("");
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [previousTotalMark, setPreviousTotalMark] = useState("");
-  const [testName, setTestName] = useState("");
-  const [previousTestName, setPreviousTestName] = useState("");
-  const [testId, setTestId] = useState(null);
-  const [testNames, setTestNames] = useState([]);
-  const [error, setError] = useState("");
-  const [isLevelTable, setIsLevelTable] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isUpdated, setIsUpdated] = useState(false);
-  const [isEdited, setIsEdited] = useState(false);
-  const [isMainTable, setIsMainTable] = useState(true);
-  const [testDetails, setTestDetails] = useState([]);
-  const [mainTableData, setMainTableData] = useState([]);
-  const [mainTableColumns, setMainTableColumns] = useState([]);
-  const [showMainTableColor, setShowMainTableColor] = useState(false);
+  const {
+    month,
+    section,subject,
+    setTestId,
+    setTestNames,
+    isLevelTable,
+    setIsLevelTable,
+    isSaved,
+    isUpdated,
+    isMainTable,
+    setIsMainTable,
+    setTestDetails,
+    setMainTableData,
+    mainTableColumns,
+    setMainTableColumns,
+  } =useMarksContext()
+
+  const [showStatus, setShowStatus] = useState(false);
 
 
-
-  const testTableColumns = useMemo(
-    () => [
-      { title: "Student", width: 200, readOnly: true },
-      { title: `Mark (out of ${totalMark})`, width: 100, editor: "text" },
-      { title: "Mark (out of 100)", width: 100, readOnly: true },
-      { title: "Remark", width: 100 },
-    ],
-    [totalMark]
-  );
-
-  useEffect(() => {
-    if ( month) {
-      axios
-        .get(
-          `${API_PATHS.GET_ALL_DATA}?section_id=${section}&month=${month}&subject=${subject}`,
-        )
-        .then((response) => {
-          console.log(response.data);
-          
-          setTestDetails(response.data.test_details || []);
+  useEffect( () => {
+      (async function () {
+        let response= await fetchAllMarks(section,month,subject);
+        console.log(response);
+        
+          setTestDetails(response.test_details || []);
           setTestNames(
-            response.data.test_details.map(
+            response.test_details.map(
               (test) => test.test_detail.test_name,
             ),
           );
-          mainTableCreate(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching test names:", error);
-        });
-    }
+          mainTableCreate(response);
+      })()
   }, [isSaved, isMainTable, isUpdated]);
 
-  const handleOptionClick = (testId,levelTable) => {
-    setTestId(testId);
-    setIsMainTable(false);
-    if(levelTable){
-      setIsLevelTable(true)
-    }else{
-      setIsLevelTable(false)
-
-    }
-  };
-
+  
   function mainTableCreate(fullData) {
     setMainTableColumns(() => {
       let columnData = [
@@ -105,7 +78,6 @@ const MarkEntry = () => {
   }
 
 
-  const [showStatus, setShowStatus] = useState(false);
 
  
   useEffect(() => {
@@ -116,77 +88,32 @@ const MarkEntry = () => {
     return () => clearTimeout(timer);
   }, [isMainTable, mainTableColumns.length]);
 
-  const sidebarProps = {
-    onOptionClick: handleOptionClick,
-    testDetails,
-    setTestDetails,
-    setIsMainTable,
-  };
+ 
 
-  const mainTableProps = {
-    subject,
-    month,
-    showMainTableColor,
-    mainTableData,
-    mainTableColumns,
-    setShowMainTableColor,
-    categoryMark,
-  };
-
-  const testTableProps = {
-    testTableData,
-    subject,
-    setTestTableData,
-    testName,
-    setTestName,
-    totalMark,
-    setTotalMark,
-    section,
-    month,
-    testNames,
-    isSaved,
-    setIsSaved,
-    isEdited,
-    setIsEdited,
-    error,
-    setError,
-    testId,setTestId,
-    setIsUpdated,
-    categoryMark,
-    isUpdated,
-    setPreviousTestName,
-    setPreviousTotalMark,
-    previousTestName,
-    previousTotalMark,
-    selectedDate,setSelectedDate,testTableColumns
-  };
-  const exportDataProps={testTableData,testTableColumns,mainTableData,mainTableColumns,isMainTable,totalMark,testName,subject,month,section}
-  const chartProps={testTableData,mainTableData,isMainTable}
-  const levelTableProps={testId,section,month,subject,setTestId}
 
   return (
     <>
       <DndProvider backend={HTML5Backend}>
-        <Sidebar {...sidebarProps} {...exportDataProps} />
+        <Sidebar  />
       </DndProvider>
 
       {showStatus && (
-  <Box
-    sx={{
-      padding: 2,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      width: "80%",
-      marginLeft: "10%",
-      gap: "3rem",
-      paddingBlock: "1rem",
-    }}
-  >
+        <Box
+          sx={{
+            padding: 2,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "80%",
+            marginLeft: "10%",
+            gap: "3rem",
+            paddingBlock: "1rem",
+          }}
+        >
     <Paper elevation={3} sx={{ padding: 2, width: "100%", maxWidth: "1000px" }}>
-      {!isMainTable && !isLevelTable &&<TestTable {...testTableProps} />}
-      {isMainTable && mainTableColumns.length > 2 && <MainTable {...mainTableProps} />}
-      {!isMainTable && isLevelTable && <LevelTestTable {...levelTableProps} /> }
+      {!isMainTable && !isLevelTable &&<TestTable  />}
+      {isMainTable && mainTableColumns.length > 2 && <MainTable  />}
+      {!isMainTable && isLevelTable && <LevelTestTable /> }
       {isMainTable && mainTableColumns.length < 3 && (
         <Typography
           variant="h5"
@@ -205,11 +132,11 @@ const MarkEntry = () => {
     
     {/* Increase width of the chart container */}
     {!isLevelTable && <Box sx={{ width: "20%", marginTop: 2 }}>
-      <ChartForCategory {...chartProps} />
+      <ChartForCategory  />
     </Box>}
   </Box>
-)}
-
+      )}
+      {/* <AdminTestForm /> */}
     </>
   );
 };

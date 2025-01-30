@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
 import { categoryMark } from "../../../constants/constValues";
 import "highcharts/modules/accessibility";
+import { useMarksContext } from "../contextFile";
 
-export default function Chart(props) {
-  const {testTableData,mainTableData,isMainTable}=props;
+export default function Chart() {
+  const {testTableData,mainTableData,isMainTable}=useMarksContext();
 
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState({

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 
 class StudentMarkSerializer(serializers.Serializer):
-    student_name = serializers.CharField(max_length=100)
+    student_id = serializers.IntegerField()
     mark = serializers.CharField(max_length=255, required=False, allow_blank=True,allow_null=True)
     remark = serializers.CharField(max_length=255, required=False, allow_blank=True)  
     level = serializers.CharField(max_length=10, required=False, allow_blank=True,allow_null=True)

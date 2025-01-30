@@ -519,6 +519,7 @@ class AllStudentsStatusCountView(APIView):
         month = request.query_params.get('month')
         year = request.query_params.get('year')
         section_id = request.query_params.get('sectionId')
+        section_id = None if section_id == 'null' else section_id
 
         # Default to full data if no month and year are provided
         if month and year:

@@ -3,11 +3,13 @@ import { jsPDF } from 'jspdf';
 import { MenuItem, Menu, Button } from '../../utils/materialImports';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useMarksContext } from "./contextFile";
 
-const ExportData = (props) => {
+
+const ExportData = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { testTableData, testTableColumns, mainTableData, mainTableColumns, isMainTable, totalMark, testName, subject, month, section } = props;
+  const { testTableData, testTableColumns, mainTableData, mainTableColumns, isMainTable, totalMark, testName, subject, month, section } = useMarksContext();
 
   let data;
   let columns;

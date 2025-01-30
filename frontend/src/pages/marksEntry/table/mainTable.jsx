@@ -1,6 +1,7 @@
 import React from "react";
 import { Handsontable, HotTable } from "../../../utils/handsOnTableImports.js";
 import { Button, Typography } from "../../../utils/materialImports.js";
+import { useMarksContext } from "../contextFile";
 
 function MainTable(props) {
   const {
@@ -11,7 +12,7 @@ function MainTable(props) {
     mainTableColumns,
     setShowMainTableColor,
     categoryMark,
-  } = props;
+  } = useMarksContext();
   const cellRendererForMainTable = function (
     instance,
     td,

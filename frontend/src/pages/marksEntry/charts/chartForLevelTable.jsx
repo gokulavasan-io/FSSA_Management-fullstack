@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
 import "highcharts/modules/accessibility";
+import { useMarksContext } from "../contextFile";
 
-export default function Chart(props) {
-    let {testTableData}=props
+export default function Chart() {
+  
+    let {testTableData}=useMarksContext()
 
     const [data, setData] = useState([])
     useEffect(()=>{

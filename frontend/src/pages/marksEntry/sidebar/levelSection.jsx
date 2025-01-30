@@ -1,8 +1,10 @@
 import { List, ListItem ,ListItemText} from "../../../utils/materialImports.js";
 import { format } from "../../../utils/dateImports";
+import { useMarksContext } from "../contextFile";
 
-const LevelSection = ({ testDetails, onOptionClick, target }) => {
-  
+const LevelSection = () => {
+    const { testDetails,handleOptionClick}=useMarksContext()
+
   return (
     <List component="div" disablePadding>
       {/* Show message when no items available */}
@@ -18,7 +20,7 @@ const LevelSection = ({ testDetails, onOptionClick, target }) => {
               <ListItem
                     button
                     onClick={() => {
-                      onOptionClick(item.test_detail.id,true);
+                      handleOptionClick(item.test_detail.id,true);
                     }}
                     sx={{
                       pl: 4,

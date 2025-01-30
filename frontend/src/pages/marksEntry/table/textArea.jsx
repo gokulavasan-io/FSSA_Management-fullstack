@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useMarksContext } from "../contextFile";
 
-export default function TextArea({aboutTest, setAboutTest,setIsEdited,previousAboutTest,isSaved}) {
-  const [isFocused, setIsFocused] = useState(false); 
+
+export default function TextArea() {
+
+ const {aboutTest, setAboutTest,setIsEdited,previousAboutTest,isSaved,isFocused, setIsFocused}=useMarksContext()
 
   const handleChange = (e) => {
     setAboutTest(e.target.value);

@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter,Route,Routes ,Link} from 'react-router-dom';
 
-import MarkEntry from './pages/marksEntry/marksEntry'
+import MarkApp from './pages/marksEntry/marksApp'
 import 'handsontable/dist/handsontable.full.css';
 import { SnackbarProvider } from 'notistack';
 import Attendance from './pages/Attendance/AttendanceMainTable/attendanceMain';
@@ -27,7 +27,7 @@ export default function App() {
                 <li><Link to='/studentStatistics'>Student</Link></li>
             </ul>
             <Routes>
-                <Route path='/' element={ <MarkEntry />} />
+                <Route path='/' element={ <MarkApp />} />
                 <Route path='/attendance' element={ <Attendance {...props} />} />
                 <Route path='/dailyStatistics' element={ <DailyStatisticsTable {...props} />} />
                 <Route path='/studentStatistics' element={ <AttendanceStatsTable  {...props}/>} />

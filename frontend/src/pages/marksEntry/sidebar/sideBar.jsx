@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import API_PATHS from "../../../constants/apiPaths";
-import axios from "axios";
 import TestsSection from "./testsSection";
 import ExportData from "../exportsData.jsx";
 import {
@@ -17,17 +15,15 @@ import {
   ArrowForwardIos,
 } from "../../../utils/materialImports.js";
 import LevelSection from "./levelSection.jsx";
+import { useMarksContext } from "../contextFile";
 
-const Sidebar = (props) => {
+const Sidebar = () => {
   const {
-    onOptionClick,
-    testDetails,
-    setTestDetails,
+    handleOptionClick,
     setIsMainTable,
-  } =props;
+    sidebarOpen,setSidebarOpen
+  } =useMarksContext();
 
-
-  const [sidebarOpen, setSidebarOpen] = useState(false); 
 
   // Toggles sidebar visibility
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -134,7 +130,7 @@ const Sidebar = (props) => {
                 borderRadius: "5px",
               }}
               onClick={() => {
-                onOptionClick(null);
+                handleOptionClick(null);
               }}
             >
               New
@@ -154,11 +150,7 @@ const Sidebar = (props) => {
               sx={{ fontWeight: "bolder", color: "#333" }}
             />
           </ListItem>
-          <LevelSection
-            testDetails={testDetails}
-            onOptionClick={onOptionClick}
-            target="levels"
-          />
+          <LevelSection />
 
           {/* Marks Section */}
           <ListItem
@@ -173,18 +165,14 @@ const Sidebar = (props) => {
               sx={{ fontWeight: "bolder", color: "#333" }}
             />
           </ListItem>
-          <TestsSection
-            testDetails={testDetails}
-            onOptionClick={onOptionClick}
-            target="marks"
-          />
+          <TestsSection />
 
          
 
          
 
 <ListItem sx={{ justifyContent: "center", marginBottom: 0 }}>
-          <ExportData  {...props} />
+          <ExportData />
           </ListItem>
         </List>
       </Drawer>
