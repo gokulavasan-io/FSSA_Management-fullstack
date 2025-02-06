@@ -1,19 +1,14 @@
 import React, { useState, useEffect,useMemo } from "react";
-import axios from "axios";
 import "./marksEntry.css";
 import Sidebar from "./sidebar/sideBar.jsx";
-import API_PATHS from "../../constants/apiPaths.js";
 import { DndProvider, HTML5Backend } from "../../utils/dragAndDropImports.js";
 import { Box, Typography, Paper } from "../../utils/materialImports.js";
-import { categoryMark } from "../../constants/constValues.js";
-import {dayjs} from '../../utils/dateImports.js';
 import MainTable from "./table/mainTable.jsx";
 import TestTable from "./table/testTable.jsx";
 import ChartForCategory from "./charts/chartForNormalTable.jsx";
-import ChartForLevel from "./charts/chartForLevelTable.jsx";
 import LevelTestTable from "./table/testTable(level).jsx";
 import AdminTestForm from "./adminTestForm.jsx";
-import { fetchAllMarks } from "../../api/marksAPI.js";
+import { fetchAllTestMarksForMonth,fetchTestDetails } from "../../api/marksAPI.js";
 import { useMarksContext } from "./contextFile";
 
 
@@ -23,63 +18,47 @@ const MarkEntry = () => {
   const {
     month,
     section,subject,
-    setTestId,
-    setTestNames,
     isLevelTable,
-    setIsLevelTable,
-    isSaved,
     isUpdated,
     isMainTable,
-    setIsMainTable,
     setTestDetails,
     setMainTableData,
     mainTableColumns,
-    setMainTableColumns,
+    setMainTableColumns,showStatus, setShowStatus,
   } =useMarksContext()
 
-  const [showStatus, setShowStatus] = useState(false);
 
 
   useEffect( () => {
       (async function () {
-        let response= await fetchAllMarks(section,month,subject);
-        console.log(response);
-        
-          setTestDetails(response.test_details || []);
-          setTestNames(
-            response.test_details.map(
-              (test) => test.test_detail.test_name,
-            ),
-          );
-          mainTableCreate(response);
+        let mainTableData= await fetchAllTestMarksForMonth(section,month,subject);
+        let testDetails=await fetchTestDetails(month,subject)
+        createMainTableData(mainTableData);
+        setTestDetails(testDetails)
       })()
-  }, [isSaved, isMainTable, isUpdated]);
+  }, [ isMainTable, isUpdated]);
 
   
-  function mainTableCreate(fullData) {
+  function createMainTableData(data) {
     setMainTableColumns(() => {
       let columnData = [
         { title: "Student", width: 200, readOnly: true },
         { title: "Average mark", width: 100, readOnly: true },
       ];
 
-      fullData.test_details.forEach((test) => {
-        if (!test.test_detail.isLevelTest) {
+      data.testNames.forEach((testName) => {
           columnData.push({
-            title: test.test_detail.test_name,
+            title: testName,
             width: 100,
             readOnly: true,
           });
-        }
       });
       return columnData;
     });
-    setMainTableData(fullData.student_avg_marks);
+    setMainTableData(data.student_avg_marks);
   }
 
 
-
- 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowStatus(true);
@@ -114,6 +93,7 @@ const MarkEntry = () => {
       {!isMainTable && !isLevelTable &&<TestTable  />}
       {isMainTable && mainTableColumns.length > 2 && <MainTable  />}
       {!isMainTable && isLevelTable && <LevelTestTable /> }
+      
       {isMainTable && mainTableColumns.length < 3 && (
         <Typography
           variant="h5"
@@ -136,7 +116,7 @@ const MarkEntry = () => {
     </Box>}
   </Box>
       )}
-      {/* <AdminTestForm /> */}
+      <AdminTestForm />
     </>
   );
 };

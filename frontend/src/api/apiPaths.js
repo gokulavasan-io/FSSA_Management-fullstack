@@ -8,13 +8,15 @@ const API_PATHS = {
     POST_MARK: "http://127.0.0.1:8000/marks/add_mark/",
     GET_MARK: "http://127.0.0.1:8000/marks/get_mark/",
     UPDATE_MARK: "http://127.0.0.1:8000/marks/update_mark/",
+    FETCH_MONTHS:"http://127.0.0.1:8000/marks/fetch_months/",
+    FETCH_SUBJECTS:"http://127.0.0.1:8000/marks/fetch_subjects/",
 
   // for level test 
     POST_LEVEL: "http://127.0.0.1:8000/marks/add_level_mark/",
     GET_LEVEL: "http://127.0.0.1:8000/marks/get_level_mark/",
     UPDATE_LEVEL: "http://127.0.0.1:8000/marks/update_level_mark/",
 
-
+    GET_ALL_TEST_DETAILS:'http://127.0.0.1:8000/marks/get_all_test_details/',
     UPDATE_ARCHIVE: "http://127.0.0.1:8000/marks/update_archive/",
     GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
     GET_CHAT_DATA: "http://127.0.0.1:8000/ai/get_chat_data/",

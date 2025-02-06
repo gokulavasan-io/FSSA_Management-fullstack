@@ -1,50 +1,47 @@
 import React, { useEffect, useState } from "react";
-import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
+import { Highcharts, HighchartsReact } from "../../../utils/highChartsImports";
 import "highcharts/modules/accessibility";
 import { useMarksContext } from "../contextFile";
 
-export default function Chart() {
-  
-    let {testTableData}=useMarksContext()
+export default function levelTestChart() {
+  const { testTableData } = useMarksContext();
+  const [data, setData] = useState([]);
 
-    const [data, setData] = useState([])
-    useEffect(()=>{
-      console.log(testTableData);
-      let onlyLevels=[];
-      testTableData.forEach(level => {
-        onlyLevels.push(Number(level[1]))
+  useEffect(() => {
+    if (Array.isArray(testTableData) && testTableData.length > 0) {
+      let levelCounts = {};
+
+      testTableData.forEach(({ level }) => {
+        const levelNumber = level ? parseInt(level) : 0; 
+        levelCounts[levelNumber] = (levelCounts[levelNumber] || 0) + 1;
       });
-      setData(onlyLevels)
 
-    },[testTableData])
-    
-    let count={}
-    data.forEach(level=>{
-        count[level]=(count[level]||0)+1;
-    })
-    
-    let finalData=[];
-    for(let level in count){
-      finalData.push({ name: `${level==0?"No level": `Lvl ${level}`} - ${count[level]}`, y: count[level] });
+      const chartData = Object.entries(levelCounts).map(([level, count]) => ({
+        name: level === "0" ? "No level" : `Lvl ${level} - ${count}`,
+        y: count,
+      }));
+
+      setData(chartData);
     }
-  
+  }, [testTableData]);
+
   const options = {
     chart: {
       type: "pie",
     },
     title: {
-      text: null, 
+      text: null,
     },
     tooltip: {
-      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>", 
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>",
     },
     plotOptions: {
       pie: {
-        allowPointSelect: true, 
-        cursor: "pointer", 
-        showInLegend: true, 
+        allowPointSelect: true,
+        cursor: "pointer",
+        showInLegend: true,
         dataLabels: {
-          enabled: false, 
+          enabled: false,
         },
       },
     },
@@ -52,16 +49,15 @@ export default function Chart() {
       {
         name: "Percent",
         colorByPoint: true,
-        data: finalData,
+        data: data,
       },
     ],
     accessibility: {
-      enabled: true, 
+      enabled: true,
     },
     credits: {
-      enabled: false, 
+      enabled: false,
     },
-
   };
 
   return (

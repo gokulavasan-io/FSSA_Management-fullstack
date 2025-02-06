@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -8,17 +9,38 @@ from .serializers import *
 from django.utils import timezone
 
 
+class MonthListView(ListAPIView):
+    queryset = Month.objects.all().order_by('id')
+    serializer_class = MonthSerializer
+
+class SubjectListView(ListAPIView):
+    queryset = Subject.objects.all().order_by('id')
+    serializer_class = SubjectSerializer
+
+
 class AddTestAndMarksView(APIView):
     def post(self, request):
         try:
             serializer = AddTestAndMarksSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
-                subject = get_object_or_404(Subject, subject_name=data['subject'])
+                subject = get_object_or_404(Subject, id=data['subject'])
                 
                 created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = created_at.month  
+                month_number = data['month']
                 month = get_object_or_404(Month, id=month_number)
+
+                # Check if a test with the same name already exists for the same month and subject
+                existing_test = TestDetail.objects.filter(
+                    test_name=data['test_name'],
+                    month=month,
+                    subject=subject
+                ).first()
+
+                if existing_test:
+                    return Response({
+                        "message": "Test with this name already exists for the selected month and subject.",
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
                 # Create the test detail without section (for all students globally)
                 test_detail = TestDetail.objects.create(
@@ -37,19 +59,31 @@ class AddTestAndMarksView(APIView):
 
                 # Create Marks entries for each student
                 marks_objects = []
-                for student in all_students:
-                    marks_objects.append(Marks(
-                        student=student,
-                        test_detail=test_detail,
-                        mark="",  
-                        remark="",
-                    ))
+                
+                if data['isLevelTest']:
+                    for student in all_students:
+                        marks_objects.append(TestLevels(
+                            student=student,
+                            test_detail=test_detail,
+                            level="",
+                            remark="",
+                        ))
 
-                # Bulk create marks for efficiency
-                Marks.objects.bulk_create(marks_objects)
+                    TestLevels.objects.bulk_create(marks_objects)
+                    
+                else:
+                    for student in all_students:
+                        marks_objects.append(Marks(
+                            student=student,
+                            test_detail=test_detail,
+                            mark="",  
+                            remark="",
+                        ))
+
+                    Marks.objects.bulk_create(marks_objects)
 
                 return Response({
-                    "message": "TestDetail and Marks created successfully for all students",
+                    "message": "Test created successfully !",
                     "test_detail_id": test_detail.id,
                     "date": created_at
                 }, status=status.HTTP_201_CREATED)
@@ -61,28 +95,15 @@ class AddTestAndMarksView(APIView):
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-class UpdateTestAndMarksView(APIView):
+class UpdateMarksView(APIView):
     def put(self, request, test_detail_id):
         try:
-            serializer = UpdateTestAndMarksSerializer(data=request.data)
+            serializer = UpdateMarksSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
-                created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = created_at.month  
-                month = get_object_or_404(Month, id=month_number)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
-                test_detail.month=month
-                test_detail.test_name = data['test_name']
-                test_detail.total_marks = data['total_marks']
-                test_detail.created_at = created_at
-                test_detail.about_test = data.get('about_test', "Nothing about test.")
-                test_detail.isLevelTest=data['isLevelTest']
-                test_detail.batch=data['batch']
-                
-                test_detail.save()
-                students = data['students']
+                students = data['studentsMark']
                 for student_data in students:
                     student = get_object_or_404(Students, id=student_data['student_id'])
                     Marks.objects.update_or_create(
@@ -106,7 +127,7 @@ class UpdateTestAndMarksView(APIView):
 class GetTestAndMarksView(APIView):
     def get(self, request, test_detail_id):
         section_id = request.query_params.get('section_id')  # Get section_id from query params
-        
+        section_id = None if section_id == 'null' else section_id
         try:
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
             # If section_id is provided, filter marks based on student's section; otherwise, get all marks for the test
@@ -126,8 +147,12 @@ class GetTestAndMarksView(APIView):
                 else:
                     try:
                         mark_value = float(mark.mark)  # Convert mark to float if numeric
-                        average_mark = (mark_value / total_marks) * 100 if total_marks > 0 else 0
-                        average_mark = round(average_mark, 1)
+                        if mark_value>total_marks:
+                            mark_value=0
+                        average_mark = 0
+                        if total_marks > 0 and mark_value <= total_marks:
+                            average_mark = (mark_value / total_marks) * 100
+                            average_mark = round(average_mark, 1)
                     except ValueError:
                         # Handle invalid mark values
                         average_mark = ""
@@ -162,19 +187,19 @@ class GetAllTestDataView(APIView):
             section_id = request.query_params.get('section_id')
             section_id = None if section_id == 'null' else section_id
 
-            month_name = request.query_params.get('month')
-            subject_name = request.query_params.get('subject')
+            month_id = request.query_params.get('month')
+            subject_id = request.query_params.get('subject')
 
             # Check if all required parameters are provided
-            if not month_name or not subject_name:
+            if not month_id or not subject_id:
                 return Response({"error": "Missing required parameters: month or subject."}, 
                                  status=status.HTTP_400_BAD_REQUEST)
 
             test_details_query = TestDetail.objects.all()
 
             # Get the related month and subject
-            month = get_object_or_404(Month, month_name=month_name)
-            subject = get_object_or_404(Subject, subject_name=subject_name)
+            month = get_object_or_404(Month, id=month_id)
+            subject = get_object_or_404(Subject, id=subject_id)
 
             # Filter test details based on month and subject
             test_details_query = test_details_query.filter(month=month, subject=subject)
@@ -182,20 +207,13 @@ class GetAllTestDataView(APIView):
             if not test_details_query.exists():
                 return Response([], status=status.HTTP_200_OK)
 
-            response_data = []
+            testNames = []
             student_avg_marks = {}
             student_marks = {}
 
             for test_detail in test_details_query:
-                test_detail_data = {
-                    "id": test_detail.id,
-                    "test_name": test_detail.test_name,
-                    "total_marks": test_detail.total_marks,
-                    "subject": test_detail.subject.subject_name,
-                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    "about_test": test_detail.about_test,
-                    "isLevelTest": test_detail.isLevelTest,
-                }
+                if not test_detail.isLevelTest:
+                    testNames.append(test_detail.test_name)
 
                 # Get marks for the test detail and filter by section if section_id is provided
                 marks_query = Marks.objects.filter(test_detail=test_detail).order_by('student__id')
@@ -203,6 +221,7 @@ class GetAllTestDataView(APIView):
                 # If section_id is provided, filter marks for that specific section
                 if section_id:
                     marks_query = marks_query.filter(student__section_id=section_id)
+                    
                 for mark in marks_query:
                     student_name = mark.student.name
                     if mark.mark == "Absent" or mark.mark=="a" or mark.mark=="A" or  mark.mark == "" or mark.mark is None:
@@ -231,9 +250,7 @@ class GetAllTestDataView(APIView):
                     )
 
 
-                response_data.append({
-                    "test_detail": test_detail_data,
-                })
+                
                 
             # Prepare the student average marks list
             student_avg_marks_list = []
@@ -242,7 +259,7 @@ class GetAllTestDataView(APIView):
                 student_avg_marks_list.append([student_name, avg_marks] + marks)
                 
 
-            return Response({"test_details": response_data, "student_avg_marks": student_avg_marks_list},
+            return Response({"testNames": testNames, "student_avg_marks": student_avg_marks_list},
                              status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
@@ -250,84 +267,17 @@ class GetAllTestDataView(APIView):
                              status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-class AddLevelTestView(APIView):
-    def post(self, request):
-        try:
-            serializer = AddTestAndMarksSerializer(data=request.data)
-            if serializer.is_valid():
-                data = serializer.validated_data
-                subject = get_object_or_404(Subject, subject_name=data['subject'])
-                
-                created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = created_at.month  
-                month = get_object_or_404(Month, id=month_number)
-
-                # Fetch all sections
-                sections = Section.objects.all()
-
-                # Create test details for all sections
-                for section in sections:
-                   # Create the test detail without section (for all students globally)
-                    test_detail = TestDetail.objects.create(
-                        test_name=data['test_name'],
-                        month=month,
-                        batch=data['batch'],
-                        subject=subject,
-                        total_marks=data['total_marks'],
-                        created_at=created_at,
-                        about_test=data.get('about_test', "Nothing about test."),
-                        isLevelTest=data['isLevelTest']
-                    )
-
-                    # Fetch all students in the current section
-                    students = Students.objects.filter(section=section)
-
-                    # Create level test records for each student in the section with null values
-                    for student in students:
-                        TestLevels.objects.create(
-                            student=student,
-                            test_detail=test_detail,
-                            level="",  
-                            remark="" 
-                        )
-
-                return Response({
-                    "message": "TestDetail and Marks created successfully for all sections and students",
-                    "test_detail_id": test_detail.id,
-                    "date": created_at
-                }, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class UpdateLevelTestView(APIView):
     def put(self, request, test_detail_id):
         try:
-            serializer = AddTestAndMarksSerializer(data=request.data)
+            serializer = UpdateLevelMarkSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
-                created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = created_at.month  
-                month = get_object_or_404(Month, id=month_number)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-                test_detail.month=month
-                test_detail.test_name = data['test_name']
-                test_detail.total_marks = data['total_marks']
-                test_detail.created_at = created_at
-                test_detail.about_test = data.get('about_test', "Nothing about test.")
-                test_detail.isLevelTest=data['isLevelTest']
-                test_detail.batch=data['batch']
                 
-                test_detail.save()
-                students = data['students']
+                students = data['studentsMark']
                 for student_data in students:
-                    student = get_object_or_404(Students, name=student_data['student_name'])
-                    if student.section != test_detail.section:
-                        return Response({"error": f"Student {student.name} does not belong to section {test_detail.section.name}."}, status=status.HTTP_400_BAD_REQUEST)
+                    student = get_object_or_404(Students, id=student_data['student_id'])
                     TestLevels.objects.update_or_create(
                         student=student,
                         test_detail=test_detail,
@@ -336,23 +286,29 @@ class UpdateLevelTestView(APIView):
                             'remark': student_data.get('remark', "")
                         }
                     )
-                return Response({"message": "TestDetail and Marks updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
+                return Response({"message": "Marks updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-          
+  
+
 class GetLevelTestView(APIView):
     def get(self, request, test_detail_id):
         try:
+            section_id = request.query_params.get('section_id')
+            section_id = None if section_id == 'null' else section_id
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-            marks_query = TestLevels.objects.filter(test_detail=test_detail)
+            marks_query = TestLevels.objects.filter(test_detail=test_detail).order_by('student__id')
+            
+            if section_id:
+                marks_query = TestLevels.objects.filter(student__section__id=section_id)
             marks_data = []
             total_marks = float(test_detail.total_marks)
-
             for mark in marks_query:
 
                 marks_data.append({
+                    'student_id':mark.student.id,
                     "student_name": mark.student.name,
                     "level": mark.level,  
                     "remark": mark.remark
@@ -364,7 +320,6 @@ class GetLevelTestView(APIView):
                     "test_name": test_detail.test_name,
                     "total_marks": total_marks,
                     "subject": test_detail.subject.subject_name,
-                    "section": test_detail.section.name,
                     "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                     "about_test": test_detail.about_test,
                     'isLevelTest':test_detail.isLevelTest,
@@ -375,3 +330,85 @@ class GetLevelTestView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class UpdateTestDetailsView(APIView):
+    def put(self, request, test_detail_id):
+        try:
+            serializer = UpdateTestDetailSerializer(data=request.data)
+            if serializer.is_valid():
+                data = serializer.validated_data
+                created_at = data['created_at'] if data['created_at'] else timezone.now()
+                month_number = data['month']  
+                month = get_object_or_404(Month, id=month_number)
+                subject = get_object_or_404(Subject, subject_id=data['subject'])
+                test_detail = get_object_or_404(TestDetail, id=test_detail_id)
+                
+                test_detail.month=month
+                test_detail.subject=subject
+                test_detail.test_name = data['test_name']
+                test_detail.total_marks = data['total_marks']
+                test_detail.created_at = created_at
+                test_detail.about_test = data.get('about_test', "Nothing about test.")
+                test_detail.isLevelTest=data['isLevelTest']
+                test_detail.batch=data['batch']
+                
+                test_detail.save()
+                return Response({"message": "TestDetail updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Http404 as e:
+            print(f"Object not found: {str(e)}")
+            return Response({"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+class GetAllTestDetailsView(APIView):
+    def get(self, request):
+        try:
+            month_id = request.query_params.get('month')
+            subject_id = request.query_params.get('subject')
+
+            # Check if all required parameters are provided
+            if not month_id or not subject_id:
+                return Response({"error": "Missing required parameters: month or subject."}, 
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+            test_details_query = TestDetail.objects.all()
+
+            # Get the related month and subject
+            month = get_object_or_404(Month, id=month_id)
+            subject = get_object_or_404(Subject, id=subject_id)
+
+            # Filter test details based on month and subject
+            test_details_query = test_details_query.filter(month=month, subject=subject)
+
+            if not test_details_query.exists():
+                return Response([], status=status.HTTP_200_OK)
+
+            response_data = []
+
+            for test_detail in test_details_query:
+                test_detail_data = {
+                    "id": test_detail.id,
+                    "test_name": test_detail.test_name,
+                    "total_marks": test_detail.total_marks,
+                    "subject": test_detail.subject.subject_name,
+                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    "about_test": test_detail.about_test,
+                    "isLevelTest": test_detail.isLevelTest,
+                }
+
+                response_data.append({
+                    "test_detail": test_detail_data,
+                })
+
+            return Response(response_data,
+                             status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return Response({"error": "Internal Server Error. Please contact support."},
+                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

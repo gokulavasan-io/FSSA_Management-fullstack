@@ -11,7 +11,7 @@ export const submitTestData = async (testData) => {
   }
 };
 
-export const fetchAllMarks = async (section,month,subject) => {
+export const fetchAllTestMarksForMonth = async (section,month,subject) => {
   try {
     let response= await axios.get(`${API_PATHS.GET_ALL_DATA}?section_id=${section}&month=${month}&subject=${subject}`)
     return response.data;
@@ -30,6 +30,50 @@ export const updateMarks = async (testId,data) => {
     throw error;
   }
 };
+
+export const fetchTestDetails = async (month,subject) => {
+  try {
+    let response= await axios.get(`${API_PATHS.GET_ALL_TEST_DETAILS}?month=${month}&subject=${subject}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting test data:", error);
+    throw error;
+  }
+};
+export const fetchMonths = async () => {
+  try {
+    let response= await axios.get(API_PATHS.FETCH_MONTHS)
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting test data:", error);
+    throw error;
+  }
+};
+
+export const fetchSubjects = async () => {
+  try {
+    let response= await axios.get(API_PATHS.FETCH_SUBJECTS)
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting test data:", error);
+    throw error;
+  }
+};
+
+
+export const fetchTestData = async (testId) => {
+  try {
+    const apiUrl = `${API_PATHS.GET_MARK}${testId}/?section_id=${null}`
+    const response = await axios.get(apiUrl);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+
+
 
 
 

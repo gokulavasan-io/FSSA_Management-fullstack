@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter,Route,Routes ,Link} from 'react-router-dom';
 
-import MarkApp from './pages/marksEntry/marksApp'
+import MarkApp from './pages/MarksEntry/marksApp'
 import 'handsontable/dist/handsontable.full.css';
 import { SnackbarProvider } from 'notistack';
 import Attendance from './pages/Attendance/AttendanceMainTable/attendanceMain';

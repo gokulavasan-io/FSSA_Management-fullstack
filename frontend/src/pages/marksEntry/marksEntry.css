@@ -51,3 +51,8 @@
 .ht_master tbody tr th {
   border-color:  black !important;
 }
+
+
+.ant-select-dropdown {
+  z-index: 9999 !important;
+}

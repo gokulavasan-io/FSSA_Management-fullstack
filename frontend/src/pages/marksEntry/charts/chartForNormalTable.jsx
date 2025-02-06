@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {Highcharts,HighchartsReact} from "../../../utils/highChartsImports"
+import { Highcharts, HighchartsReact } from "../../../utils/highChartsImports";
 import { categoryMark } from "../../../constants/constValues";
 import "highcharts/modules/accessibility";
 import { useMarksContext } from "../contextFile";
 
-export default function Chart() {
-  const {testTableData,mainTableData,isMainTable}=useMarksContext();
+export default function NormalTestChart() {
+  const { testTableData, mainTableData, isMainTable } = useMarksContext();
 
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState({
@@ -13,32 +13,41 @@ export default function Chart() {
     [categoryMark.yellowRange]: [],
     [categoryMark.greenRange]: [],
     [categoryMark.absent]: [],
+    withoutMarks: [],  // New category for missing marks
   });
 
   useEffect(() => {
-    let data = [];
-    Object.keys(categories).forEach(category => {
-      let count=categories[category].length ;
-      data.push({ name: `${category} - ${count}`, y: count });
+    let filteredData = [];
+
+    // Exclude "Absent" category if it's a main table
+    Object.keys(categories).forEach((category) => {
+      if (isMainTable && category === categoryMark.absent|| category===categoryMark.withoutMarks) return;
+      
+      const count = categories[category].length;
+      filteredData.push({ name: `${category} - ${count}`, y: count });
     });
-    setData(data);
-  }, [categories]);
+
+    setData(filteredData);
+  }, [categories, isMainTable]);
 
   useEffect(() => {
-    let tableData=isMainTable?mainTableData:testTableData;
+    let tableData = isMainTable ? mainTableData : testTableData;
     const updatedCategories = {
       [categoryMark.redRange]: [],
       [categoryMark.yellowRange]: [],
       [categoryMark.greenRange]: [],
       [categoryMark.absent]: [],
+      withoutMarks: [], // Initialize new category
     };
 
-    tableData.forEach(student => {
-      let name = student[0];
-      let mark = isMainTable? Math.round(Number(student[1])):Math.round(Number(student[2]));
+    tableData.forEach((student) => {
+      let name = student.student_name;
+      let mark = isMainTable ? student[1] : student.average_mark;
 
-      if (student[2] === "Absent") {
+      if (mark === "Absent") {
         updatedCategories[categoryMark.absent].push({ name, mark });
+      } else if (mark === "" || mark === null) {
+        updatedCategories.withoutMarks.push({ name, mark }); // Add to missing marks
       } else if (mark >= categoryMark.greenStartValue) {
         updatedCategories[categoryMark.greenRange].push({ name, mark });
       } else if (mark >= categoryMark.yellowStartValue) {
@@ -49,25 +58,25 @@ export default function Chart() {
     });
 
     setCategories(updatedCategories);
-  }, [mainTableData,testTableData]);
+  }, [mainTableData, testTableData, isMainTable]);
 
   const options = {
     chart: {
       type: "pie",
     },
     title: {
-      text: null, 
+      text: null,
     },
     tooltip: {
-      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>", 
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>",
     },
     plotOptions: {
       pie: {
-        allowPointSelect: true, 
-        cursor: "pointer", 
-        showInLegend: true, 
+        allowPointSelect: true,
+        cursor: "pointer",
+        showInLegend: true,
         dataLabels: {
-          enabled: false, 
+          enabled: false,
         },
       },
     },
@@ -79,13 +88,12 @@ export default function Chart() {
       },
     ],
     accessibility: {
-      enabled: true, 
+      enabled: true,
     },
     credits: {
-      enabled: false, 
+      enabled: false,
     },
-    colors: ['red', '#FFEB3B', 'green', 'rgb(183, 131, 20)'],
-
+    colors: ['red', '#FFEB3B', 'green', 'rgb(183, 131, 20)', 'rgb(22, 212, 249)'], // Added color for missing marks
   };
 
   return (

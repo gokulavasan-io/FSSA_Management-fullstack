@@ -8,20 +8,21 @@ const MarksContext = createContext();
 
 // Create a Provider Component
 export const MarksContextProvider = ({ children }) => {
-  const month = "January";
-  const subject = "English";
-  const section = null;
+  const month = 1;
+  const subject = 1;
+  const section = 3;
+  const batchNumber=4;
+  const [testDetail, setTestDetail] = useState({})
+  const [showStatus, setShowStatus] = useState(false);
   const [testTableData, setTestTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [previousTotalMark, setPreviousTotalMark] = useState("");
-  const [testName, setTestName] = useState("");
   const [previousTestName, setPreviousTestName] = useState("");
   const [testId, setTestId] = useState(null);
   const [testNames, setTestNames] = useState([]);
   const [error, setError] = useState("");
   const [isLevelTable, setIsLevelTable] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const [isMainTable, setIsMainTable] = useState(true);
@@ -33,23 +34,28 @@ export const MarksContextProvider = ({ children }) => {
   const [previousAboutTest,setPreviousAboutTest]=useState('')
   const [isFocused, setIsFocused] = useState(false); 
   const [sidebarOpen, setSidebarOpen] = useState(false); 
-  const hotTableRef = useRef(null);
+  const [openNewTestForm, setOpenNewTestForm] = useState(false);
+  const [testDetailCardVisible, setTestDetailCardVisible] = useState(false);
+  
+
 
   const handleOptionClick = (testId,levelTable) => {
     setTestId(testId);
     setIsMainTable(false);
+    setSidebarOpen((prev) => !prev)
     if(levelTable){
       setIsLevelTable(true)
     }else{
       setIsLevelTable(false)
     }
   };
+
   return (
     <MarksContext.Provider
       value={{
-        categoryMark,aboutTest,setAboutTest,previousAboutTest,setPreviousAboutTest,hotTableRef,isFocused,isFocused,sidebarOpen,setSidebarOpen,
-        handleOptionClick,
-        month,
+        categoryMark,aboutTest,setAboutTest,previousAboutTest,setPreviousAboutTest,isFocused,sidebarOpen,setSidebarOpen,showStatus,setShowStatus,
+        handleOptionClick,openNewTestForm,setOpenNewTestForm,testDetail, setTestDetail,testDetailCardVisible,setTestDetailCardVisible,
+        month,batchNumber,
         section,subject,
         testTableData,
         setTestTableData,
@@ -59,8 +65,6 @@ export const MarksContextProvider = ({ children }) => {
         setSelectedDate,
         previousTotalMark,
         setPreviousTotalMark,
-        testName,
-        setTestName,
         previousTestName,
         setPreviousTestName,
         testId,
@@ -71,8 +75,6 @@ export const MarksContextProvider = ({ children }) => {
         setError,
         isLevelTable,
         setIsLevelTable,
-        isSaved,
-        setIsSaved,
         isUpdated,
         setIsUpdated,
         isEdited,
