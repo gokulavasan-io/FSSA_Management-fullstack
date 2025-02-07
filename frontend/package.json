@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "firebase": "^11.2.0",
     "highcharts": "^12.1.2",
     "highcharts-react-official": "^3.2.1",
     "react": "^19.0.0",
