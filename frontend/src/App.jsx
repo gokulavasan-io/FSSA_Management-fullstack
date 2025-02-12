@@ -11,6 +11,7 @@ import AttendanceStatsTable from './pages/Attendance/Statistics/studentStatistic
 import { AttendanceContextProvider } from './pages/Attendance/AttendanceContext';
 import AdminPage from './pages/Admin/adminPage';
 import LoginPage from './pages/Admin/loginPage';
+import StudentAdmin from './pages/Admin/studetntsAdmin'
 
 let sectionId=null;
 let month=12;
@@ -29,7 +30,8 @@ export default function App() {
                 <li><Link to='/attendance'>Attendance</Link></li>
                 <li><Link to='/dailyStatistics'>Daily</Link></li>
                 <li><Link to='/studentStatistics'>Student</Link></li>
-                <li><Link to='/admin'>Admin</Link></li>
+                <li><Link to='/admin/members'>Admin</Link></li>
+                <li><Link to='/admin/student'>Admin</Link></li>
                 {/* <li><Link to='/'>Login</Link></li> */}
             </ul>}
             <Routes>
@@ -37,7 +39,8 @@ export default function App() {
                 <Route path='/attendance' element={ <Attendance {...props} />} />
                 <Route path='/dailyStatistics' element={ <DailyStatisticsTable {...props} />} />
                 <Route path='/studentStatistics' element={ <AttendanceStatsTable  {...props}/>} />
-                <Route path='/admin' element={ <AdminPage />} />
+                <Route path='/admin/members' element={ <AdminPage />} />
+                <Route path='/admin/student' element={ <StudentAdmin />} />
                 <Route path='/login' element={ <LoginPage setIsLoggedIn={setIsLoggedIn} />} />
             </Routes>
 

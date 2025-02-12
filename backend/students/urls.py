@@ -7,5 +7,6 @@ urlpatterns = [
     path('studentsData/', StudentsData.as_view(), name='studentsData'),
     path('studentsName/', StudentNamesView.as_view(), name='studentsName'),
     path('sections/', SectionListView.as_view()), 
+    path("choices/", ChoicesAPIView.as_view(), name="get-choices"),
     
 ]

@@ -41,13 +41,13 @@ class FirebaseTokenVerifyView(APIView):
             return Response({"error": "An error occurred during token verification."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class MemberCreateView(generics.CreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
-
     def create(self, request):
+        print("Received Data:", request.data)  # Log incoming data
         serializer = self.get_serializer(data=request.data)
+        
         try:
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)

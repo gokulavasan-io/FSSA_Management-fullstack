@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useFormik } from "formik";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import {
   TextField,
@@ -25,7 +26,7 @@ const AdminPage = () => {
   const [roles, setRoles] = useState([]);
   const [sections, setSections] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [open, setOpen] = useState(false); // Dialog state
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetchMembers();
@@ -33,7 +34,6 @@ const AdminPage = () => {
     fetchSections();
   }, []);
 
-  // Fetch members
   const fetchMembers = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/member/members/");
@@ -43,7 +43,6 @@ const AdminPage = () => {
     }
   };
 
-  // Fetch roles
   const fetchRoles = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/member/roles/");
@@ -53,7 +52,6 @@ const AdminPage = () => {
     }
   };
 
-  // Fetch sections
   const fetchSections = async () => {
     try {
       const response = await axios.get("http://127.0.0.1:8000/students/sections/");
@@ -63,50 +61,50 @@ const AdminPage = () => {
     }
   };
 
-  // Form validation schema
-  const validationSchema = Yup.object({
-    name: Yup.string().required("Name is required").min(3, "Name must be at least 3 characters"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required").min(3, "Must be at least 3 characters"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
     role: Yup.string().required("Role is required"),
     section: Yup.string().required("Section is required"),
     is_admin: Yup.boolean(),
   });
 
-  // Formik for form handling
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      role: "",
-      section: "",
-      is_admin: false,
-    },
-    validationSchema,
-    onSubmit: async (values, { resetForm, setErrors }) => {
-      try {
-        if (editingId) {
-          await axios.put(`http://127.0.0.1:8000/member/update_member/${editingId}/`, values);
-          message.success("Member updated successfully!");
-          setEditingId(null);
-        } else {
-          await axios.post("http://127.0.0.1:8000/member/add_member/", values);
-          message.success("Member added successfully!");
-        }
-        fetchMembers();
-        resetForm();
-        handleClose();
-      } catch (error) {
-        if (error.response && error.response.data) {
-          setErrors(error.response.data); 
-        } else {
-          message.error("Failed to save member");
-        }
-      }
-    }
-    
+  const { register, handleSubmit, reset, setValue,setError, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),
   });
 
-  // Handle delete
+  const onSubmit = async (data) => {
+    try {
+      if (editingId) {
+        await axios.put(`http://127.0.0.1:8000/member/update_member/${editingId}/`, data);
+        message.success("Member updated successfully!");
+        setEditingId(null);
+      } else {
+        await axios.post("http://127.0.0.1:8000/member/add_member/", data);
+        message.success("Member added successfully!");
+      }
+      fetchMembers();
+      reset();
+      handleClose();
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const apiErrors = error.response.data;
+        
+        Object.keys(apiErrors).forEach((field) => {
+          setError(field, {
+            type: "server",
+            message: apiErrors[field][0], 
+          });
+        });
+  
+        message.error("Failed to save member. Please check the form for errors.");
+      } else {
+        message.error("An unexpected error occurred.");
+      }
+    }
+  };
+  
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://127.0.0.1:8000/member/delete_member/${id}/`);
@@ -117,32 +115,24 @@ const AdminPage = () => {
     }
   };
 
-  // Open popup for editing
   const handleEdit = (member) => {
     setEditingId(member.id);
-    formik.setValues({
-      name: member.name,
-      email: member.email,
-      role: member.role,
-      section: member.section,
-      is_admin: member.is_admin,
-    });
+    setValue("name", member.name);
+    setValue("email", member.email);
+    setValue("role", member.role);
+    setValue("section", member.section);
+    setValue("is_admin", member.is_admin);
     setOpen(true);
   };
 
-  // Open popup for adding
   const handleOpen = () => {
     setEditingId(null);
-    formik.resetForm();
+    reset();
     setOpen(true);
   };
 
-  // Close popup
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = () => setOpen(false);
 
-  // Table columns
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -184,86 +174,26 @@ const AdminPage = () => {
 
       <Table dataSource={members} columns={columns} rowKey="id" pagination={{ pageSize: 5 }} />
 
-      {/* Popup Dialog for Adding/Editing */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>{editingId ? "Edit Member" : "Add Member"}</DialogTitle>
         <DialogContent>
-          <form onSubmit={formik.handleSubmit} className="p-4">
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
-              <TextField
-                label="Name"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                fullWidth
-                required
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-              />
-
-              <TextField
-                label="Email"
-                name="email"
-                type="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                fullWidth
-                required
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-
-              <TextField
-                select
-                label="Role"
-                name="role"
-                value={formik.values.role}
-                onChange={formik.handleChange}
-                fullWidth
-                required
-                error={formik.touched.role && Boolean(formik.errors.role)}
-                helperText={formik.touched.role && formik.errors.role}
-              >
-                {roles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.name}
-                  </MenuItem>
-                ))}
+              <TextField label="Name" {...register("name")} error={!!errors.name} helperText={errors.name?.message} fullWidth required />
+              <TextField label="Email" {...register("email")} error={!!errors.email} helperText={errors.email?.message} fullWidth required />
+              <TextField select label="Role" {...register("role")} error={!!errors.role} helperText={errors.role?.message} fullWidth required defaultValue={""}>
+                {roles.map((role) => <MenuItem key={role.id} value={role.id}>{role.name}</MenuItem>)}
               </TextField>
-
-              <TextField
-                select
-                label="Section"
-                name="section"
-                value={formik.values.section}
-                onChange={formik.handleChange}
-                fullWidth
-                required
-                error={formik.touched.section && Boolean(formik.errors.section)}
-                helperText={formik.touched.section && formik.errors.section}
-              >
-                {sections.map((section) => (
-                  <MenuItem key={section.id} value={section.id}>
-                    {section.name}
-                  </MenuItem>
-                ))}
+              <TextField select label="Section" {...register("section")} error={!!errors.section} helperText={errors.section?.message} fullWidth required defaultValue={""}>
+                {sections.map((section) => <MenuItem key={section.id} value={section.id}>{section.name}</MenuItem>)}
               </TextField>
-
-              <FormControlLabel
-                control={<Checkbox name="is_admin" checked={formik.values.is_admin} onChange={formik.handleChange} />}
-                label="Is Admin?"
-              />
+              <FormControlLabel control={<Checkbox {...register("is_admin")} />} label="Is Admin?" />
             </Stack>
           </form>
         </DialogContent>
-
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={formik.handleSubmit} variant="contained" color="primary">
-            {editingId ? "Update" : "Add"}
-          </Button>
+          <Button onClick={handleClose} color="secondary">Cancel</Button>
+          <Button type="submit" variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>{editingId ? "Update" : "Add"}</Button>
         </DialogActions>
       </Dialog>
     </Paper>
