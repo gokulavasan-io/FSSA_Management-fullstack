@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status,generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
@@ -95,3 +95,7 @@ class StudentNamesView(APIView):
 
         student_names = list(students.values_list('name', flat=True))
         return Response(student_names, status=status.HTTP_200_OK)
+
+class SectionListView(generics.ListAPIView):
+    queryset = Section.objects.all()
+    serializer_class = SectionSerializer

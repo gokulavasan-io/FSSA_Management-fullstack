@@ -1,18 +1,14 @@
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
 from .models import *
-from .serializers import MemberSerializer
+from .serializers import *
 from django.core.exceptions import ObjectDoesNotExist
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from .models import Member
 from firebase_admin import auth
-from django.core.exceptions import ObjectDoesNotExist
 from .firebaseAdminSDK import initialize_firebase
+
 
 # Initialize Firebase
 initialize_firebase()
@@ -27,23 +23,22 @@ class FirebaseTokenVerifyView(APIView):
         try:
             # Verify the Firebase token
             decoded_token = auth.verify_id_token(token)
-            uid = decoded_token["uid"]
             email = decoded_token.get("email") 
 
             try:
-                member = Member.objects.get(email=email)  # Assuming email is unique for each member
+                member = Member.objects.get(email=email)
+                member_data=MemberSerializer(member).data
+                return Response({
+                    "message": "Token verified and member authenticated.",
+                    "email": email,
+                    'member':member_data,
+                }, status=status.HTTP_200_OK)
+                
             except ObjectDoesNotExist:
                 return Response({"error": "You are not a registered member."}, status=status.HTTP_403_FORBIDDEN)
-
-            # Successfully verified the token and found the member
-            return Response({
-                "message": "Token verified and member authenticated.",
-                "uid": uid,
-                "email": email,
-            }, status=status.HTTP_200_OK)
-
+            
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred during token verification."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -51,13 +46,15 @@ class MemberCreateView(generics.CreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
 
-    def create(self, request, *args, **kwargs):
-        email = request.data.get("email")
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
-        if Member.objects.filter(email=email).exists():
-            return Response({"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST)
-
-        return super().create(request, *args, **kwargs)
 
 # List all members
 class MemberListView(generics.ListAPIView):
@@ -69,3 +66,16 @@ class MemberListView(generics.ListAPIView):
 class MemberDeleteView(generics.DestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
+    lookup_field = 'id'
+    
+# Update a member
+class MemberUpdateView(generics.UpdateAPIView):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
+    lookup_field = 'id'
+
+
+class RoleListView(generics.ListAPIView):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+
