@@ -44,16 +44,6 @@ class FirebaseTokenVerifyView(APIView):
 class MemberCreateView(generics.CreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    def create(self, request):
-        print("Received Data:", request.data)  # Log incoming data
-        serializer = self.get_serializer(data=request.data)
-        
-        try:
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
 
 # List all members
@@ -65,7 +55,6 @@ class MemberListView(generics.ListAPIView):
 # Delete a member
 class MemberDeleteView(generics.DestroyAPIView):
     queryset = Member.objects.all()
-    serializer_class = MemberSerializer
     lookup_field = 'id'
     
 # Update a member

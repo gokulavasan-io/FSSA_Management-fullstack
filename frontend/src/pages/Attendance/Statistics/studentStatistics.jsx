@@ -1,21 +1,12 @@
-import React, { useEffect, useState,useContext } from "react";
-import { HotTable } from "@handsontable/react";
-import "handsontable/dist/handsontable.full.min.css";
+import React, { useEffect } from "react";
+import { Table, Spin } from "antd";
 import API_PATHS from "../../../constants/apiPaths";
 import useAttendanceContext from "../AttendanceContext";
 
 const AttendanceStatsTable = () => {
-  const {sectionId,month,year,loading,setLoading,attendanceData,setAttendanceData,totalWorkingDays,setTotalWorkingDays} = useAttendanceContext();
-
-  // let { sectionId, month, year }=props
-
-
-  // const [attendanceData, setAttendanceData] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [totalWorkingDays, setTotalWorkingDays] = useState(0);
+  const { sectionId, month, year, loading, setLoading, attendanceData, setAttendanceData, totalWorkingDays, setTotalWorkingDays } = useAttendanceContext();
 
   useEffect(() => {
-    // Fetch data from the API
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -34,62 +25,62 @@ const AttendanceStatsTable = () => {
     fetchData();
   }, [sectionId, month, year]);
 
+  // Extract dynamic status counts
+  const getStatusFields = () => {
+    if (attendanceData.length === 0) return [];
+    return Object.keys(attendanceData[0]?.status_counts || {});
+  };
+  
+  // Generate dynamic columns
   const columns = [
-    { data: "name", title: "Student Name", readOnly: true },
-    { data: "status_counts.Present", title: "Present", readOnly: true },
-    { data: "status_counts.Absent", title: "Absent", readOnly: true },
-    { data: "status_counts.Late Arrival", title: "Late Arrival", readOnly: true },
-    { data: "status_counts.Approved Permission", title: "Approved Permission", readOnly: true },
-    { data: "status_counts.Sick Leave", title: "Sick Leave", readOnly: true },
-    { data: "status_counts.Casual Leave", title: "Casual Leave", readOnly: true },
-    { data: "status_counts.Half leave", title: "Half Day Leave", readOnly: true },
-    { data: "total_score", title: "Total Score", readOnly: true },
-    { data: "total_percentage", title: "Total Percentage", readOnly: true },
-    { data: "present_percentage", title: "Present Percentage", readOnly: true },
+    { title: "Student Name", dataIndex: "name", key: "name", fixed: "left", width: 250 },
+    ...getStatusFields().map((status) => ({
+      title: status.replace(/_/g, " "), // Format column name
+      dataIndex: ["status_counts", status],
+      key: status,
+      sorter: (a, b) => (a.status_counts[status] || 0) - (b.status_counts[status] || 0),
+      width: 120,align: "center",
+    })),
+    { title: "Total Score", dataIndex: "total_score", key: "total_score",align: "center", sorter: (a, b) => a.total_score - b.total_score, width: 120 },
+    { 
+      title: "Total Percentage", 
+      dataIndex: "total_percentage", 
+      key: "total_percentage", 
+      align: "center", 
+      width: 120,
+      sorter: (a, b) => parseFloat(a.total_percentage) - parseFloat(b.total_percentage) // Convert string to number
+    },
+    { 
+      title: "Present Percentage", 
+      dataIndex: "present_percentage", 
+      key: "present_percentage", 
+      align: "center", 
+      width: 120,
+      sorter: (a, b) => parseFloat(a.present_percentage) - parseFloat(b.present_percentage) // Convert string to number
+    },
   ];
 
-  const tableSettings = {
-    data: attendanceData,
-    colHeaders: columns.map((col) => col.title),
-    columns: columns.map((col) => ({ data: col.data, readOnly: col.readOnly })),
-    stretchH: "all",
-    width: "100%",
-    height: "auto",
-    rowHeaders: true,
-    columnSorting: true, // Enable sorting
-    licenseKey: "non-commercial-and-evaluation", // Free license for non-commercial use
-    
-  };
-
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h1>Attendance Statistics</h1>
       {loading ? (
-        <p>Loading...</p>
+        <Spin size="large" style={{ display: "block", margin: "20px auto" }} />
       ) : (
         <>
           <p>Total Working Days: {totalWorkingDays}</p>
-          <HotTable
-            data={attendanceData}
-            colHeaders={columns.map((col) => col.title)}
-            columns={columns.map((col) => ({
-              data: col.data,
-              readOnly: true, // Making all columns read-only
-            }))}
-            stretchH="all"
-            width="100%"
-            height="auto"
-            rowHeaders={true}
-            columnSorting={true} // Enable sorting
-            licenseKey="non-commercial-and-evaluation" // Free license for non-commercial use
-            fixedColumnsLeft={1} // Freeze the first column
-            className="htCenter"
+          <Table
+            dataSource={attendanceData}
+            columns={columns}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+            scroll={{ x: "max-content" }}
+            bordered
+            size="small"
           />
         </>
       )}
     </div>
   );
-  
 };
 
 export default AttendanceStatsTable;

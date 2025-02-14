@@ -47,10 +47,11 @@ const SideBarForHoliday = () => {
   }, [tableVisible]);
 
   const columns = [
-    { field: "date", headerName: "Date", width: 150 },
-    { field: "day", headerName: "Day", width: 150 },
-    { field: "reason", headerName: "Reason", width: 850, editable: true },
+    { field: "date", headerName: "Date", flex: 1 },
+    { field: "day", headerName: "Day", flex: 1 },
+    { field: "reason", headerName: "Reason", flex: 5, editable: true },
   ];
+  
 
   const rows = holidays.map((holiday, idx) => ({
     id: idx,
@@ -213,19 +214,19 @@ if (trimmedReason !== oldRow.reason) {
             <CircularProgress />
           ) : (
             <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10, 20]}
-              processRowUpdate={handleProcessRowUpdate}
-              experimentalFeatures={{ newEditingApi: true }}
-              sx={{
-                width: "100%",
-                height: "100%",
-                overflow: "hidden",
-                marginTop: "1rem",
-              }}
-            />
+            rows={rows}
+            columns={columns.map(col => ({ ...col, resizable: false }))}
+            processRowUpdate={handleProcessRowUpdate}
+            experimentalFeatures={{ newEditingApi: true }}
+            pagination={false}
+            hideFooter={true} 
+            sx={{
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+              marginTop: "1rem",
+            }}
+          />
           )}
         </Box>
       )}

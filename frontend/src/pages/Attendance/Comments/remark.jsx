@@ -45,33 +45,34 @@ const Sidebar = () => {
     {
       field: "student_name",
       headerName: "Name",
-      width: 280,
-      disableColumnResize: true,
+      flex: 2,
+      resizable: false,
     },
     {
       field: "date",
       headerName: "Date",
-      width: 130,
-      disableColumnResize: true,
+      flex: 1,
+      resizable: false,
     },
     {
       field: "status",
       headerName: "Status",
-      width: 120,
-      disableColumnResize: true,
+      flex: 1,
+      resizable: false,
     },
     {
       field: "remark",
       headerName: "Remark",
-      width: 550,
+      flex: 2,
       editable: true,
-      disableColumnResize: true,
+      resizable: false,
     },
     {
       field: "delete_remark",
       headerName: "Delete",
-      width: 100,
-      align: "right", // Ensure the delete button is always on the right
+      flex: .5,
+      align: "right",
+      resizable: false,
       renderCell: (params) => {
         return (
           <IconButton
@@ -325,8 +326,8 @@ const Sidebar = () => {
               <DataGrid
                 rows={rows}
                 columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5, 10, 20]}
+                pagination={false}
+                hideFooter={true}
                 processRowUpdate={handleProcessRowUpdate}
                 experimentalFeatures={{ newEditingApi: true }}
                 sx={{

@@ -32,3 +32,13 @@
     border-top: 10px solid rgb(255, 0, 0); /* Color and size of the triangle */
     
   }
+
+  .sticky-column {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+    font-weight: bold;
+    border-right: 2px solid #ddd;
+  }
+  

@@ -547,6 +547,7 @@ class AllStudentsStatusCountView(APIView):
 
         result = []
         all_statuses = Status.objects.all()
+        
 
         # Calculate working days (excluding weekends and holidays)
         working_days = 0
@@ -573,9 +574,13 @@ class AllStudentsStatusCountView(APIView):
             # Count statuses
             status_counts = {status.status: 0 for status in all_statuses}
             attendance_counts = attendance_data.values('status__status').annotate(count=Count('status'))
+            
             for record in attendance_counts:
-                status_counts[record['status__status']] = record['count']
-
+                status_name = record["status__status"]
+                if not status_name is None:
+                    status_counts[status_name] = record['count']
+                
+                
             # Calculate total score using the provided formula
             total_score = 0
             total_score += status_counts.get("Present", 0)
@@ -608,7 +613,7 @@ class AllStudentsStatusCountView(APIView):
                 "total_percentage": f"{total_percentage:.2f}%" if total_percentage != "N/A" else "N/A",
                 "present_percentage": f"{present_percentage:.2f}%" if present_percentage != "N/A" else "N/A",
             })
-
+        print(result)
         response = {
             "total_working_days": working_days,
             "students": result

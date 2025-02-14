@@ -12,10 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "apexcharts": "^4.4.0",
     "firebase": "^11.2.0",
     "highcharts": "^12.1.2",
     "highcharts-react-official": "^3.2.1",
     "react": "^19.0.0",
+    "react-apexcharts": "^1.7.0",
     "react-dom": "^19.0.0",
     "vite": "^6.0.7"
   }

@@ -4,38 +4,17 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 
-class SectionCreateView(APIView):
-    def post(self, request):
-        sections_data = request.data.get("sections", [])
+class SectionCreateView(generics.CreateAPIView):
+    queryset = Section.objects.all()
+    serializer_class = SectionSerializer
 
-        created_sections = []
-
-        for section_name in sections_data:
-            if Section.objects.filter(name=section_name).exists():
-                continue
-
-            section_data = {"name": section_name}
-            serializer = SectionSerializer(data=section_data)
-
-            if serializer.is_valid():
-                serializer.save()
-                created_sections.append(serializer.data['name'])
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        if created_sections:
-            return Response({"created_sections": created_sections}, status=status.HTTP_201_CREATED)
-
-        return Response({"message": "No new sections created."}, status=status.HTTP_400_BAD_REQUEST)
 
 class StudentsData(APIView):
     def post(self, request):
-        print(request.data)
         serializer = StudentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 
     def get(self, request):

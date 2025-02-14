@@ -192,8 +192,8 @@ const Attendance = () => {
       />
   
       
-      {/* <Sidebar year={year} month={month} sectionId={sectionId} /> */}
-      <SideBarForHoliday year={year} month={month} sectionId={sectionId} />
+      <Sidebar year={year} month={month} sectionId={sectionId} />
+      {/* <SideBarForHoliday year={year} month={month} sectionId={sectionId} /> */}
 
       </AttendanceContextProvider>
     </div>

@@ -2,7 +2,6 @@ from django.db import models
 
 class Section(models.Model):
     name = models.CharField(max_length=50, unique=True, null=True)
-
     
     class Meta:
         ordering = ['name']
@@ -13,9 +12,8 @@ class Section(models.Model):
     
 class Batch(models.Model):
     batch_no = models.IntegerField(unique=True, null=True)  
-    def __str__(self):
-        return "Batch " + str(self.batch_no)
-
+    
+    
 GENDER_CHOICES=[
     ("Male","Male"),
     ("Female","Female"),
