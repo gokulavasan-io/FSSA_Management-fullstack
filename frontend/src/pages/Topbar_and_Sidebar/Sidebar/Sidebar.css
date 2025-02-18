@@ -17,7 +17,7 @@
 .ant-menu-submenu-selected .ant-menu-submenu-title {
     background-color: #5D5FEF !important;
     color: white !important;
- 
+    
 }
 
 .ant-menu-inline-collapsed .ant-menu-item-icon {
@@ -28,3 +28,8 @@
 .ant-menu-item-icon{
     right: 4px;
 }
+
+.ant-menu-submenu {
+    background: #fff !important; 
+}
+

@@ -81,7 +81,6 @@ function TestTable() {
   
     for (let i = 0; i < changes.length; i++) {
       const [visualRow, prop, oldValue, newValue] = changes[i];
-      const physicalRow = hotInstance.toPhysicalRow(visualRow);
   
       if (prop === "mark") {
         if (newValue?.toLowerCase() === "a") {

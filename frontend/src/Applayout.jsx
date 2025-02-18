@@ -7,7 +7,7 @@ import { useState } from "react";
 const { Content } = Layout;
 
 function AppLayout() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -17,7 +17,7 @@ function AppLayout() {
       {/* Main Layout */}
       <Layout
         style={{
-          marginLeft: collapsed ? 80 : 240, // Sidebar width
+          marginLeft:  80, // Sidebar width
           transition: "margin-left 0.3s ease-in-out",
         }}
       >
@@ -27,11 +27,12 @@ function AppLayout() {
         {/* Content */}
         <Content
           style={{
-            marginTop: 64, // Prevents overlap with TopBar
+            marginTop: 64,
             padding: "20px",
             minHeight: "calc(100vh - 64px)",
             background: "#f5f5f5",
             transition: "all 0.3s ease-in-out",
+
           }}
         >
           <Outlet />

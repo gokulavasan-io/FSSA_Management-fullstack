@@ -54,7 +54,7 @@ function TopBar({collapsed}) {
       <Header
         style={{
           position: "fixed",
-          width: collapsed ? "calc(100% - 90px)" : "calc(100% - 250px)",
+          width: collapsed ? "calc(100% - 80px)" : "calc(100% - 230px)",
           top: 0,
           right: 0,
           zIndex: 1000,
@@ -71,7 +71,7 @@ function TopBar({collapsed}) {
       >
         <Breadcrumb separator=">" >
           <Breadcrumb.Item>
-            <Link to="/attendance">
+            <Link to="/">
               <Home04Icon size={20} />
             </Link>
           </Breadcrumb.Item>

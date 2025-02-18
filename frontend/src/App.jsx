@@ -18,7 +18,6 @@ import { Outlet } from "react-router-dom";
 import AppLayout from './Applayout';
 const { Content } = Layout;
 
-
 let sectionId=null;
 let month=12;
 let year=2024;
@@ -42,9 +41,8 @@ export default function App() {
             </ul>}
             <Routes>
             <Route path="/" element={<AppLayout />}>
-                <Route index element={<Attendance />} />
+                <Route index element={<MarkApp />} />
                 <Route path="attendance" element={<Attendance />} />
-                <Route path="analysis" element={<MarkApp />} />
             </Route>
                 {/* <Route path='/sidebar' element={ <Sidebar />} />
                 <Route path='/' element={ <TopBar />} />
