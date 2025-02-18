@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { BrowserRouter,Route,Routes ,Link} from 'react-router-dom';
-
+import { Layout } from "antd";
 import MarkApp from './pages/MarksEntry/marksApp'
 import 'handsontable/dist/handsontable.full.css';
 import { SnackbarProvider } from 'notistack';
@@ -12,6 +12,12 @@ import { AttendanceContextProvider } from './pages/Attendance/AttendanceContext'
 import AdminPage from './pages/Admin/adminPage';
 import LoginPage from './pages/Admin/loginPage';
 import StudentAdmin from './pages/Admin/studetntsAdmin'
+import Sidebar from './pages/Topbar_and_Sidebar/Sidebar/Sidebar';
+import TopBar from './pages/Topbar_and_Sidebar/Topbar/Topbar';
+import { Outlet } from "react-router-dom";
+import AppLayout from './Applayout';
+const { Content } = Layout;
+
 
 let sectionId=null;
 let month=12;
@@ -35,13 +41,20 @@ export default function App() {
                 {/* <li><Link to='/'>Login</Link></li> */}
             </ul>}
             <Routes>
+            <Route path="/" element={<AppLayout />}>
+                <Route index element={<Attendance />} />
+                <Route path="attendance" element={<Attendance />} />
+                <Route path="analysis" element={<MarkApp />} />
+            </Route>
+                {/* <Route path='/sidebar' element={ <Sidebar />} />
+                <Route path='/' element={ <TopBar />} />
                 <Route path='/mark' element={ <MarkApp />} />
                 <Route path='/attendance' element={ <Attendance {...props} />} />
                 <Route path='/dailyStatistics' element={ <DailyStatisticsTable {...props} />} />
                 <Route path='/studentStatistics' element={ <AttendanceStatsTable  {...props}/>} />
                 <Route path='/admin/members' element={ <AdminPage />} />
                 <Route path='/admin/student' element={ <StudentAdmin />} />
-                <Route path='/login' element={ <LoginPage setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path='/login' element={ <LoginPage setIsLoggedIn={setIsLoggedIn} />} /> */}
             </Routes>
 
         </BrowserRouter>

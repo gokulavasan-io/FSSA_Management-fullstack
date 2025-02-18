@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Drawer, List, Typography } from "antd";
-import { MenuOutlined, TableOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import { MenuOutlined, TableOutlined } from "@ant-design/icons";
 import LevelSection from "./levelSection.jsx";
 import TestsSection from "./testsSection.jsx";
 import ExportData from "../exportsData.jsx";
