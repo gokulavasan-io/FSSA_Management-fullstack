@@ -1,0 +1,7 @@
+.ant-dropdown{
+    z-index: 10000;
+}
+
+.ant-drawer-content-wrapper{
+    box-shadow: none !important;
+}

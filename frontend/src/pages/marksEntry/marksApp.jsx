@@ -1,12 +1,12 @@
-import { MarksContextProvider } from "./contextFile.jsx";
-import MarkEntry from "./marksEntry.jsx";
+import { MarksContextProvider } from "../../Context/MarksContext.jsx";
+import MarksMain from "./MarksMain.jsx";
 
 import React from 'react'
 
 function MarkApp() {
   return (
     <MarksContextProvider>
-        <MarkEntry />
+        <MarksMain />
     </MarksContextProvider>
   )
 }

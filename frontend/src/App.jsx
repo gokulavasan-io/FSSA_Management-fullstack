@@ -1,50 +1,64 @@
-import React from 'react'
-import { useState } from 'react';
-import { BrowserRouter,Route,Routes ,Link} from 'react-router-dom';
-import { Layout } from "antd";
-import MarkApp from './pages/MarksEntry/marksApp'
-import 'handsontable/dist/handsontable.full.css';
-import { SnackbarProvider } from 'notistack';
-import Attendance from './pages/Attendance/AttendanceMainTable/attendanceMain';
-import DailyStatisticsTable from './pages/Attendance/Statistics/dailyStatisticts';
-import AttendanceStatsTable from './pages/Attendance/Statistics/studentStatistics';
-import { AttendanceContextProvider } from './pages/Attendance/AttendanceContext';
-import AdminPage from './pages/Admin/adminPage';
-import LoginPage from './pages/Admin/loginPage';
-import StudentAdmin from './pages/Admin/studetntsAdmin'
-import Sidebar from './pages/Topbar_and_Sidebar/Sidebar/Sidebar';
-import TopBar from './pages/Topbar_and_Sidebar/Topbar/Topbar';
-import { Outlet } from "react-router-dom";
-import AppLayout from './Applayout';
-const { Content } = Layout;
-
-let sectionId=null;
-let month=12;
-let year=2024;
+import React from "react";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+import "handsontable/dist/handsontable.full.css";
+import { SnackbarProvider } from "notistack";
+import Attendance from "./pages/Attendance/AttendanceMainTable/attendanceMain";
+import DailyStatisticsTable from "./pages/Attendance/Statistics/dailyStatisticts";
+import AttendanceStatsTable from "./pages/Attendance/Statistics/studentStatistics";
+import { AttendanceContextProvider } from "./pages/Attendance/AttendanceContext";
+import AdminPage from "./pages/Admin/adminPage";
+import LoginPage from "./pages/Admin/loginPage";
+import StudentAdmin from "./pages/Admin/studetntsAdmin";
+import Sidebar from "./pages/TopbarSidebar/Sidebar/Sidebar";
+import TopBar from "./pages//TopbarSidebar/Topbar/Topbar";
+import AppLayout from "./Applayout";
+import { useMainContext } from "./Context/MainContext";
+import MarkApp from "./pages/MarksEntry/MarksApp";
 
 export default function App() {
-    let props={sectionId,month,year}
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
- 
+  const { isLoggedIn } = useMainContext();
+
   return (
     <SnackbarProvider maxSnack={3}>
-        <AttendanceContextProvider>
+      <AttendanceContextProvider>
         <BrowserRouter>
-            {isLoggedIn&&<ul style={{ display: 'flex', listStyle: 'none',gap:'1rem',textDecoration:"none" }}>
-                <li><Link to='/mark'>Mark</Link></li>
-                <li><Link to='/attendance'>Attendance</Link></li>
-                <li><Link to='/dailyStatistics'>Daily</Link></li>
-                <li><Link to='/studentStatistics'>Student</Link></li>
-                <li><Link to='/admin/members'>Admin</Link></li>
-                <li><Link to='/admin/student'>Admin</Link></li>
-                {/* <li><Link to='/'>Login</Link></li> */}
-            </ul>}
-            <Routes>
+          {isLoggedIn && (
+            <ul
+              style={{
+                display: "flex",
+                listStyle: "none",
+                gap: "1rem",
+                textDecoration: "none",
+              }}
+            >
+              <li>
+                <Link to="/assessment">Mark</Link>
+              </li>
+              <li>
+                <Link to="/attendance">Attendance</Link>
+              </li>
+              <li>
+                <Link to="/dailyStatistics">Daily</Link>
+              </li>
+              <li>
+                <Link to="/studentStatistics">Student</Link>
+              </li>
+              <li>
+                <Link to="/admin/members">Admin</Link>
+              </li>
+              <li>
+                <Link to="/admin/student">Admin</Link>
+              </li>
+              {/* <li><Link to='/'>Login</Link></li> */}
+            </ul>
+          )}
+          <Routes>
             <Route path="/" element={<AppLayout />}>
-                <Route index element={<MarkApp />} />
-                <Route path="attendance" element={<Attendance />} />
+              <Route index element={<MarkApp />} />
+              <Route path="assessment" element={<MarkApp />} />
+              <Route path="attendance" element={<Attendance />} />
             </Route>
-                {/* <Route path='/sidebar' element={ <Sidebar />} />
+            {/* <Route path='/sidebar' element={ <Sidebar />} />
                 <Route path='/' element={ <TopBar />} />
                 <Route path='/mark' element={ <MarkApp />} />
                 <Route path='/attendance' element={ <Attendance {...props} />} />
@@ -53,11 +67,9 @@ export default function App() {
                 <Route path='/admin/members' element={ <AdminPage />} />
                 <Route path='/admin/student' element={ <StudentAdmin />} />
                 <Route path='/login' element={ <LoginPage setIsLoggedIn={setIsLoggedIn} />} /> */}
-            </Routes>
-
+          </Routes>
         </BrowserRouter>
-        </AttendanceContextProvider>
-
+      </AttendanceContextProvider>
     </SnackbarProvider>
-  )
+  );
 }

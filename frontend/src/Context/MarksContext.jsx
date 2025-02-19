@@ -1,18 +1,21 @@
-import React, { createContext, useState, useContext,useRef } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import dayjs from "dayjs";
-import {categoryMark} from '../../constants/constValues'
-
+import { categoryMark } from "../constants/constValues";
+import { useMainContext } from "./MainContext";
 
 // Create Context
 const MarksContext = createContext();
 
 // Create a Provider Component
 export const MarksContextProvider = ({ children }) => {
-  const month = 1;
-  const subject = 1;
-  const section = 3;
-  const batchNumber=4;
-  const [testDetail, setTestDetail] = useState({})
+  const { selectedMonth, selectedSubject } = useMainContext();
+
+  const section = 1;
+  const batchNumber = 4;
+
+  const [monthId, setMonthId] = useState(selectedSubject.id);
+  const [subjectId, setSubjectId] = useState(selectedSubject.id);
+  const [testDetail, setTestDetail] = useState({});
   const [showStatus, setShowStatus] = useState(false);
   const [testTableData, setTestTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
@@ -30,33 +33,53 @@ export const MarksContextProvider = ({ children }) => {
   const [mainTableData, setMainTableData] = useState([]);
   const [mainTableColumns, setMainTableColumns] = useState([]);
   const [showMainTableColor, setShowMainTableColor] = useState(false);
-  const [aboutTest, setAboutTest] = useState('');
-  const [previousAboutTest,setPreviousAboutTest]=useState('')
-  const [isFocused, setIsFocused] = useState(false); 
-  const [sidebarOpen, setSidebarOpen] = useState(false); 
+  const [aboutTest, setAboutTest] = useState("");
+  const [previousAboutTest, setPreviousAboutTest] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   const [testDetailCardVisible, setTestDetailCardVisible] = useState(false);
-  
 
+  useEffect(() => {
+    setMonthId(selectedMonth.id);
+    setSubjectId(selectedSubject.id);
+  }, [selectedSubject, selectedMonth]);
 
-  const handleOptionClick = (testId,levelTable) => {
+  const handleOptionClick = (testId, levelTable) => {
     setTestId(testId);
     setIsMainTable(false);
-    setSidebarOpen((prev) => !prev)
-    if(levelTable){
-      setIsLevelTable(true)
-    }else{
-      setIsLevelTable(false)
+    setSidebarOpen((prev) => !prev);
+    if (levelTable) {
+      setIsLevelTable(true);
+    } else {
+      setIsLevelTable(false);
     }
   };
 
   return (
     <MarksContext.Provider
       value={{
-        categoryMark,aboutTest,setAboutTest,previousAboutTest,setPreviousAboutTest,isFocused,sidebarOpen,setSidebarOpen,showStatus,setShowStatus,
-        handleOptionClick,openNewTestForm,setOpenNewTestForm,testDetail, setTestDetail,testDetailCardVisible,setTestDetailCardVisible,
-        month,batchNumber,
-        section,subject,
+        categoryMark,
+        aboutTest,
+        setAboutTest,
+        previousAboutTest,
+        setPreviousAboutTest,
+        isFocused,
+        sidebarOpen,
+        setSidebarOpen,
+        showStatus,
+        setShowStatus,
+        handleOptionClick,
+        openNewTestForm,
+        setOpenNewTestForm,
+        testDetail,
+        setTestDetail,
+        testDetailCardVisible,
+        setTestDetailCardVisible,
+        monthId,
+        batchNumber,
+        section,
+        subjectId,
         testTableData,
         setTestTableData,
         totalMark,

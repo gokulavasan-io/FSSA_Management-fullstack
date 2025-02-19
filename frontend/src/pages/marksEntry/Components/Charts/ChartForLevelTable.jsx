@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Highcharts, HighchartsReact } from "../../../utils/highChartsImports";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 import "highcharts/modules/accessibility";
-import { useMarksContext } from "../contextFile";
+import { useMarksContext } from "../../../../Context/MarksContext";
 
 export default function levelTestChart() {
   const { testTableData } = useMarksContext();
@@ -12,7 +13,7 @@ export default function levelTestChart() {
       let levelCounts = {};
 
       testTableData.forEach(({ level }) => {
-        const levelNumber = level ? parseInt(level) : 0; 
+        const levelNumber = level ? parseInt(level) : 0;
         levelCounts[levelNumber] = (levelCounts[levelNumber] || 0) + 1;
       });
 
@@ -33,7 +34,8 @@ export default function levelTestChart() {
       text: null,
     },
     tooltip: {
-      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>",
+      pointFormat:
+        "{series.name}: <b>{point.percentage:.1f}%</b><br/>count: <b>{point.y}</b>",
     },
     plotOptions: {
       pie: {

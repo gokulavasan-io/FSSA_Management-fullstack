@@ -1,37 +1,32 @@
 import React from "react";
 import { Button, Drawer, List, Typography } from "antd";
-import { MenuOutlined, TableOutlined } from "@ant-design/icons";
-import LevelSection from "./levelSection.jsx";
-import TestsSection from "./testsSection.jsx";
-import ExportData from "../exportsData.jsx";
-import { useMarksContext } from "../contextFile";
-import 'antd/dist/reset.css'; 
+import { MenuOutlined, } from "@ant-design/icons";
+import LevelSection from "./LevelSection.jsx";
+import TestsSection from "./TestSection.jsx";
+import ExportData from "../ExportData.jsx";
+import { useMarksContext } from "../../../../Context/MarksContext.jsx";
+import "antd/dist/reset.css";
 import { TableChartOutlined } from "@mui/icons-material";
-import TestButton from "./addNewTestButton.jsx";
+import TestButton from "./AddNewTestButton.jsx";
 
-
-const Sidebar = () => {
-  const { setIsMainTable, sidebarOpen,setSidebarOpen} = useMarksContext();
+const TestDetailSideBar = () => {
+  const { setIsMainTable, sidebarOpen, setSidebarOpen } = useMarksContext();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-
 
   return (
     <>
       {!sidebarOpen && (
         <Button
-        shape="circle"
-          type="primary"
-          icon={<MenuOutlined />}
+          shape="circle"
+          type="text" // Removes background and border
+          icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />} // Adjust color & size
           onClick={toggleSidebar}
           style={{
-            position: "fixed",
-            top: 16,
-            right: 16,
+            position: "sticky",
+            top: 4,
+            left: 2000,
             zIndex: 1000,
-            backgroundColor: "#1890ff",
-            borderColor: "#1890ff",
-            color: "#fff",
           }}
         />
       )}
@@ -43,13 +38,21 @@ const Sidebar = () => {
         closable
         onClose={toggleSidebar}
         open={sidebarOpen}
-        bodyStyle={{ padding: "16px" }}
+        bodyStyle={{
+          padding: "16px",
+          height: "calc(100vh - 68px)",
+          overflowY: "auto",
+        }} // Height adjusted to fit content
+        style={{
+          position: "absolute",
+          top: "68px",
+          right: 0,
+          height: "calc(100vh - 68px)",
+          borderRadius: "16px 0 0 16px",
+        }}
+        maskStyle={{ backgroundColor: "rgba(0, 0, 0, .09)" }}
       >
-        <List
-          bordered
-          itemLayout="vertical"
-          style={{ padding: 0 }}
-        >
+        <List bordered itemLayout="vertical" style={{ padding: 0 }}>
           {/* Average Table Button */}
           <List.Item>
             <Button
@@ -69,7 +72,6 @@ const Sidebar = () => {
           </List.Item>
 
           <TestButton />
-
 
           {/* Marks Section */}
           <List.Item>
@@ -91,4 +93,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default TestDetailSideBar;

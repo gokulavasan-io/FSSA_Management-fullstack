@@ -1,18 +1,21 @@
 import React from "react";
-import { Handsontable, HotTable } from "../../../utils/handsOnTableImports.js";
-import { Button, Typography } from "../../../utils/materialImports.js";
-import { useMarksContext } from "../contextFile";
+import Handsontable from 'handsontable';
+import { HotTable } from '@handsontable/react';
+import {
+  Button,
+  Typography,
+} from '@mui/material';
+import { useMarksContext } from "../../../../Context/MarksContext";
 
 function MainTable(props) {
   const {
-    subject,
-    month,
     showMainTableColor,
     mainTableData,
     mainTableColumns,
     setShowMainTableColor,
-    categoryMark,
+    categoryMark
   } = useMarksContext();
+
   const cellRendererForMainTable = function (
     instance,
     td,
@@ -20,7 +23,7 @@ function MainTable(props) {
     col,
     prop,
     value,
-    cellProperties,
+    cellProperties
   ) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
     td.classList.remove("cell-red", "cell-yellow", "cell-green");
@@ -29,9 +32,7 @@ function MainTable(props) {
         const numericValue = Math.round(parseFloat(value));
         if (numericValue <= categoryMark.redEndValue) {
           td.classList.add("cell-red");
-        } else if (
-          numericValue <= categoryMark.yellowEndValue 
-        ) {
+        } else if (numericValue <= categoryMark.yellowEndValue) {
           td.classList.add("cell-yellow");
         } else if (numericValue >= categoryMark.greenStartValue) {
           td.classList.add("cell-green");
@@ -63,7 +64,7 @@ function MainTable(props) {
         color="primary"
       >
         <div>
-          {subject} - {month}
+          Monthly Average
         </div>
         <Button
           size="small"
@@ -83,11 +84,12 @@ function MainTable(props) {
         colHeaders={mainTableColumns.map((test) => test.title)}
         columns={mainTableColumns}
         width="100%"
-        height="auto"
+        height="650"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"
         rowHeaders={true}
         stretchH="all"
+        fixedRowsTop={0}
         fixedColumnsLeft={2}
         columnSorting={true}
         cells={(row, col) => {
