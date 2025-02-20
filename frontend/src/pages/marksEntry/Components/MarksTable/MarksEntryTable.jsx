@@ -139,7 +139,7 @@ function TestTable() {
   const handleReset = async () => {
     try {
       const initialData = await fetchTestData(testId);
-
+      
       setTestTableData(initialData);
       setIsEdited(false);
     } catch (error) {
@@ -165,17 +165,18 @@ function TestTable() {
   }, [testId]);
 
   return (
-    <>
+    <div style={{display:'flex',flexDirection:"column",alignItems:"center",marginTop:12}}>
       <TestDetailCard />
-      <Typography.Title level={5} style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Typography.Title level={5} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center",width:"90%", }}>
         <Space>
           <InfoButton />
-          <span>{testDetail.test_name}</span>
+          <span style={{color:"#1677ff"}}>{testDetail.test_name}</span>
         </Space>
         <Space>
           <Button
-            type="primary"
-            danger
+            size="small"
+            variant="text"
+            color="red"
             icon={<ReloadOutlined />}
             onClick={handleReset}
             disabled={!isEdited}
@@ -183,7 +184,10 @@ function TestTable() {
             Reset
           </Button>
           <Button
-            type="primary"
+            size="small"
+            color="primary" 
+            variant="text"
+            
             icon={<SaveOutlined />}
             onClick={handleUpdate}
             disabled={!isEdited}
@@ -201,8 +205,8 @@ function TestTable() {
           { data: "average_mark", title: `Average`,readOnly:true },
           { data: "remark", title: "Remark" },
         ]}
-        width="100%"
-        height="auto"
+        width="90%"
+        height="700"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"
         afterChange={handleDataChange}
@@ -214,7 +218,7 @@ function TestTable() {
           return { renderer: cellRenderer };
         }}
       />
-    </>
+    </div>
   );
 }
 

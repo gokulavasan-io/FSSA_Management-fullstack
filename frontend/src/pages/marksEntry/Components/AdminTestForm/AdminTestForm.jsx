@@ -195,6 +195,7 @@ const AdminTestForm = () => {
         onClose={handleCancel}
         maxWidth="sm"
         fullWidth
+        style={{zIndex:10000000}}
       >
         <DialogTitle>Add New Test</DialogTitle>
         <DialogContent>

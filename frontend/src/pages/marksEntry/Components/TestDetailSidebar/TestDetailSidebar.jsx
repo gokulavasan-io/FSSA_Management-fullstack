@@ -23,10 +23,9 @@ const TestDetailSideBar = () => {
           icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />} // Adjust color & size
           onClick={toggleSidebar}
           style={{
-            position: "sticky",
-            top: 4,
-            left: 2000,
-            zIndex: 1000,
+            position:"fixed",
+            top:"80px",
+            right:"30px",
           }}
         />
       )}

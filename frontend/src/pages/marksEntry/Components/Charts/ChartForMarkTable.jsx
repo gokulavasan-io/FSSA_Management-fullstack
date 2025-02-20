@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import "highcharts/modules/accessibility";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import Accessibility from "highcharts/modules/accessibility";
+
+// Initialize the module
 import { useMarksContext } from "../../../../Context/MarksContext";
 import { categoryMark } from "../../../../constants/constValues";
 import { Card, Typography } from "antd";
 
 const { Title, Text } = Typography;
+Accessibility(Highcharts);
 
 export default function NormalTestChart() {
   const { testTableData, mainTableData, isMainTable } = useMarksContext();
@@ -39,6 +43,12 @@ export default function NormalTestChart() {
 
   useEffect(() => {
     let tableData = isMainTable ? mainTableData : testTableData;
+    
+    if (!Array.isArray(tableData)) {
+      console.warn("Invalid tableData format:", tableData);
+      return;
+    }
+  
     const updatedCategories = {
       [categoryMark.redRange]: [],
       [categoryMark.yellowRange]: [],
@@ -46,11 +56,11 @@ export default function NormalTestChart() {
       [categoryMark.absent]: [],
       withoutMarks: [],
     };
-
+  
     tableData.forEach((student) => {
       let name = student.student_name;
       let mark = isMainTable ? student[1] : student.average_mark;
-
+  
       if (mark === "Absent") {
         updatedCategories[categoryMark.absent].push({ name, mark });
       } else if (mark === "" || mark === null) {
@@ -63,16 +73,17 @@ export default function NormalTestChart() {
         updatedCategories[categoryMark.redRange].push({ name, mark });
       }
     });
-
+  
     setCategories(updatedCategories);
   }, [mainTableData, testTableData, isMainTable]);
+  
 
   const colors = ["red", "rgb(234, 226, 85)", "green", "rgb(183, 131, 20)", "rgb(22, 212, 249)"];
 
   const options = {
     chart: {
       type: "pie",
-      height: 250, // Set height to fit within the card
+      height: 150, 
     },
     title: {
       text: null,
@@ -85,8 +96,8 @@ export default function NormalTestChart() {
       pie: {
         allowPointSelect: true,
         cursor: "pointer",
-        size: "80%", // Reduce pie size to fit within card
-        showInLegend: false, // Disable default legend
+        size: "100%", 
+        showInLegend: false, 
         dataLabels: {
           enabled: false,
         },

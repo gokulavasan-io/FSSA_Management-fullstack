@@ -1,10 +1,7 @@
 import React from "react";
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
-import {
-  Button,
-  Typography,
-} from '@mui/material';
+import { Button, Typography } from 'antd';
 import { useMarksContext } from "../../../../Context/MarksContext";
 
 function MainTable(props) {
@@ -46,45 +43,35 @@ function MainTable(props) {
 
     if (col > 0) td.classList.add("cell-center");
   };
+
   const handleColorButtonClick = () => {
     setShowMainTableColor((prev) => !prev);
   };
 
   return (
     <>
-      <Typography
-        variant="h5"
-        sx={{
-          marginBottom: 2,
-          height: "3rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-        color="primary"
-      >
-        <div>
-          Monthly Average
-        </div>
+      <Typography.Title level={5} style={{
+        height: "3rem",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <div style={{color:"#1677ff"}}>Monthly Average</div>
         <Button
           size="small"
-          variant="contained"
+          color="primary" variant="text"
           onClick={handleColorButtonClick}
-          sx={{
-            backgroundColor: "#ff4c4c",
-            "&:hover": { backgroundColor: "#ff0000" },
-          }}
         >
-          {showMainTableColor ? "Hide color" : "Show color"}
+          {showMainTableColor ? "Hide Category" : "Show Category"}
         </Button>
-      </Typography>
+      </Typography.Title>
 
       <HotTable
         data={mainTableData}
         colHeaders={mainTableColumns.map((test) => test.title)}
         columns={mainTableColumns}
         width="100%"
-        height="650"
+        height="700"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"
         rowHeaders={true}

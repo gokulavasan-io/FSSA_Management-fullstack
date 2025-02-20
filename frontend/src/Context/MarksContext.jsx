@@ -10,7 +10,7 @@ const MarksContext = createContext();
 export const MarksContextProvider = ({ children }) => {
   const { selectedMonth, selectedSubject } = useMainContext();
 
-  const section = 1;
+  const section = null;
   const batchNumber = 4;
 
   const [monthId, setMonthId] = useState(selectedSubject.id);

@@ -25,6 +25,7 @@ function TestDetailCard() {
     <Dialog
       open={testDetailCardVisible}
       onClose={() => setTestDetailCardVisible(false)}
+      style={{zIndex:10000}}
     >
       <Card>
         <CardHeader

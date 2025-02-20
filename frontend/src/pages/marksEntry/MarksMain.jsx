@@ -1,17 +1,15 @@
 import React, { useEffect } from "react";
 import "./styles/MarksEntry.css";
-import { Card, Typography,Row, Col, } from "antd";
+import {  Typography, Row, Col } from "antd";
 import TestDetailSideBar from "./Components/TestDetailSidebar/TestDetailSidebar";
 import MainTable from "./Components/MarksTable/MainTable";
 import MarkEntryTable from "./Components/MarksTable/MarksEntryTable";
 import LevelEntryTable from "./Components/MarksTable/LevelEntryTable";
 import ChartForCategory from "./Components/Charts/ChartForMarkTable";
 import AdminTestForm from "./Components/AdminTestForm/AdminTestForm";
-import {
-  fetchAllTestMarksForMonth,
-  fetchTestDetails,
-} from "../../api/marksAPI.js";
+import { fetchAllTestMarksForMonth, fetchTestDetails } from "../../api/marksAPI.js";
 import { useMarksContext } from "../../Context/MarksContext";
+import ChartForLevelTable from "./Components/Charts/ChartForLevelTable.jsx";
 
 const MarksMain = () => {
   const {
@@ -31,11 +29,7 @@ const MarksMain = () => {
 
   useEffect(() => {
     (async function () {
-      let mainTableData = await fetchAllTestMarksForMonth(
-        section,
-        monthId,
-        subjectId
-      );
+      let mainTableData = await fetchAllTestMarksForMonth(section, monthId, subjectId);
       let testDetails = await fetchTestDetails(monthId, subjectId);
       createMainTableData(mainTableData);
       setTestDetails(testDetails);
@@ -81,39 +75,44 @@ const MarksMain = () => {
   }, [isMainTable, mainTableColumns.length]);
 
   return (
-    <div style={{ display: "flex", width: "100%", height: "100%" }}>
+    <div style={{ display: "flex", width: "100%", overflow: "hidden",justifyContent:"center",position:"relative",top:"-20px",height:"100%" }}>
+        <div style={{ position: "absolute", zIndex: 1000 }}>
+          <TestDetailSideBar />
+        </div>
 
-    <TestDetailSideBar />
+      {/* Main Content */}
+      <div style={{ flex: 1, height: "100%",overflow:"hidden",width:"100%" }}>
+        {showStatus && (
+          <Row gutter={30} style={{alignItems:"center",justifyContent:"center"}} >
+            <Col xs={24} lg={18} style={{ height: "100%", display: "flex", flexDirection: "column"}}>
+              <div style={{ flex: 1, width: "100%", height: "100%"}}>
+                {isMainTable && mainTableColumns.length > 2 && <MainTable />}
+                {!isMainTable && !isLevelTable && <MarkEntryTable />}
+                {!isMainTable && isLevelTable && <LevelEntryTable />}
 
-    {/* Main Content */}
-    <div style={{ flex: 1, transition: "margin-left 0.3s ease" }}>
-      {showStatus && (
-        <Row gutter={5} justify="center">
-          <Col xs={24} lg={16}>
-            <div style={{ padding: "16px", width: "100%" }}>
-              {isMainTable && mainTableColumns.length > 2 && <MainTable />}
-              {!isMainTable && !isLevelTable && <MarkEntryTable />}
-              {!isMainTable && isLevelTable && <LevelEntryTable />}
+                {isMainTable && mainTableColumns.length < 3 && (
+                  <Typography.Title level={4} style={{ textAlign: "center", color: "#1890ff" }}>
+                    No tests added yet
+                  </Typography.Title>
+                )}
+              </div>
+            </Col>
 
-              {isMainTable && mainTableColumns.length < 3 && (
-                <Typography.Title level={4} style={{ textAlign: "center", color: "#1890ff" }}>
-                  No tests added yet
-                </Typography.Title>
-              )}
-            </div>
-          </Col>
+            <Col xs={24} lg={6} style={{ height: "100%", display: "flex", flexDirection: "column"}}>
+              <div style={{ flex: 1, width: "100%" }}>
+                {!isLevelTable && <ChartForCategory />}
+                {isLevelTable && <ChartForLevelTable />}
+              </div>
+            </Col>
+          </Row>
+        )}
 
-          <Col xs={24} lg={8}>
-            <ChartForCategory />
-          </Col>
-        </Row>
-      )}
-
-      <AdminTestForm />
-     </div>
+        <AdminTestForm />
+      </div>
 </div>
 
   );
+  
 };
 
 export default MarksMain;

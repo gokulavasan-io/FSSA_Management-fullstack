@@ -89,7 +89,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         minHeight: "100vh",
         position: "fixed",
         left: 0,
-        zIndex: 10000000,
+        zIndex: 10000,
         borderTopRightRadius: "10px",
         borderBottomRightRadius: "10px",
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",

@@ -51,8 +51,7 @@
     border-color:  black !important;
   }
   
-  
-  .ant-select-dropdown {
-    z-index: 9999 !important;
+.ant-select-dropdown {
+    z-index: 10000000 !important;
   }
   
