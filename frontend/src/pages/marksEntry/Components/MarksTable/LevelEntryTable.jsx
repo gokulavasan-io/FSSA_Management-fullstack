@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 import axios from "axios";
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
@@ -8,17 +8,19 @@ import API_PATHS from "../../../../constants/apiPaths.js";
 import { levelRegex } from "../../../../constants/regex.js";
 import "../../styles/MarksEntry.css";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
+import { fetchLevels, updateLevels } from "../../../../api/marksAPI.js";
 
 function LevelTestTable() {
   const {
     testId,
-    testTableData,
-    setTestTableData,
+    levelTableData,
+    setLevelTableData,
     isUpdated,
     setIsUpdated,
     isEdited,
     setIsEdited,testDetail
   } = useMarksContext();
+  const [testName,setTestName]=useState("Level Up")
   const hotTableRef = useRef(null);
 
   const testTableColumns = [
@@ -35,26 +37,24 @@ function LevelTestTable() {
     })),
   });
 
-  const handleUpdate = () => {
-    const formattedData = transformMarksData(testTableData);
-
-    axios
-      .put(`${API_PATHS.UPDATE_LEVEL}${testId}/`, formattedData)
-      .then((response) => {
-        console.log("Marks data updated successfully!", response.data);
-        setIsUpdated((prev) => !prev);
-      })
-      .catch((error) => {
-        console.error("Error submitting marks data:", error.message);
-        alert("Something went wrong. Try again later.");
-      });
+  const handleUpdate = async () => {
+    try {
+      const formattedData = transformMarksData(levelTableData);
+      const response = await updateLevels(testId, formattedData);
+      console.log("Marks data updated successfully!", response.data);
+      setIsUpdated((prev) => !prev);
+    } catch (error) {
+      console.error("Error submitting marks data:", error.message);
+      alert("Something went wrong. Try again later.");
+    }
   };
+  
 
   const handleDataChange = useCallback((changes) => {
     if (!changes) return;
     const instance = hotTableRef.current.hotInstance;
 
-    setTestTableData((prevData) => {
+    setLevelTableData((prevData) => {
       const updatedData = { ...prevData };
 
       changes.forEach(([row, col, , newValue]) => {
@@ -90,7 +90,7 @@ function LevelTestTable() {
   const handleReset = async () => {
     try {
       const initialData = await fetchData();
-      setTestTableData(initialData);
+      setLevelTableData(initialData);
       setIsEdited(false);
     } catch (error) {
       console.error("Error in handleReset:", error);
@@ -103,9 +103,8 @@ function LevelTestTable() {
 
   const fetchData = async () => {
     try {
-      const apiUrl = `${API_PATHS.GET_LEVEL}${testId}/`;
-      const response = await axios.get(apiUrl);
-      console.log(response.data);
+      const response = await fetchLevels(testId);
+      setTestName(response.data.test_detail.test_name )
       return response.data.marks;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -123,18 +122,19 @@ function LevelTestTable() {
     (async () => {
       try {
         const initialData = await fetchData();
-        setTestTableData(initialData);
+        setLevelTableData(initialData);
       } catch (error) {
         console.error("Error in useEffect:", error);
       }
     })();
   }, [testId]);
-
+  console.log(testDetail  );
+  
   return (
-    <div style={{display:'flex',flexDirection:"column",alignItems:"center",marginTop:12}}>
+    <div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
       <Typography.Title level={5} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center",width:"90%", }}>
         <Space>
-          <span style={{color:"#1677ff"}}>Level</span>
+          <span style={{color:"#1677ff"}}>{testName}</span>
         </Space>
         <Space>
           <Button
@@ -163,7 +163,7 @@ function LevelTestTable() {
 
       <HotTable
         ref={hotTableRef}
-        data={Object.values(testTableData).map(({ student_name, level, remark }) => [
+        data={Object.values(levelTableData).map(({ student_name, level, remark }) => [
           student_name,
           level,
           remark,

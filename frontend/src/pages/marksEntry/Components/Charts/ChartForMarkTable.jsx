@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
-import "highcharts/modules/accessibility";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import Accessibility from "highcharts/modules/accessibility";
+import "highcharts/modules/accessibility"; // Just import, no need to call
 
-// Initialize the module
 import { useMarksContext } from "../../../../Context/MarksContext";
 import { categoryMark } from "../../../../constants/constValues";
 import { Card, Typography } from "antd";
 
 const { Title, Text } = Typography;
-Accessibility(Highcharts);
 
 export default function NormalTestChart() {
   const { testTableData, mainTableData, isMainTable } = useMarksContext();

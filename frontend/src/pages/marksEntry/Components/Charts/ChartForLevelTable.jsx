@@ -1,40 +1,44 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import "highcharts/modules/accessibility"; // Just import, no need to call
+
 import { useMarksContext } from "../../../../Context/MarksContext";
 import { Card, Typography } from "antd";
-import Accessibility from "highcharts/modules/accessibility";
 
-// Initialize the module
-Accessibility(Highcharts);
 const { Title, Text } = Typography;
 
 export default function ChartForLevelTable() {
-  const { testTableData } = useMarksContext();
+  const { levelTableData } = useMarksContext();
   const [data, setData] = useState([]);
+
   
   useEffect(() => {
-    if (Array.isArray(testTableData) && testTableData.length > 0) {
+
+    const normalizedData = Array.isArray(levelTableData) ? levelTableData : Object.values(levelTableData);
+
+    if (normalizedData.length > 0) {
       let levelCounts = {};
       
-      testTableData.forEach(({ level }) => {
+      normalizedData.forEach(({ level }) => {
         const levelNumber = level ? parseInt(level) : 0;
         levelCounts[levelNumber] = (levelCounts[levelNumber] || 0) + 1;
       });
-
+  
       const chartData = Object.entries(levelCounts).map(([level, count]) => ({
         name: level === "0" ? "No level" : `Lvl ${level} - ${count}`,
         y: count,
       }));
-
+  
       setData(chartData);
     }
-  }, [testTableData]);
+  }, [levelTableData]);
+  
 
   const options = {
     chart: {
       type: "pie",
-      height: 250,
+      height: 350,
     },
     title: {
       text: null,

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Select } from "antd";
 import { submitTestData } from "../../../../api/marksAPI.js";
-import dayjs from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import useNotification from "../../../uxComponents/Notification.jsx"; 
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import useNotification from "../../../UxComponents/Notification.jsx";
 import {
   TextField,
   Button,
@@ -16,16 +16,17 @@ import {
   FormHelperText,
   Dialog,
   DialogContent,
-  DialogTitle,Grid,
+  DialogTitle,
+  Grid,
 } from "@mui/material";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 
-
 const { Option } = Select;
 
 const AdminTestForm = () => {
-  const { openNewTestForm, setOpenNewTestForm, batchNumber } =useMarksContext();
+  const { openNewTestForm, setOpenNewTestForm, batchNumber } =
+    useMarksContext();
   const { months, subjects } = useMainContext();
   const showMessage = useNotification();
 
@@ -195,7 +196,7 @@ const AdminTestForm = () => {
         onClose={handleCancel}
         maxWidth="sm"
         fullWidth
-        style={{zIndex:10000000}}
+        style={{ zIndex: 10000 }}
       >
         <DialogTitle>Add New Test</DialogTitle>
         <DialogContent>
@@ -340,7 +341,7 @@ const AdminTestForm = () => {
               error={!!errors.created_at}
               required
             >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} >
                 <DemoContainer components={["DatePicker"]}>
                   <DatePicker
                     label="Date"
@@ -357,6 +358,7 @@ const AdminTestForm = () => {
                           width: "auto",
                         },
                       },
+                      popper: { sx: { zIndex: 10000 } }
                     }}
                   />
                 </DemoContainer>

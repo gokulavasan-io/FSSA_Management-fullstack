@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback, useRef,useState } from "react";
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import { Button, Typography, Space } from 'antd';
@@ -7,6 +7,7 @@ import { fetchTestData, updateMarks } from "../../../../api/marksAPI.js";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import TestDetailCard from "../TestDetailCard/TestDetailsCard.jsx";
 import InfoButton from "../TestDetailCard/InfoButton.jsx";
+import { useMainContext } from "../../../../Context/MainContext.jsx";
 
 function TestTable() {
   const {
@@ -23,7 +24,10 @@ function TestTable() {
     setTestDetail,
     testDetail,
   } = useMarksContext();
+
+  const {sectionId} =useMainContext()
   const hotTableRef = useRef(null);
+
 
   const calculateMarksOutOf100 = (marks) => {
     if (marks === "A" || marks === "a") return "Absent";
@@ -138,10 +142,11 @@ function TestTable() {
 
   const handleReset = async () => {
     try {
-      const initialData = await fetchTestData(testId);
-      
-      setTestTableData(initialData);
-      setIsEdited(false);
+        const response = await fetchTestData(testId,sectionId);
+        setTotalMark(response.test_detail.total_marks);
+        setTestDetail(response.test_detail);
+        setTestTableData(response.marks);
+        setIsEdited(false);
     } catch (error) {
       console.error("Error in handleReset:", error);
     }
@@ -154,18 +159,18 @@ function TestTable() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetchTestData(testId);
+        const response = await fetchTestData(testId,sectionId);
         setTotalMark(response.test_detail.total_marks);
         setTestDetail(response.test_detail);
         setTestTableData(response.marks);
       } catch (error) {
         console.error("Error in useEffect:", error);
-      }
+      } 
     })();
   }, [testId]);
 
   return (
-    <div style={{display:'flex',flexDirection:"column",alignItems:"center",marginTop:12}}>
+    <div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
       <TestDetailCard />
       <Typography.Title level={5} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center",width:"90%", }}>
         <Space>
@@ -206,7 +211,7 @@ function TestTable() {
           { data: "remark", title: "Remark" },
         ]}
         width="90%"
-        height="700"
+        height="650"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"
         afterChange={handleDataChange}

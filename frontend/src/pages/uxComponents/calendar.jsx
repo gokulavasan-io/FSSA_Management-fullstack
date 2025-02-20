@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { IconButton, Popper, ClickAwayListener } from '@mui/material';
-import { calendarBgImg } from '../../../public/assets/images/imagePaths';
-import CalendarIcon from '../../../public/assets/icons/ic_calendar.jsx';
+import React, { useState, useRef, useEffect } from "react";
+import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { IconButton, Popper, ClickAwayListener } from "@mui/material";
+import { calendarBgImg } from "../../../public/assets/images/imagePaths.js";
+import CalendarIcon from "../../../public/assets/icons/ic_calendar.jsx";
 
 const CalendarPopup = () => {
   const [open, setOpen] = useState(false);
@@ -29,17 +29,17 @@ const CalendarPopup = () => {
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
   return (
     <div>
-     <IconButton ref={iconRef} onClick={toggleCalendar}>
-     <CalendarIcon />
-</IconButton>
+      <IconButton ref={iconRef} onClick={toggleCalendar}>
+        <CalendarIcon />
+      </IconButton>
 
       <Popper
         open={open}
@@ -47,17 +47,17 @@ const CalendarPopup = () => {
         placement="bottom-start"
         style={{
           zIndex: 1000000000,
-          position: 'absolute',
+          position: "absolute",
           backgroundImage: `url(${calendarBgImg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        //   backgroundColor:'rgb(255, 255, 255)',
-          borderRadius: '8px',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.51)',
-          minWidth: '220px',
-          border: '1px solid #ddd',
-          transition: 'none',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          //   backgroundColor:'rgb(255, 255, 255)',
+          borderRadius: "8px",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.51)",
+          minWidth: "220px",
+          border: "1px solid #ddd",
+          transition: "none",
         }}
       >
         <ClickAwayListener onClickAway={handleClickAway}>

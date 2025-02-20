@@ -25,9 +25,8 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
-  const { months, selectedMonth, setSelectedMonth, selectedSubject } =
-    useMainContext();
-
+  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
+ 
   const monthMenu = (
     <Menu
       onClick={(e) => {
@@ -94,7 +93,7 @@ function TopBar({ collapsed }) {
           </Breadcrumb.Item>
           <Breadcrumb.Item>{selectedSubject.subject_name}</Breadcrumb.Item>
           <Breadcrumb.Item>
-            <Dropdown overlay={monthMenu} trigger={["click"]} > 
+            <Dropdown overlay={monthMenu} trigger={["click","hover"]} > 
               <span
                 style={{
                   cursor: "pointer",
@@ -138,13 +137,13 @@ function TopBar({ collapsed }) {
                 }}
               >
                 <Text strong style={{ fontSize: "15px", color: "#333" }}>
-                  Username
+                  {"GV"}
                 </Text>
                 <Text
                   type="secondary"
                   style={{ fontSize: "13px", color: "#737791" }}
                 >
-                  Tech - B
+                  Admin - B
                 </Text>
               </div>
             </div>

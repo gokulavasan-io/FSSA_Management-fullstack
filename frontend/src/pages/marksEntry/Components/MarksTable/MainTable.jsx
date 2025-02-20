@@ -71,7 +71,7 @@ function MainTable(props) {
         colHeaders={mainTableColumns.map((test) => test.title)}
         columns={mainTableColumns}
         width="100%"
-        height="700"
+        height="650"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"
         rowHeaders={true}
