@@ -41,9 +41,9 @@ export const fetchTestDetails = async (month,subject) => {
   }
 };
 
-export const fetchTestData = async (testId) => {
+export const fetchTestData = async (testId,sectionId) => {
   try {
-    const apiUrl = `${API_PATHS.GET_MARK}${testId}/?section_id=${null}`
+    const apiUrl = `${API_PATHS.GET_MARK}${testId}/?section_id=${sectionId}`
     const response = await axios.get(apiUrl);
     return response.data;
   } catch (error) {
@@ -52,3 +52,26 @@ export const fetchTestData = async (testId) => {
   }
 };
 
+
+
+
+export const fetchLevels = async (testId) => {
+  try {
+    const response = await axios.get(`${API_PATHS.GET_LEVEL}${testId}/`)
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting test data:", error);
+    throw error;
+  }
+};
+
+
+export const updateLevels = async (testId,data) => {
+  try {
+    let response = axios.put(`${API_PATHS.UPDATE_LEVEL}${testId}/`, data)
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting test data:", error);
+    throw error;
+  }
+};

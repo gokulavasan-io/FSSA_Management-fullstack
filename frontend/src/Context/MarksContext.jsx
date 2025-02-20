@@ -9,15 +9,11 @@ const MarksContext = createContext();
 // Create a Provider Component
 export const MarksContextProvider = ({ children }) => {
   const { selectedMonth, selectedSubject } = useMainContext();
-
-  const section = null;
-  const batchNumber = 4;
-
   const [monthId, setMonthId] = useState(selectedSubject.id);
   const [subjectId, setSubjectId] = useState(selectedSubject.id);
   const [testDetail, setTestDetail] = useState({});
-  const [showStatus, setShowStatus] = useState(false);
   const [testTableData, setTestTableData] = useState([]);
+  const [levelTableData,setLevelTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [previousTotalMark, setPreviousTotalMark] = useState("");
@@ -67,8 +63,6 @@ export const MarksContextProvider = ({ children }) => {
         isFocused,
         sidebarOpen,
         setSidebarOpen,
-        showStatus,
-        setShowStatus,
         handleOptionClick,
         openNewTestForm,
         setOpenNewTestForm,
@@ -77,8 +71,6 @@ export const MarksContextProvider = ({ children }) => {
         testDetailCardVisible,
         setTestDetailCardVisible,
         monthId,
-        batchNumber,
-        section,
         subjectId,
         testTableData,
         setTestTableData,
@@ -111,7 +103,7 @@ export const MarksContextProvider = ({ children }) => {
         mainTableColumns,
         setMainTableColumns,
         showMainTableColor,
-        setShowMainTableColor,
+        setShowMainTableColor,levelTableData,setLevelTableData,
       }}
     >
       {children}

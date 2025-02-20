@@ -3,7 +3,21 @@ from validate_email_address import validate_email
 from .models import *
 import re
 
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ["id","name"]
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Section
+        fields = ["id", "name"]
+
 class MemberSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(read_only=True) 
+    section = SectionSerializer(read_only=True) 
+    
     class Meta:
         model = Member
         fields = "__all__"
@@ -30,9 +44,4 @@ class MemberSerializer(serializers.ModelSerializer):
 
         return value
 
-
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = "__all__"
 
