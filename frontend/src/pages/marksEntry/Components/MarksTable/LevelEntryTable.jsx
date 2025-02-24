@@ -104,8 +104,8 @@ function LevelTestTable() {
   const fetchData = async () => {
     try {
       const response = await fetchLevels(testId);
-      setTestName(response.data.test_detail.test_name )
-      return response.data.marks;
+      setTestName(response.test_detail.test_name )
+      return response.marks;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;
@@ -128,7 +128,6 @@ function LevelTestTable() {
       }
     })();
   }, [testId]);
-  console.log(testDetail  );
   
   return (
     <div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>

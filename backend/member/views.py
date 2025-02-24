@@ -68,3 +68,8 @@ class RoleListView(generics.ListAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
+
+class MemberDetailView(generics.RetrieveAPIView):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
+    lookup_field = 'id'

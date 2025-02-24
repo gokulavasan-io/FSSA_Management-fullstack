@@ -8,4 +8,5 @@ urlpatterns = [
     path("delete_member/<int:id>/", MemberDeleteView.as_view()),
     path("verify/",FirebaseTokenVerifyView.as_view() ),
     path('roles/', RoleListView.as_view()),
+    path('<int:id>/', MemberDetailView.as_view()),
 ]

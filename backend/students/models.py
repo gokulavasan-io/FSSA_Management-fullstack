@@ -50,6 +50,7 @@ class Students(models.Model):
     medium = models.CharField(max_length=10, choices=MEDIUM_CHOICES, null=True, blank=True) 
     school = models.CharField(max_length=15, choices=SCHOOL_CHOICES, null=True, blank=True) 
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True, blank=True)
+    mailID=models.EmailField(unique=True,max_length=255,null=True,blank=True)
 
     class Meta:
         ordering = ['name']

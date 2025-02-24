@@ -25,7 +25,9 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
+  
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
+ 
  
   const monthMenu = (
     <Menu
@@ -137,13 +139,13 @@ function TopBar({ collapsed }) {
                 }}
               >
                 <Text strong style={{ fontSize: "15px", color: "#333" }}>
-                  {"GV"}
+                  {userName.split(" ")[0]}
                 </Text>
                 <Text
                   type="secondary"
                   style={{ fontSize: "13px", color: "#737791" }}
                 >
-                  Admin - B
+                  {userRole} - {sectionName}
                 </Text>
               </div>
             </div>

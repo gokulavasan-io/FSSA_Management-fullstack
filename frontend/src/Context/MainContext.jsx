@@ -30,7 +30,7 @@ export const MainContextProvider = ({ children }) => {
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
         year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,
-        userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole
+        userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole
       }}
     >
       {children}

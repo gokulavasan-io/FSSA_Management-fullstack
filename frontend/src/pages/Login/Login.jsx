@@ -2,15 +2,15 @@ import { useState } from "react";
 import { auth, provider, signInWithPopup } from "../../api/firebaseAuth"; // import from firebaseAuth.js
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useMainContext } from "../../Context/MainContext";
+import LoginUI from "./LoginUI";
 
-const LoginPage = () => {
+const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const {setUserName,setUserMailId,setSectionName,setSectionId,setUserId,setUserRole } = useMainContext();
-
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -23,14 +23,7 @@ const LoginPage = () => {
       if (response.status === 200 && response.data.message === "Token verified and member authenticated.") {
         alert("Login Successful");
         console.log(response.data);
-  
-        let userData = response.data;
-        setUserId(userData.member.id);
-        setUserName(userData.member.name);
-        setSectionId(userData.member.section.id);
-        setSectionName(userData.member.section.name);
-        setUserRole(userData.member.role.name);
-  
+        localStorage.setItem("userId",response.data.member.id);
         navigate("/");
       } else {
         alert("You are not a registered member.");
@@ -45,17 +38,15 @@ const LoginPage = () => {
       } else {
         setError("Login Failed. Please try again.");
       }
+    }finally {
+      setLoading(false);
     }
   };
   
 
   return (
-    <div style={{display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", flexDirection:"column"}}>
-      <h2>Please Login</h2>
-      {error && <p>{error}</p>}
-      <button onClick={handleLogin}>Login with Google</button>
-    </div>
+    <LoginUI handleLogin={handleLogin} error={error} loading={loading} />
   );
 };
 
-export default LoginPage;
+export default Login;
