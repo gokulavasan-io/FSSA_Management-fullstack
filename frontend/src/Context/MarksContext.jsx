@@ -9,7 +9,8 @@ const MarksContext = createContext();
 // Create a Provider Component
 export const MarksContextProvider = ({ children }) => {
   const { selectedMonth, selectedSubject } = useMainContext();
-  const [monthId, setMonthId] = useState(selectedSubject.id);
+  
+  const [monthId, setMonthId] = useState(selectedMonth.id);
   const [subjectId, setSubjectId] = useState(selectedSubject.id);
   const [testDetail, setTestDetail] = useState({});
   const [testTableData, setTestTableData] = useState([]);
@@ -31,7 +32,6 @@ export const MarksContextProvider = ({ children }) => {
   const [showMainTableColor, setShowMainTableColor] = useState(false);
   const [aboutTest, setAboutTest] = useState("");
   const [previousAboutTest, setPreviousAboutTest] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   const [testDetailCardVisible, setTestDetailCardVisible] = useState(false);
@@ -60,7 +60,6 @@ export const MarksContextProvider = ({ children }) => {
         setAboutTest,
         previousAboutTest,
         setPreviousAboutTest,
-        isFocused,
         sidebarOpen,
         setSidebarOpen,
         handleOptionClick,

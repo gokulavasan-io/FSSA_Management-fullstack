@@ -8,32 +8,23 @@ import {
 } from "@mui/material";
 import { Menu, Close } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
-import axios from "axios";
-import API_PATHS from "../../../constants/apiPaths";
-import { validReasonRegex } from "../../../constants/regex";
-import useAttendanceContext from "../AttendanceContext";
+import { validReasonRegex } from "../../../../constants/regex";
+import useAttendanceContext from "../../../../Context/AttendanceContext";
+import { addHoliday, fetchHolidays } from "../../../../api/attendanceAPI";
 
 
 const SideBarForHoliday = () => {
-  const { sectionId,month,year,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,holidays,setHolidays,loading,setLoading} = useAttendanceContext();
+  const { sectionId,loading,setLoading} = useAttendanceContext();
 
-  // const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const [tableVisible, setTableVisible] = useState(false);
-  // const [holidays, setHolidays] = useState([]);
-  // const [loading, setLoading] = useState(false);
+  const [holidays, setHolidays] = useState([]);
+   const [tableVisible, setTableVisible] = useState(false);
 
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-
-  const fetchHolidays = async () => {
+  const getHolidays = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${API_PATHS.FETCH_HOLIDAYS}?year=${year || ""}&month=${
-          month || ""
-        }&section_id=${sectionId || ""}`
-      );
-      setHolidays(response.data);
-      console.log(response.data);
+      const response = await fetchHolidays()
+      setHolidays(response);
+      console.log(response);
     } catch (error) {
       console.error("Error fetching data:", error);
       alert("Failed to fetch holidays.", "error");
@@ -43,7 +34,7 @@ const SideBarForHoliday = () => {
   };
 
   useEffect(() => {
-    if (tableVisible) fetchHolidays();
+    if (tableVisible) getHolidays();
   }, [tableVisible]);
 
   const columns = [
@@ -74,11 +65,12 @@ if (!validReasonRegex.test(trimmedReason)) {
 
 if (trimmedReason !== oldRow.reason) {
   try {
-    await axios.post(API_PATHS.ADD_HOLIDAY, {
+    let holidayData={
       section_id: sectionId,
       date: newRow.date,
       reason: trimmedReason,  // Use the trimmed reason
-    });
+    }
+    await addHoliday(holidayData)
 
     // Update the local holidays state
     setHolidays((prevHolidays) =>
@@ -101,64 +93,7 @@ if (trimmedReason !== oldRow.reason) {
 
   return (
     <div>
-      {!sidebarOpen && (
-        <IconButton
-          onClick={toggleSidebar}
-          sx={{
-            position: "fixed",
-            top: 16,
-            right: 16,
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#115293" },
-          }}
-        >
-          <Menu />
-        </IconButton>
-      )}
 
-      <Drawer
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: 300,
-            boxSizing: "border-box",
-            backgroundColor: "#f9f9f9",
-            padding: "16px",
-            borderLeft: "1px solid #ddd",
-            zIndex: 10000001,
-          },
-        }}
-        anchor="right"
-        open={sidebarOpen}
-        onClose={toggleSidebar}
-      >
-        <IconButton
-          onClick={toggleSidebar}
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#115293" },
-          }}
-        >
-          <Close />
-        </IconButton>
-
-        <Box sx={{ marginTop: 8, textAlign: "center" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setTableVisible((prev) => !prev);
-              setSidebarOpen(false);
-            }}
-          >
-            {tableVisible ? "Hide Holidays" : "Show Holidays"}
-          </Button>
-        </Box>
-      </Drawer>
 
       {tableVisible && (
         <Box

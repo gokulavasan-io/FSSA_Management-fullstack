@@ -8,6 +8,7 @@ urlpatterns = [
     path('add_holiday/',AddOrUpdateHolidayView.as_view()),
     path('fetch_remarks/',FetchStudentsWithRemarksView.as_view()),
     path('fetch_holidays/',FetchHolidaysView.as_view()),
+    path('check_holiday/',CheckHolidayView.as_view()),
     path('fetch_students_status_count/',AllStudentsStatusCountView.as_view()),
     path('fetch_daily_statistics/',DailyStatisticsView.as_view()),
 ]

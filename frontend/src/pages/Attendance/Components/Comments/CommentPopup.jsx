@@ -1,21 +1,20 @@
 import React, { useEffect, useState, useRef,useContext } from "react";
-import axios from "axios";
-import API_PATHS from "../../../constants/apiPaths";
-import useAttendanceContext from "../AttendanceContext";
+import useAttendanceContext from "../../../../Context/AttendanceContext";
+import { useMainContext } from "../../../../Context/MainContext";
 
-// let year = 2024;
-// let month = 12;
-// let sectionId = 1;
+
 
 const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
-  const { sectionId,month,year,remark,setRemark,tooltipPosition,setTooltipPosition,isTooltipVisible,setIsTooltipVisible,tooltipRef} = useAttendanceContext();
+  
+  const { sectionId,monthId} = useAttendanceContext();
+  const {year}=useMainContext()
 
-  // const [remark, setRemark] = useState(null);
-  // const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-  // const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  // const tooltipRef = useRef(null);
+  const [remark, setRemark] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const tooltipRef = useRef(null);
 
-  async function showRemarks(studentId, date) {
+  async function showRemarks(studentId, date,td) {
     const student = remarksData.find((item) => item.student_id === studentId);
     const attendanceRecord = student.attendance.find((record) => record.date === date);
 
@@ -31,6 +30,7 @@ const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
     const hotInstance = hotTableRef.current.hotInstance;
 
     const handleHover = (event) => {
+      
       const cell = event.target.closest("td");
       if (cell) {
         const row = hotInstance.toVisualRow(cell.parentNode.rowIndex - 1);
@@ -39,8 +39,8 @@ const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
 
         if (classNames.includes("remarkCell")) {
           let studentId = tableData[row]["student_id"];
-          let date = `${year}-${String(month).padStart(2, "0")}-${String(column).padStart(2, "0")}`;
-          showRemarks(studentId, date);
+          let date = `${year}-${String(monthId).padStart(2, "0")}-${String(column).padStart(2, "0")}`;
+          showRemarks(studentId, date,tableData);
 
           // Calculate position for the tooltip (positioning on the right side of the cell)
           const cellRect = cell.getBoundingClientRect();

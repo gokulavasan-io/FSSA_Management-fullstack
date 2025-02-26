@@ -217,6 +217,8 @@ function TestTable() {
         afterChange={handleDataChange}
         beforeChange={handleBeforeChange}
         rowHeaders={true}
+        fixedRowsTop={0}
+        fixedColumnsLeft={1}
         columnSorting={true}
         stretchH="all"
         cells={(row, col) => {

@@ -1,32 +1,28 @@
 import React, { useState, useEffect,useContext } from "react";
 import {
-  Drawer,
   IconButton,
-  Button,
   Box,
   CircularProgress,
 } from "@mui/material";
-import { Menu, Close, Delete } from "@mui/icons-material";
+import { Close, Delete } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
-import axios from "axios";
-import API_PATHS from "../../../constants/apiPaths";
 import ConfirmationDialog from "../../uxComponents/confirmationDialog";
 import { validRemarkRegex } from "../../../constants/regex";
 import useAttendanceContext from "../AttendanceContext";
+import { addRemark, deleteRemark, fetchRemarks } from "../../../../api/attendanceAPI";
 
 const Sidebar = () => {
-  const { month,year,loading,setLoading,sidebarOpen,setSidebarOpen,tableVisible,setTableVisible,students,setStudents,dialogOpen,setDialogOpen,selectedRow,setSelectedRow } = useAttendanceContext();
+  const { month,year,loading,setLoading} = useAttendanceContext();
   
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+    const [tableVisible, setTableVisible] = useState(false);
+    const [students, setStudents] = useState([]);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
 
   const fetchStudentRemarks = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${API_PATHS.FETCH_REMARKS}?year=${year || ""}&month=${
-          month || ""
-        }&section_id=${sectionId || ""}`
-      );
+      const response = await fetchRemarks()
       setStudents(response.data);
       console.log(response.data);
       
@@ -117,32 +113,21 @@ const Sidebar = () => {
       const { student_id, date } = selectedRow;
 
       try {
-        const response = await axios.delete(API_PATHS.ADD_REMARK, {
-          data: {
-            student_id,
-            date,
-          },
-        });
+        let remarkData={student_id,date }
+        await deleteRemark(remarkData);
+        alert("Remark deleted successfully.");
 
-        alert(
-          response.data.message || "Remark deleted successfully.",
-          "success"
+        setStudents((prevStudents) =>
+          prevStudents
+            .map((student) => ({
+              ...student,
+              attendance: student.attendance.filter(
+                (attendance) => attendance.date !== date
+              ),
+            }))
+            .filter((student) => student.attendance.length > 0)
         );
-
-        // Remove the row from the students array
-        setStudents(
-          (prevStudents) =>
-            prevStudents
-              .map((student) => {
-                if (student.student_id === student_id) {
-                  student.attendance = student.attendance.filter(
-                    (attendance) => attendance.date !== date
-                  );
-                }
-                return student;
-              })
-              .filter((student) => student.attendance.length > 0) // Remove student if they have no attendance
-        );
+        
       } catch (error) {
         console.error("Error deleting remark:", error);
         alert("Failed to delete remark.", "error");
@@ -164,13 +149,13 @@ const Sidebar = () => {
       }
   
       try {
-        // Make an API call to update the remark
-        await axios.post(API_PATHS.ADD_REMARK, {
+        let remarkData={
           student_id: newRow.student_id,
           date: newRow.date,
-          remark: trimmedRemark, // Send the trimmed remark
-        });
-  
+          remark: trimmedRemark,
+        }
+
+        await addRemark(remarkData);
         alert("Remark updated successfully.", "success");
   
         // Update the students state locally
@@ -204,68 +189,7 @@ const Sidebar = () => {
 
   return (
     <div>
-      {/* Floating Button to Open Sidebar */}
-      {!sidebarOpen && (
-        <IconButton
-          onClick={toggleSidebar}
-          sx={{
-            position: "fixed",
-            top: 16,
-            right: 16,
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#115293" },
-          }}
-        >
-          <Menu />
-        </IconButton>
-      )}
-
-      {/* Sidebar Drawer */}
-      <Drawer
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: 300,
-            boxSizing: "border-box",
-            backgroundColor: "#f9f9f9",
-            padding: "16px",
-            borderLeft: "1px solid #ddd",
-            zIndex: 10000001, // Ensure sidebar is above overlay
-          },
-        }}
-        anchor="right"
-        open={sidebarOpen}
-        onClose={toggleSidebar}
-      >
-        {/* Close Button */}
-        <IconButton
-          onClick={toggleSidebar}
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#115293" },
-          }}
-        >
-          <Close />
-        </IconButton>
-
-        {/* Remarks Button */}
-        <Box sx={{ marginTop: 8, textAlign: "center" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setTableVisible((prev) => !prev); // Toggle remarks table visibility
-              setSidebarOpen(false); // Close the sidebar
-            }}
-          >
-            {tableVisible ? "Hide Remarks" : "Show Remarks"}
-          </Button>
-        </Box>
-      </Drawer>
+  
 
       {/* Grey Overlay */}
       {tableVisible && (

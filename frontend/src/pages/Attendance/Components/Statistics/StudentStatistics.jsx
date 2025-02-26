@@ -1,20 +1,19 @@
 import React, { useEffect } from "react";
 import { Table, Spin } from "antd";
-import API_PATHS from "../../../constants/apiPaths";
 import useAttendanceContext from "../AttendanceContext";
+import { fetchStudentStatistics } from "../../../../api/attendanceAPI";
 
 const AttendanceStatsTable = () => {
-  const { sectionId, month, year, loading, setLoading, attendanceData, setAttendanceData, totalWorkingDays, setTotalWorkingDays } = useAttendanceContext();
+  const { sectionId, month, year, loading, setLoading } = useAttendanceContext();
+  const [totalWorkingDays, setTotalWorkingDays] = useState(0);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `${API_PATHS.FETCH_STUDENTSTATISTICS}?sectionId=${sectionId}&month=${month}&year=${year}`
-        );
-        const data = await response.json();
-        setAttendanceData(data.students || []);
-        setTotalWorkingDays(data.total_working_days || 0);
+        const response = await fetchStudentStatistics(sectionId,month,year)
+        setAttendanceData(response.students || []);
+        setTotalWorkingDays(response.total_working_days || 0);
       } catch (error) {
         console.error("Error fetching attendance data:", error);
       } finally {

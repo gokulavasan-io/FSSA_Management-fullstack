@@ -1,10 +1,8 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
-import axios from "axios";
 import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import { Typography, Button, Space, Card } from "antd";
 import { ReloadOutlined, SaveOutlined } from "@ant-design/icons";
-import API_PATHS from "../../../../constants/apiPaths.js";
 import { levelRegex } from "../../../../constants/regex.js";
 import "../../styles/MarksEntry.css";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
@@ -176,6 +174,8 @@ function LevelTestTable() {
         afterChange={handleDataChange}
         beforeChange={handleBeforeChange}
         rowHeaders={true}
+        fixedRowsTop={0}
+        fixedColumnsLeft={1}
         columnSorting={true}
         stretchH="all"
         cells={(row, col) => {

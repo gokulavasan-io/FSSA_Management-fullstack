@@ -1,0 +1,47 @@
+.handsontable.listbox {
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 300px !important;
+    scrollbar-width: none !important;
+
+}
+
+.holidayCell {
+    color: transparent !important;
+    background-color: rgba(236, 111, 111, 0.521) !important;
+    border-top: none !important;
+    border-bottom: none !important; 
+}
+
+.weekendCell {
+    color: transparent !important;
+    background-color: rgba(4, 143, 181, 0.521) !important;
+    border-top: none !important;
+    border-bottom: none !important; 
+}
+
+.remarkCell {
+    position: relative;
+}
+
+.remarkCell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-top: 10px solid rgb(255, 0, 0);
+
+}
+
+.sticky-column {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+    font-weight: bold;
+    border-right: 2px solid #ddd;
+}
+

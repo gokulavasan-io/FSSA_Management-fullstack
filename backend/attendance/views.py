@@ -16,41 +16,44 @@ class AttendanceView(APIView):
         if section_id in [None, "", "null"]:
             section_id = None
 
-        # Determine the year and month
         year = int(year) if year else datetime.now().year
         month = int(month) if month else datetime.now().month
-        days_in_month = monthrange(year, month)[1]  # Get the total number of days in the month
+        days_in_month = monthrange(year, month)[1]
 
-        # Fetch all students in the section
+        # Fetch the "Weekend" status object
+        weekend_status = Status.objects.filter(status="Weekend").first()
+        if not weekend_status:
+            return Response({"error": "Status 'Weekend' not found in the database."}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Fetch students
         students_query = Students.objects.filter(section_id=section_id) if section_id else Students.objects.all()
 
-        # Fetch attendance data filtered by year, month, and section_id (if provided)
+        # Fetch attendance records
         attendance_query = Attendance.objects.select_related('student', 'status').filter(
             date__year=year,
             date__month=month
         )
-
         if section_id:
             attendance_query = attendance_query.filter(student__section_id=section_id)
 
-        # Prepare a set of all existing attendance records (student_id, date)
+        # Ensure missing records are created
         existing_records = {(record.student.id, record.date) for record in attendance_query}
-
-        # Create missing attendance records
         new_attendance_records = []
+
         for student in students_query:
             for day in range(1, days_in_month + 1):
                 date = datetime(year, month, day).date()
+                is_weekend = weekday(year, month, day) >= 5  
+
                 if (student.id, date) not in existing_records:
                     new_attendance_records.append(
-                        Attendance(student=student, date=date, status=None)
+                        Attendance(student=student, date=date, status=weekend_status if is_weekend else None)
                     )
 
-        # Bulk create missing records
         if new_attendance_records:
             Attendance.objects.bulk_create(new_attendance_records)
 
-        # Fetch attendance data again to include newly created records
+        # Fetch updated attendance records
         attendance_query = Attendance.objects.select_related('student', 'status').filter(
             date__year=year,
             date__month=month
@@ -58,152 +61,31 @@ class AttendanceView(APIView):
         if section_id:
             attendance_query = attendance_query.filter(student__section_id=section_id)
 
-        # Group attendance data by student and day of the month
-        grouped_data = {}
-        for record in attendance_query:
-            student_id = record.student.id
-            student_name = record.student.name
-
-            if student_id not in grouped_data:
-                grouped_data[student_id] = {
-                    "student_id": student_id,  # Include student ID
-                    "name": student_name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
-                       for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
-                }
-
-            # Get the day of the month for the attendance record and set the status
-            day = record.date.day
-            grouped_data[student_id][str(day)] = {
-                "status": record.status.short_form if record.status else None
+        # Prepare response
+        formatted_data = []
+        for student in students_query:
+            student_data = {
+                "student_id": student.id,
+                "name": student.name,
             }
 
-        # Ensure all students are in the response, even those without attendance data
-        for student in students_query:
-            if student.id not in grouped_data:
-                grouped_data[student.id] = {
-                    "student_id": student.id,  # Include student ID
-                    "name": student.name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
-                       for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
-                }
-
-        # Convert grouped data to a list and sort by student_id
-        formatted_data = sorted(grouped_data.values(), key=lambda x: x['student_id'])
-
-        # Get all possible status options (assuming 'Status' model has a 'status' field)
-        status_options = Status.objects.order_by('id').values_list('short_form', flat=True)
-
-        # Column headers for Handsontable (Day 1, Day 2, ..., Day N)
-        columns = [
-            {"data": "name", "title": "Student Name"},
-            *[
-                {"data": str(day), "title": f"Day {day}"}
-                for day in range(1, days_in_month + 1)
-            ],
-        ]
-
-        # Return both the attendance data and the status options
-        return Response({"columns": columns, "data": formatted_data, "status": status_options})
-class AttendanceView(APIView):
-    def get(self, request):
-        year = request.query_params.get('year', None)
-        month = request.query_params.get('month', None)
-        section_id = request.query_params.get('section_id', None)
-
-        if section_id in [None, "", "null"]:
-            section_id = None
-
-        # Determine the year and month
-        year = int(year) if year else datetime.now().year
-        month = int(month) if month else datetime.now().month
-        days_in_month = monthrange(year, month)[1]  # Get the total number of days in the month
-
-        # Fetch all students in the section
-        students_query = Students.objects.filter(section_id=section_id) if section_id else Students.objects.all()
-
-        # Fetch attendance data filtered by year, month, and section_id (if provided)
-        attendance_query = Attendance.objects.select_related('student', 'status').filter(
-            date__year=year,
-            date__month=month
-        )
-
-        if section_id:
-            attendance_query = attendance_query.filter(student__section_id=section_id)
-
-        # Prepare a set of all existing attendance records (student_id, date)
-        existing_records = {(record.student.id, record.date) for record in attendance_query}
-
-        # Create missing attendance records
-        new_attendance_records = []
-        for student in students_query:
             for day in range(1, days_in_month + 1):
                 date = datetime(year, month, day).date()
-                if (student.id, date) not in existing_records:
-                    new_attendance_records.append(
-                        Attendance(student=student, date=date, status=None)
-                    )
+                record = next((rec for rec in attendance_query if rec.student.id == student.id and rec.date == date), None)
+                student_data[str(day)] = record.status.short_form if record and record.status else ""
 
-        # Bulk create missing records
-        if new_attendance_records:
-            Attendance.objects.bulk_create(new_attendance_records)
+            formatted_data.append(student_data)
 
-        # Fetch attendance data again to include newly created records
-        attendance_query = Attendance.objects.select_related('student', 'status').filter(
-            date__year=year,
-            date__month=month
-        )
-        if section_id:
-            attendance_query = attendance_query.filter(student__section_id=section_id)
-
-        # Group attendance data by student and day of the month
-        grouped_data = {}
-        for record in attendance_query:
-            student_id = record.student.id
-            student_name = record.student.name
-
-            if student_id not in grouped_data:
-                grouped_data[student_id] = {
-                    "student_id": student_id,  # Include student ID
-                    "name": student_name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
-                       for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
-                }
-
-            # Get the day of the month for the attendance record and set the status
-            day = record.date.day
-            grouped_data[student_id][str(day)] = {
-                "status": record.status.short_form if record.status else None
-            }
-
-        # Ensure all students are in the response, even those without attendance data
-        for student in students_query:
-            if student.id not in grouped_data:
-                grouped_data[student.id] = {
-                    "student_id": student.id,  # Include student ID
-                    "name": student.name,
-                    **{str(day): {"status": "Holiday" if weekday(year, month, day) >= 5 else ""}
-                       for day in range(1, days_in_month + 1)}  # Initialize days with "Holiday" for weekends
-                }
-
-        # Convert grouped data to a list and sort by student_id
-        formatted_data = sorted(grouped_data.values(), key=lambda x: x['student_id'])
-
-        # Get all possible status options (assuming 'Status' model has a 'status' field)
-        status_options = Status.objects.order_by('id').values_list('short_form', flat=True)
-
-        # Column headers for Handsontable (Day 1, Day 2, ..., Day N)
+        # Column headers
         columns = [
             {"data": "name", "title": "Student Name"},
-            *[
-                {"data": str(day), "title": f"Day {day}"}
-                for day in range(1, days_in_month + 1)
-            ],
+            *[{"data": str(day), "title": f"Day {day}"} for day in range(1, days_in_month + 1)],
         ]
 
-        # Return both the attendance data and the status options
-        return Response({"columns": columns, "data": formatted_data, "status": status_options})
+        # Status options
+        status_options = Status.objects.order_by('id').values_list('short_form', flat=True)
 
+        return Response({"columns": columns, "data": formatted_data, "status": status_options})
 
     
 class BulkUpdateAttendanceView(APIView):
@@ -398,9 +280,10 @@ class FetchStudentsWithRemarksView(APIView):
         return Response(result, status=http_status.HTTP_200_OK)
 
 class AddOrUpdateHolidayView(APIView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         date = request.data.get("date")
         reason = request.data.get("reason")
+        batch_id = 4  # Define batch ID dynamically if needed
 
         # Validate required fields
         if not date:
@@ -415,7 +298,7 @@ class AddOrUpdateHolidayView(APIView):
             except ValueError:
                 return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=http_status.HTTP_400_BAD_REQUEST)
 
-            # Add or update the holiday for the given date
+            # Fetch or create the holiday record
             holiday, created = Holiday.objects.get_or_create(
                 date=date_obj,
                 defaults={'reason': reason}
@@ -433,8 +316,22 @@ class AddOrUpdateHolidayView(APIView):
             if not holiday_status:
                 return Response({"error": "Status 'Holiday' not found in the database."}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Update all attendance records for that date
-            Attendance.objects.filter(date=date_obj).update(status=holiday_status)
+            # Fetch students in the batch
+            students_in_batch = Students.objects.filter(batch=batch_id)
+
+            # Check if attendance records exist for this date
+            existing_attendance = Attendance.objects.filter(date=date_obj)
+
+            if not existing_attendance.exists():
+                # If attendance does not exist, create records for all students in the batch with remark=None
+                attendance_records = [
+                    Attendance(student=student, date=date_obj, status=holiday_status, remark=None)
+                    for student in students_in_batch
+                ]
+                Attendance.objects.bulk_create(attendance_records)
+            else:
+                # Update existing attendance records to "Holiday" and set remark to None
+                existing_attendance.update(status=holiday_status, remark=None)
 
             return Response({"message": message}, status=http_status.HTTP_200_OK)
 
@@ -475,7 +372,6 @@ class FetchHolidaysView(APIView):
     def get(self, request):
         month = request.query_params.get("month")
         year = request.query_params.get("year")
-
         if not month or not year:
             return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
 
@@ -492,11 +388,6 @@ class FetchHolidaysView(APIView):
         # Initial filter
         holidays = Holiday.objects.filter(date__year=year, date__month=month)
 
-        # Exclude weekends (assuming 1 = Sunday and 7 = Saturday)
-        holidays = holidays.exclude(
-            Q(date__week_day=1) | Q(date__week_day=7)
-        )
-
         # Debug: Print holidays after exclusion
         print("Holidays after exclusion:", holidays)
 
@@ -512,6 +403,28 @@ class FetchHolidaysView(APIView):
 
         return Response(holiday_data, status=http_status.HTTP_200_OK)
 
+
+class CheckHolidayView(APIView):
+    def get(self, request):
+        date_str = request.query_params.get("date")  # Expecting YYYY-MM-DD format
+
+        if not date_str:
+            return Response({"error": "Missing 'date' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()  # Convert to date object
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        # Fetch holiday details
+        holiday = Holiday.objects.filter(date=date_obj).first()  
+        is_holiday = holiday is not None
+        holiday_reason = holiday.reason if holiday else None 
+        
+        return Response(
+            {"is_holiday": is_holiday, "reason": holiday_reason}, 
+            status=http_status.HTTP_200_OK
+        )
 
 class AllStudentsStatusCountView(APIView):
     def get(self, request):
@@ -613,7 +526,6 @@ class AllStudentsStatusCountView(APIView):
                 "total_percentage": f"{total_percentage:.2f}%" if total_percentage != "N/A" else "N/A",
                 "present_percentage": f"{present_percentage:.2f}%" if present_percentage != "N/A" else "N/A",
             })
-        print(result)
         response = {
             "total_working_days": working_days,
             "students": result
