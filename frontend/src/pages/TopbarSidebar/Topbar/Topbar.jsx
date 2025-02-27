@@ -25,6 +25,8 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
+  let userPicLink=localStorage.getItem("pictureLink")
+  console.log(userPicLink);
   
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
  
@@ -127,7 +129,7 @@ function TopBar({ collapsed }) {
               }}
             >
               <Avatar
-                src="https://randomuser.me/api/portraits/women/67.jpg"
+                src={userPicLink}
                 size={45}
                 style={{ borderRadius: "8px" }}
               />

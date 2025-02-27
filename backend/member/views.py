@@ -24,7 +24,7 @@ class FirebaseTokenVerifyView(APIView):
             # Verify the Firebase token
             decoded_token = auth.verify_id_token(token)
             email = decoded_token.get("email") 
-
+            picture=decoded_token.get("picture")
             try:
                 member = Member.objects.get(email=email)
                 member_data=MemberSerializer(member).data
@@ -32,6 +32,7 @@ class FirebaseTokenVerifyView(APIView):
                     "message": "Token verified and member authenticated.",
                     "email": email,
                     'member':member_data,
+                    "picture":picture,
                 }, status=status.HTTP_200_OK)
                 
             except ObjectDoesNotExist:

@@ -22,8 +22,8 @@ const Login = () => {
   
       if (response.status === 200 && response.data.message === "Token verified and member authenticated.") {
         alert("Login Successful");
-        console.log(response.data);
         localStorage.setItem("userId",response.data.member.id);
+        localStorage.setItem("pictureLink",response.data.picture);
         navigate("/");
       } else {
         alert("You are not a registered member.");
@@ -42,7 +42,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <LoginUI handleLogin={handleLogin} error={error} loading={loading} />
