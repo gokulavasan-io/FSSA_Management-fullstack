@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import {  CircularProgress,
-} from "@mui/material";
-import {  Close, Mode } from "@mui/icons-material";
+import { CircularProgress } from "@mui/material";
+import { Close, Mode } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { validReasonRegex } from "../../../../constants/regex";
 import useAttendanceContext from "../../../../Context/AttendanceContext";
 import { addHoliday, fetchHolidays } from "../../../../api/attendanceAPI";
 import { useMainContext } from "../../../../Context/MainContext";
-import { Modal } from "antd";
+import { Empty, Modal } from "antd";
 
 const ShowHolidays = () => {
   const {
@@ -93,32 +92,35 @@ const ShowHolidays = () => {
 
   return (
     <>
-
-        <Modal
-         open={holidaysTableVisible}
-         onCancel={() => setHolidaysTableVisible(false)}
-         footer={null}
-         centered
-         title={"Holidays"}
-         zIndex={100003}
-         width={1200}
-        >
-            <DataGrid
-              rows={rows}
-              columns={columns.map((col) => ({ ...col, resizable: false }))}
-              processRowUpdate={handleProcessRowUpdate}
-              experimentalFeatures={{ newEditingApi: true }}
-              pagination={false}
-              hideFooter={true}
-              sx={{
-                width: "100%",
-                height: "600px",
-                overflow: "hidden",
-                marginTop: "1rem",
-              }}
-              loading={loading}
-            />
-        </Modal>
+      <Modal
+        open={holidaysTableVisible}
+        onCancel={() => setHolidaysTableVisible(false)}
+        footer={null}
+        centered
+        title={"Holidays"}
+        zIndex={100003}
+        width={1200}
+      >
+        {holidays.length == 0 ? (
+          <Empty description="No Holidays Available" />
+        ) : (
+          <DataGrid
+            rows={rows}
+            columns={columns.map((col) => ({ ...col, resizable: false }))}
+            processRowUpdate={handleProcessRowUpdate}
+            experimentalFeatures={{ newEditingApi: true }}
+            pagination={false}
+            hideFooter={true}
+            sx={{
+              width: "100%",
+              height: "600px",
+              overflow: "hidden",
+              marginTop: "1rem",
+            }}
+            loading={loading}
+          />
+        )}
+      </Modal>
     </>
   );
 };

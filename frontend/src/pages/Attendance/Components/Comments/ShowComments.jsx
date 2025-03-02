@@ -11,7 +11,7 @@ import {
 } from "../../../../api/attendanceAPI";
 import { useMainContext } from "../../../../Context/MainContext";
 import { Delete03Icon } from "hugeicons-react";
-import { Modal } from "antd";
+import { Empty, Modal } from "antd";
 
 const ShowComments = () => {
   const {
@@ -201,25 +201,29 @@ const ShowComments = () => {
         zIndex={100003}
         width={1200}
       >
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pagination={false}
-          hideFooter={true}
-          processRowUpdate={handleProcessRowUpdate}
-          experimentalFeatures={{ newEditingApi: true }}
-          sx={{
-            width: "100%",
-            height: "600px",
-            overflow: "hidden",
-            marginTop: "1rem",
-          }}
-          loading={loading}
-          onProcessRowUpdateError={(error) => {
-            console.error("Error processing row update:", error);
-            alert("Error updating remark. Please try again.", "error");
-          }}
-        />
+        {students.length == 0 ? (
+          <Empty description="No Comments Available" />
+        ) : (
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pagination={false}
+            hideFooter={true}
+            processRowUpdate={handleProcessRowUpdate}
+            experimentalFeatures={{ newEditingApi: true }}
+            sx={{
+              width: "100%",
+              height: "600px",
+              overflow: "hidden",
+              marginTop: "1rem",
+            }}
+            loading={loading}
+            onProcessRowUpdateError={(error) => {
+              console.error("Error processing row update:", error);
+              alert("Error updating remark. Please try again.", "error");
+            }}
+          />
+        )}
       </Modal>
       <ConfirmationDialog
         open={dialogOpen}

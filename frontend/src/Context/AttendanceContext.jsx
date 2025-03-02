@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { useMainContext } from "./MainContext";
 
 // Create the context
@@ -19,6 +19,11 @@ export const AttendanceContextProvider = ({ children }) => {
   const [holidaysTableVisible, setHolidaysTableVisible] = useState(false);
   const [dailyStatisticsVisible, setDailyStatisticsVisible] = useState(false);
   const [studentStatisticsVisible, setStudentStatisticsVisible] = useState(false);
+  
+  useEffect(() => {
+    setMonthId(selectedMonth.id)
+  }, [selectedMonth])
+  
   
 
   return (

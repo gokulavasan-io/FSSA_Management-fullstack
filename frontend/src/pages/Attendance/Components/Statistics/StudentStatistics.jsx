@@ -95,7 +95,6 @@ const AttendanceStatsTable = () => {
       zIndex={100003}
       width={1300}
     >
-      
         <>
           <p>Total Working Days: {totalWorkingDays}</p>
           <Table

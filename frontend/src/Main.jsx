@@ -15,9 +15,8 @@ export default function Main() {
           <Routes>
             <Route path="login" element={<Login />} />
             <Route path="/" element={<AppLayout />}>
-              {/* <Route index element={<MarkApp />} /> */}
               <Route path="assessment" element={<MarkApp />} />
-              <Route index element={<AttendanceApp />} />
+              <Route path="attendance" element={<AttendanceApp />} />
             </Route>
           </Routes>
         </BrowserRouter>
