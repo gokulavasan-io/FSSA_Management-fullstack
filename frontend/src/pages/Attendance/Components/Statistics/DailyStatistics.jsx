@@ -19,44 +19,38 @@ const DailyStatisticsTable = () => {
   
   const fetchData = async () => {
     try {
-        setLoading(true);
-        const response = await fetchDailyStatistics(sectionId,monthId,year)
-        const statusCounts = response[0]?.status_counts;
-        const statusTypes = statusCounts ? Object.keys(statusCounts).filter(item => item !== 'Holiday') : [];
-
-        const formattedData = response.map((item, index) => ({
-          id: index,
-          date: format(new Date(item.date), 'dd/MM/yyyy'),
-          day: `${item.day_name} ${item.is_holiday && !['sun', 'sat'].includes(item.day_name) ? '(holiday)' : ''}`,
-          ...Object.keys(item.status_counts).reduce((acc, status) => {
-            if (status !== 'Holiday') acc[status] = item.status_counts[status] || 0;
-            return acc;
-          }, {}),
-        }));
-
-        const dynamicColumns = [
-          { field: 'date', headerName: 'Date',flex: 1 },
-          { field: 'day', headerName: 'Day', flex: 1 },
-          ...statusTypes.map(status => ({
-            field: status,
-            headerName: status,
-            flex: 1,
-            sortable: true,
-            align: 'center',
-            headerAlign: 'center',
-            
-          })),
-        ];
-
-        setColumns(dynamicColumns);
-        setData(formattedData);
-      } 
-    catch (error) {
+      setLoading(true);
+      const response = await fetchDailyStatistics(sectionId, monthId, year);
+  
+      // Directly set the formatted data from the backend
+      setData(response);
+  
+      // Extract dynamic status types from the first record
+      const statusCounts = response[0]?.status_counts || {};
+      const statusTypes = Object.keys(statusCounts);
+  
+      // Generate dynamic columns
+      const dynamicColumns = [
+        { field: 'date', headerName: 'Date', flex: 1 },
+        { field: 'day_name', headerName: 'Day', flex: 1 },
+        ...statusTypes.map(status => ({
+          field: status,
+          headerName: status,
+          flex: 1,
+          sortable: true,
+          align: 'center',
+          headerAlign: 'center',
+        })),
+      ];
+  
+      setColumns(dynamicColumns);
+    } catch (error) {
       console.error('API Error:', error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchData();

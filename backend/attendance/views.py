@@ -560,17 +560,19 @@ class DailyStatisticsView(APIView):
         else:
             students = Students.objects.all()
 
-        # Fetch all statuses
-        all_statuses = Status.objects.all()
+        # Fetch all statuses except "Holiday"
+        all_statuses = [status.status for status in Status.objects.all() if status.status != "Holiday"]
 
         # Prepare daily statistics dictionary
         daily_statistics = {}
         for day in range(1, end_date.day + 1):
             current_date = datetime(year, month, day).date()
+            is_weekend = current_date.weekday() in [5, 6]  # Saturday (5) and Sunday (6)
+            
             daily_statistics[current_date] = {
-                "day_name": current_date.strftime('%a').lower(),
-                "is_holiday": current_date.weekday() in [5, 6],  # Mark weekends as holidays
-                "status_counts": {status.status: 0 for status in all_statuses}
+                "date": current_date.strftime('%d/%m/%Y'),
+                "day": f"{current_date.strftime('%a').lower()} {'(holiday)' if is_weekend else ''}",
+                "status_counts": {status: 0 for status in all_statuses}
             }
 
         # Mark additional holidays explicitly
@@ -578,7 +580,7 @@ class DailyStatisticsView(APIView):
         for holiday in holidays:
             holiday_date = holiday.date
             if holiday_date in daily_statistics:
-                daily_statistics[holiday_date]["is_holiday"] = True
+                daily_statistics[holiday_date]["day"] += " (holiday)"
 
         # Populate attendance counts
         attendances = Attendance.objects.filter(
@@ -588,21 +590,15 @@ class DailyStatisticsView(APIView):
         for record in attendances:
             record_date = record['date']
             record_status = record['status__status']
-            if record_date in daily_statistics and record_status:
+            if record_date in daily_statistics and record_status and record_status != "Holiday":
                 daily_statistics[record_date]["status_counts"][record_status] += record['count']
-        
-        for date, data in daily_statistics.items():
-            if data["is_holiday"]:
-                data["status_counts"] = {status: "-" for status in data["status_counts"]}
 
-
-        # Format response
+        # Convert dictionary to list response
         response = []
         for date, data in sorted(daily_statistics.items()):
             response.append({
-                "date": date.strftime('%Y-%m-%d'),
-                "day_name": data["day_name"],
-                "is_holiday": data["is_holiday"],
+                "date": data["date"],
+                "day_name": data["day"],
                 "status_counts": data["status_counts"]
             })
 
