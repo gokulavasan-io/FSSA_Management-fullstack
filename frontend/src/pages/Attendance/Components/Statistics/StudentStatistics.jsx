@@ -5,7 +5,7 @@ import { useMainContext } from "../../../../Context/MainContext";
 import useAttendanceContext from "../../../../Context/AttendanceContext";
 import { Modal } from "antd";
 
-const AttendanceStatsTable = () => {
+const StudentStatistics = () => {
   const {
     monthId,
     loading,
@@ -113,4 +113,6 @@ const AttendanceStatsTable = () => {
   );
 };
 
-export default AttendanceStatsTable;
+export default StudentStatistics;
+
+

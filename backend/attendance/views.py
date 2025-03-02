@@ -87,8 +87,6 @@ class AttendanceView(APIView):
 
         return Response({"columns": columns, "data": formatted_data, "status": status_options})
 
-    
-class BulkUpdateAttendanceView(APIView):
     def put(self, request):
         records = request.data.get("records", [])
         try:
@@ -141,86 +139,7 @@ class BulkUpdateAttendanceView(APIView):
             return Response({"error": str(e)}, status=http_status.HTTP_400_BAD_REQUEST)
 
 
-
-class AddOrUpdateRemarkView(APIView):
-    def post(self, request, *args, **kwargs):
-        student_id = request.data.get("student_id")
-        date = request.data.get("date")
-        remark = request.data.get("remark")
-
-        if not student_id:
-            return Response({"error": "Missing 'student_id' in request."}, status=400)
-        if not date:
-            return Response({"error": "Missing 'date' in request."}, status=400)
-        if remark is None:  # Explicitly check for None to allow empty strings if needed
-            return Response({"error": "Missing 'remark' in request."}, status=400)
-
-        try:
-            # Verify if the student exists
-            student = Students.objects.filter(id=student_id).first()
-            if not student:
-                return Response({"error": "Student not found."}, status=404)
-
-            # Convert date string to a Date object
-            try:
-                date_obj = datetime.strptime(date, "%Y-%m-%d").date()
-            except ValueError:
-                return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=400)
-
-            # Fetch or create the attendance record for the student and date
-            attendance, created = Attendance.objects.get_or_create(
-                student=student,
-                date=date_obj,
-                defaults={'status': None}  # Do not set default remark
-            )
-
-            # Update the remark field
-            attendance.remark = remark
-            attendance.save()
-
-            message = "Remark updated successfully."
-            if created:
-                message += " (New attendance record created.)"
-
-            return Response({"message": message}, status=200)
-
-        except Exception as e:
-            return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
-        
-        
-    def delete(self, request):
-        
-        student_id = request.data.get("student_id")
-        date = request.data.get("date")
-        
-        if not student_id or not date:
-            return Response({"error": "Both 'student_id' and 'date' are required."}, status=http_status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # Convert date to datetime object
-            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
-            
-            # Fetch student and attendance record
-            student = Students.objects.filter(id=student_id).first()
-            if not student:
-                return Response({"error": "Student not found."}, status=http_status.HTTP_404_NOT_FOUND)
-
-            attendance = Attendance.objects.filter(student=student, date=date_obj).first()
-            if not attendance:
-                return Response({"error": "Attendance record not found."}, status=http_status.HTTP_404_NOT_FOUND)
-
-            # Delete the remark but keep the status unchanged
-            attendance.remark = None
-            attendance.save()
-
-            return Response({"message": "Remark deleted successfully."}, status=http_status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response({"error": f"Internal Server Error: {str(e)}"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        
-        
-class FetchStudentsWithRemarksView(APIView):
+class RemarkView(APIView):
     def get(self, request):
         # Get 'month', 'year', and optionally 'section_id' from query parameters
         month = request.query_params.get("month")
@@ -278,7 +197,113 @@ class FetchStudentsWithRemarksView(APIView):
         # Return the response with the list of students and their attendance with remarks and status
         return Response(result, status=http_status.HTTP_200_OK)
 
-class AddOrUpdateHolidayView(APIView):
+    def post(self, request):
+        student_id = request.data.get("student_id")
+        date = request.data.get("date")
+        remark = request.data.get("remark")
+
+        if not student_id:
+            return Response({"error": "Missing 'student_id' in request."}, status=400)
+        if not date:
+            return Response({"error": "Missing 'date' in request."}, status=400)
+        if remark is None:  # Explicitly check for None to allow empty strings if needed
+            return Response({"error": "Missing 'remark' in request."}, status=400)
+
+        try:
+            # Verify if the student exists
+            student = Students.objects.filter(id=student_id).first()
+            if not student:
+                return Response({"error": "Student not found."}, status=404)
+
+            # Convert date string to a Date object
+            try:
+                date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            except ValueError:
+                return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=400)
+
+            # Fetch or create the attendance record for the student and date
+            attendance, created = Attendance.objects.get_or_create(
+                student=student,
+                date=date_obj,
+                defaults={'status': None}  # Do not set default remark
+            )
+
+            # Update the remark field
+            attendance.remark = remark
+            attendance.save()
+
+            message = "Remark updated successfully."
+            if created:
+                message += " (New attendance record created.)"
+
+            return Response({"message": message}, status=200)
+
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
+            
+    def delete(self, request):
+        
+        student_id = request.data.get("student_id")
+        date = request.data.get("date")
+        
+        if not student_id or not date:
+            return Response({"error": "Both 'student_id' and 'date' are required."}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convert date to datetime object
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            
+            # Fetch student and attendance record
+            student = Students.objects.filter(id=student_id).first()
+            if not student:
+                return Response({"error": "Student not found."}, status=http_status.HTTP_404_NOT_FOUND)
+
+            attendance = Attendance.objects.filter(student=student, date=date_obj).first()
+            if not attendance:
+                return Response({"error": "Attendance record not found."}, status=http_status.HTTP_404_NOT_FOUND)
+
+            # Delete the remark but keep the status unchanged
+            attendance.remark = None
+            attendance.save()
+
+            return Response({"message": "Remark deleted successfully."}, status=http_status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class HolidayView(APIView):
+    def get(self, request):
+        month = request.query_params.get("month")
+        year = request.query_params.get("year")
+        if not month or not year:
+            return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            month = int(month)
+            year = int(year)
+            if month < 1 or month > 12:
+                return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=http_status.HTTP_400_BAD_REQUEST)
+            if year < 1000 or year > 9999:
+                return Response({"error": "Invalid year."}, status=http_status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            return Response({"error": "Invalid input. Month and Year should be integers."}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        # Initial filter
+        holidays = Holiday.objects.filter(date__year=year, date__month=month)
+
+        # Prepare response
+        holiday_data = [
+            {
+                "date": holiday.date.strftime("%Y-%m-%d"),  # Format date as a string
+                "day_of_week": holiday.date.strftime("%A"),  # Get day of the week
+                "reason": holiday.reason,  # Reason for the holiday
+            }
+            for holiday in holidays
+        ]
+
+        return Response(holiday_data, status=http_status.HTTP_200_OK)
+    
     def post(self, request):
         date = request.data.get("date")
         reason = request.data.get("reason")
@@ -337,7 +362,7 @@ class AddOrUpdateHolidayView(APIView):
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request):
         date = request.data.get("date")
 
         # Validate required fields
@@ -365,40 +390,7 @@ class AddOrUpdateHolidayView(APIView):
 
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class FetchHolidaysView(APIView):
-    def get(self, request):
-        month = request.query_params.get("month")
-        year = request.query_params.get("year")
-        if not month or not year:
-            return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
-
-        try:
-            month = int(month)
-            year = int(year)
-            if month < 1 or month > 12:
-                return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=http_status.HTTP_400_BAD_REQUEST)
-            if year < 1000 or year > 9999:
-                return Response({"error": "Invalid year."}, status=http_status.HTTP_400_BAD_REQUEST)
-        except ValueError:
-            return Response({"error": "Invalid input. Month and Year should be integers."}, status=http_status.HTTP_400_BAD_REQUEST)
-
-        # Initial filter
-        holidays = Holiday.objects.filter(date__year=year, date__month=month)
-
-        # Prepare response
-        holiday_data = [
-            {
-                "date": holiday.date.strftime("%Y-%m-%d"),  # Format date as a string
-                "day_of_week": holiday.date.strftime("%A"),  # Get day of the week
-                "reason": holiday.reason,  # Reason for the holiday
-            }
-            for holiday in holidays
-        ]
-
-        return Response(holiday_data, status=http_status.HTTP_200_OK)
-
+ 
 
 class CheckHolidayView(APIView):
     def get(self, request):
@@ -422,7 +414,8 @@ class CheckHolidayView(APIView):
             status=http_status.HTTP_200_OK
         )
 
-class AllStudentsStatusCountView(APIView):
+
+class StudentStatistics(APIView):
     def get(self, request):
         # Get the query parameters
         month = request.query_params.get('month')
@@ -530,7 +523,6 @@ class AllStudentsStatusCountView(APIView):
         return Response(response, status=http_status.HTTP_200_OK)
 
 
-
 class DailyStatisticsView(APIView):
     def get(self, request):
         # Get query parameters
@@ -560,19 +552,21 @@ class DailyStatisticsView(APIView):
         else:
             students = Students.objects.all()
 
-        # Fetch all statuses except "Holiday"
-        all_statuses = [status.status for status in Status.objects.all() if status.status != "Holiday"]
+        # Fetch all statuses
+        all_statuses = Status.objects.all()
+        excluded_statuses = {"Weekend", "Holiday"} 
+        status_types = [status.status for status in all_statuses if status.status not in excluded_statuses]
 
+        
         # Prepare daily statistics dictionary
         daily_statistics = {}
         for day in range(1, end_date.day + 1):
             current_date = datetime(year, month, day).date()
-            is_weekend = current_date.weekday() in [5, 6]  # Saturday (5) and Sunday (6)
-            
             daily_statistics[current_date] = {
-                "date": current_date.strftime('%d/%m/%Y'),
-                "day": f"{current_date.strftime('%a').lower()} {'(holiday)' if is_weekend else ''}",
-                "status_counts": {status: 0 for status in all_statuses}
+                "date": current_date.strftime('%d/%m/%Y'),  # Preformatted date
+                "day":  current_date.strftime('%a').lower(),
+                "is_holiday": current_date.weekday() in [5, 6],
+                "status_counts": {status: 0 for status in status_types}
             }
 
         # Mark additional holidays explicitly
@@ -580,6 +574,7 @@ class DailyStatisticsView(APIView):
         for holiday in holidays:
             holiday_date = holiday.date
             if holiday_date in daily_statistics:
+                daily_statistics[holiday_date]["is_holiday"] = True
                 daily_statistics[holiday_date]["day"] += " (holiday)"
 
         # Populate attendance counts
@@ -590,16 +585,23 @@ class DailyStatisticsView(APIView):
         for record in attendances:
             record_date = record['date']
             record_status = record['status__status']
-            if record_date in daily_statistics and record_status and record_status != "Holiday":
+
+            # Skip excluded statuses
+            if record_status in excluded_statuses:
+                continue
+
+            if record_date in daily_statistics and record_status:
                 daily_statistics[record_date]["status_counts"][record_status] += record['count']
 
-        # Convert dictionary to list response
-        response = []
-        for date, data in sorted(daily_statistics.items()):
-            response.append({
-                "date": data["date"],
-                "day_name": data["day"],
-                "status_counts": data["status_counts"]
-            })
 
-        return Response(response, status=http_status.HTTP_200_OK)
+        # Convert to final response format
+        formatted_response = []
+        for date, data in sorted(daily_statistics.items()):
+            row = {
+                "date": data["date"],
+                "day": data["day"],
+                **{status: "-" if data["is_holiday"] else data["status_counts"].get(status, 0) for status in status_types}
+            }
+            formatted_response.append(row)
+
+        return Response({"columns": ["date", "day"] + status_types, "data": formatted_response}, status=http_status.HTTP_200_OK)

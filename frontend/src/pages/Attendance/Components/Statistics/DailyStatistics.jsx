@@ -7,7 +7,7 @@ import { useMainContext } from '../../../../Context/MainContext';
 import useAttendanceContext from "../../../../Context/AttendanceContext";
 import { Modal } from 'antd';
 
-const DailyStatisticsTable = () => {
+const DailyStatistics = () => {
   const {
     monthId,
     loading,
@@ -19,37 +19,26 @@ const DailyStatisticsTable = () => {
   
   const fetchData = async () => {
     try {
-      setLoading(true);
-      const response = await fetchDailyStatistics(sectionId, monthId, year);
-  
-      // Directly set the formatted data from the backend
-      setData(response);
-  
-      // Extract dynamic status types from the first record
-      const statusCounts = response[0]?.status_counts || {};
-      const statusTypes = Object.keys(statusCounts);
-  
-      // Generate dynamic columns
-      const dynamicColumns = [
-        { field: 'date', headerName: 'Date', flex: 1 },
-        { field: 'day_name', headerName: 'Day', flex: 1 },
-        ...statusTypes.map(status => ({
-          field: status,
-          headerName: status,
-          flex: 1,
-          sortable: true,
-          align: 'center',
-          headerAlign: 'center',
-        })),
-      ];
-  
-      setColumns(dynamicColumns);
+        setLoading(true);
+        const response = await fetchDailyStatistics(sectionId, monthId, year);
+        
+        setColumns(response.columns.map(col => ({
+            field: col,
+            headerName: col.charAt(0).toUpperCase() + col.slice(1),
+            flex: 1,
+            align: 'center',
+            headerAlign: 'center',
+            sortable: col !== "date" && col !== "day"
+        })));
+
+        setData(response.data);
     } catch (error) {
-      console.error('API Error:', error);
+        console.error('API Error:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
   
 
   useEffect(() => {
@@ -74,6 +63,7 @@ const DailyStatisticsTable = () => {
             disableColumnMenu
             rowHeight={30}
             loading={loading}
+            getRowId={(row) => row.date}
             sx={{
               width: "100%",
               height: "600px",
@@ -85,4 +75,4 @@ const DailyStatisticsTable = () => {
   );
 };
 
-export default DailyStatisticsTable;
+export default DailyStatistics;
