@@ -275,7 +275,6 @@ class FetchStudentsWithRemarksView(APIView):
                         "attendance": filtered_attendance
                     }
                     result.append(student_data)
-        print(result)
         # Return the response with the list of students and their attendance with remarks and status
         return Response(result, status=http_status.HTTP_200_OK)
 
@@ -387,9 +386,6 @@ class FetchHolidaysView(APIView):
 
         # Initial filter
         holidays = Holiday.objects.filter(date__year=year, date__month=month)
-
-        # Debug: Print holidays after exclusion
-        print("Holidays after exclusion:", holidays)
 
         # Prepare response
         holiday_data = [

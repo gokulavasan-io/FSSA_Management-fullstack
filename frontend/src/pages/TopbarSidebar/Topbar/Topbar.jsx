@@ -26,8 +26,7 @@ const { Text } = Typography;
 
 function TopBar({ collapsed }) {
   let userPicLink=localStorage.getItem("pictureLink")
-  console.log(userPicLink);
-  
+
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
  
  

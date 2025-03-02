@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import "dayjs/locale/en";
 import Handsontable from "handsontable";
-import { Button } from "antd";
 import useAttendanceContext from "../../Context/AttendanceContext";
 import {
   fetchAttendanceData,
@@ -11,12 +10,17 @@ import {
 import AttendanceTable from "./Components/Table/AttendanceTable";
 import { useMainContext } from "../../Context/MainContext";
 import "./Styles/attendance.css";
-import { MenuOutlined } from "@ant-design/icons";
 import HolidayManager from "./Components/Holiday/AddHoliday";
+import { Dropdown, Menu, Button } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+import ShowComments from "./Components/Comments/ShowComments";
+import ShowHolidays from "./Components/Holiday/ShowHolidays";
+import DailyStatisticsTable from "./Components/Statistics/DailyStatistics";
+import StudentStatisticsTable from "./Components/Statistics/StudentStatistics";
+
 
 const AttendanceMain = () => {
   const { setSelectedSubject, year, sectionId } = useMainContext();
-
   const {
     monthId,
     tableData,
@@ -26,12 +30,21 @@ const AttendanceMain = () => {
     loading,
     setLoading,
     remarks,
-    setRemarks,
+    setRemarks, setCommentsTableVisible, setHolidaysTableVisible,setDailyStatisticsVisible,setStudentStatisticsVisible
   } = useAttendanceContext();
 
   useEffect(() => {
     setSelectedSubject({ id: null, subject_name: "Attendance" });
   }, []);
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" onClick={()=>setCommentsTableVisible(true)}>Comments</Menu.Item>
+      <Menu.Item key="2" onClick={()=>setHolidaysTableVisible(true)} >Holidays</Menu.Item>
+      <Menu.Item key="3" onClick={()=>setStudentStatisticsVisible(true)} >Student Statistics</Menu.Item>
+      <Menu.Item key="4" onClick={()=>setDailyStatisticsVisible(true)}>Daily Statistics</Menu.Item>
+    </Menu>
+  );
 
   const fetchStudentRemarks = async () => {
     setLoading(true);
@@ -99,7 +112,8 @@ const AttendanceMain = () => {
     } catch (error) {
       console.error("Error updating attendance:", error);
       alert("Failed to update attendance.");
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -177,12 +191,14 @@ const AttendanceMain = () => {
         >
           {loading ? "Updating..." : " Update"}
         </Button>
-        <Button
-          shape="circle"
-          type="text"
-          icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
-        />
-        <HolidayManager />
+          <HolidayManager />
+        <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
+            <Button
+              shape="circle"
+              type="text"
+              icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
+            />
+          </Dropdown>
       </div>
 
       <AttendanceTable
@@ -191,6 +207,13 @@ const AttendanceMain = () => {
         handleAfterChange={handleAfterChange}
         remarksData={remarks}
       />
+
+     <ShowComments/>
+      <ShowHolidays/>
+      <DailyStatisticsTable />
+      <StudentStatisticsTable />
+      
+       
     </div>
   );
 };

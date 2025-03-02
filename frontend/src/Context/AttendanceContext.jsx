@@ -15,6 +15,12 @@ export const AttendanceContextProvider = ({ children }) => {
   const [remarks, setRemarks] = useState([]);
   const hotTableRef = useRef(null);
 
+  const [commentsTableVisible, setCommentsTableVisible] = useState(false);
+  const [holidaysTableVisible, setHolidaysTableVisible] = useState(false);
+  const [dailyStatisticsVisible, setDailyStatisticsVisible] = useState(false);
+  const [studentStatisticsVisible, setStudentStatisticsVisible] = useState(false);
+  
+
   return (
     <AttendanceContext.Provider
       value={{
@@ -28,7 +34,8 @@ export const AttendanceContextProvider = ({ children }) => {
         setLoading,
         remarks,
         setRemarks,
-        hotTableRef,
+        hotTableRef,commentsTableVisible, setCommentsTableVisible,holidaysTableVisible, setHolidaysTableVisible,
+        dailyStatisticsVisible,setDailyStatisticsVisible,studentStatisticsVisible,setStudentStatisticsVisible,
       }}
     >
       {children}

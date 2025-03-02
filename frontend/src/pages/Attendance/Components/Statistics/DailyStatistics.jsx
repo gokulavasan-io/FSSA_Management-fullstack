@@ -2,18 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { format } from 'date-fns';
-import useAttendanceContext from '../AttendanceContext';
 import { fetchDailyStatistics } from '../../../../api/attendanceAPI';
+import { useMainContext } from '../../../../Context/MainContext';
+import useAttendanceContext from "../../../../Context/AttendanceContext";
+import { Modal } from 'antd';
 
 const DailyStatisticsTable = () => {
-  const { sectionId, month, year, loading, setLoading} = useAttendanceContext();
+  const {
+    monthId,
+    loading,
+    setLoading,dailyStatisticsVisible,setDailyStatisticsVisible,
+  } = useAttendanceContext();
+  const {sectionId,year}= useMainContext()
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   
   const fetchData = async () => {
     try {
         setLoading(true);
-        const response = await fetchDailyStatistics(sectionId,month,year)
+        const response = await fetchDailyStatistics(sectionId,monthId,year)
         const statusCounts = response[0]?.status_counts;
         const statusTypes = statusCounts ? Object.keys(statusCounts).filter(item => item !== 'Holiday') : [];
 
@@ -53,16 +60,18 @@ const DailyStatisticsTable = () => {
 
   useEffect(() => {
     fetchData();
-  }, [sectionId, month, year]);
+  }, [sectionId, monthId, year]);
 
   return (
-    <div style={{ width: '80%', height: 600, margin: 'auto' }}>
-      {loading ? (
-        <CircularProgress style={{ display: 'block', margin: '50px auto' }} />
-      ) : (
-        data.length === 0 ? (
-          <p style={{ textAlign: 'center' }}>No data available</p>
-        ) : (
+    <Modal
+         open={dailyStatisticsVisible}
+         onCancel={() => setDailyStatisticsVisible(false)}
+         footer={null}
+         centered
+         title={"Daily Statistics"}
+         zIndex={100003}
+         width={1300}
+        >
           <DataGrid
             rows={data}
             columns={columns.map(col => ({ ...col, resizable: false }))}
@@ -70,10 +79,15 @@ const DailyStatisticsTable = () => {
             hideFooter={true}
             disableColumnMenu
             rowHeight={30}
+            loading={loading}
+            sx={{
+              width: "100%",
+              height: "600px",
+              overflow: "hidden",
+              marginTop: "1rem",
+            }}
           />
-        )
-      )}
-    </div>
+    </Modal>
   );
 };
 

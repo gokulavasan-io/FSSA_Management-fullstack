@@ -9,7 +9,6 @@ export const fetchAttendanceData = async (section,month,year) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching attendance data:", error);
       throw error;
     }
 };
@@ -20,7 +19,6 @@ export const updateAttendance = async (data) =>{
         await axios.put(API_PATHS.UPDATE_ATTENDANCE, { records: data });
         
     } catch (error) {
-    console.error("Error updating attendance data:", error);
       throw error;
     }
 
@@ -34,7 +32,6 @@ export const fetchRemarks = async (section,month,year) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching remarks :", error);
       throw error;
     }
 };
@@ -43,9 +40,9 @@ export const fetchRemarks = async (section,month,year) => {
 export const  addRemark = async (remarkData) => {
     try {
       await axios.post(API_PATHS.ADD_REMARK, remarkData);
-      
     } catch (error) {
-      console.error("Error adding remark:", error);
+      throw error;
+
     }
 }
 
@@ -54,7 +51,8 @@ export const  deleteRemark = async (remarkData) => {
       await axios.delete(API_PATHS.ADD_REMARK, {data : remarkData});
       
     } catch (error) {
-      console.error("Error deleting remark:", error);
+      throw error;
+
     }
 }
 
@@ -64,7 +62,6 @@ export const checkHoliday = async (date) => {
     return response.data;
     
   } catch (error) {
-    console.error("Error checking holiday:", error);
     throw error;
   }
 };
@@ -78,7 +75,6 @@ export const fetchHolidays = async (section,month,year) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching remarks :", error);
       throw error;
     }
 };
@@ -91,7 +87,8 @@ export const  addHoliday = async (holidayData) => {
       await axios.post(API_PATHS.ADD_HOLIDAY, holidayData);
       
     } catch (error) {
-      console.error("Error adding holiday:", error);
+      throw error;
+
     }
 }
 
@@ -101,7 +98,8 @@ export const  deleteHoliday = async (date) => {
             data: { date },
           });
     } catch (error) {
-      console.error("Error deleting holiday:", error);
+      throw error;
+
     }
 }
 
@@ -115,7 +113,6 @@ export const fetchDailyStatistics = async (section,month,year) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching remarks :", error);
       throw error;
     }
 };
@@ -130,7 +127,6 @@ export const fetchStudentStatistics = async (section,month,year) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching remarks :", error);
       throw error;
     }
 };

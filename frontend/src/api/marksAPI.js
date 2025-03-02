@@ -6,7 +6,6 @@ export const submitTestData = async (testData) => {
     const response = await axios.post(`${API_PATHS.POST_MARK}`, testData);
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
@@ -16,7 +15,6 @@ export const fetchAllTestMarksForMonth = async (section,month,subject) => {
     let response= await axios.get(`${API_PATHS.GET_ALL_DATA}?section_id=${section}&month=${month}&subject=${subject}`)
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
@@ -26,7 +24,6 @@ export const updateMarks = async (testId,data) => {
     let response= await axios.put(`${API_PATHS.UPDATE_MARK}${testId}/`, data)
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
@@ -36,7 +33,6 @@ export const fetchTestDetails = async (month,subject) => {
     let response= await axios.get(`${API_PATHS.GET_ALL_TEST_DETAILS}?month=${month}&subject=${subject}`)
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
@@ -47,7 +43,6 @@ export const fetchTestData = async (testId,sectionId) => {
     const response = await axios.get(apiUrl);
     return response.data;
   } catch (error) {
-    console.error("Error fetching data:", error);
     throw error;
   }
 };
@@ -60,7 +55,6 @@ export const fetchLevels = async (testId) => {
     const response = await axios.get(`${API_PATHS.GET_LEVEL}${testId}/`)
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
@@ -71,7 +65,6 @@ export const updateLevels = async (testId,data) => {
     let response = axios.put(`${API_PATHS.UPDATE_LEVEL}${testId}/`, data)
     return response.data;
   } catch (error) {
-    console.error("Error submitting test data:", error);
     throw error;
   }
 };
