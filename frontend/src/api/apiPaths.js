@@ -33,9 +33,13 @@ export const ATTENDANCE_API_ENDPOINTS={
     ATTENDANCE_DATA:"http://127.0.0.1:8000/attendance/attendance/",
     REMARK:'http://127.0.0.1:8000/attendance/remarks/',
     HOLIDAY:'http://127.0.0.1:8000/attendance/add_holiday/',
-
     CHECK_HOLIDAY:'http://127.0.0.1:8000/attendance/check_holiday/',
     FETCH_STUDENT_STATISTICS:'http://127.0.0.1:8000/attendance/fetch_student_statistics/',
     FETCH_DAILY_STATISTICS:'http://127.0.0.1:8000/attendance/fetch_daily_statistics/',
+
+}
+
+export const HOME_API_ENDPOINTS={
+    ATTENDANCE_REPORT:"http://127.0.0.1:8000/home/attendance-report/",
 
 }

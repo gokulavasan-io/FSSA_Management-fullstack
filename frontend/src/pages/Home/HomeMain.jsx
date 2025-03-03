@@ -1,8 +1,9 @@
 import React from 'react'
+import AttendanceReport from './Components/AttendanceReport'
 
 function HomeMain() {
   return (
-    <div>Home</div>
+    <AttendanceReport/>
   )
 }
 

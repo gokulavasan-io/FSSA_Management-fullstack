@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'marks',
     'attendance',
     'member',
+    'home',
   
 ]
 

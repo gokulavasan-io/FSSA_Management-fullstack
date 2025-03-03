@@ -17,7 +17,6 @@ import {
   UserGroupIcon,
   UserIcon,
 } from "hugeicons-react";
-import { useState } from "react";
 import { useMainContext } from "../../../Context/MainContext";
 import "./Topbar.css"
 

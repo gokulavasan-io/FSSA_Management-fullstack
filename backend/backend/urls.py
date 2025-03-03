@@ -7,4 +7,6 @@ urlpatterns = [
     path('marks/', include("marks.urls")),
     path('attendance/', include("attendance.urls")),
     path('member/', include("member.urls")),
+    path('home/', include("home.urls")),
+    
 ]
