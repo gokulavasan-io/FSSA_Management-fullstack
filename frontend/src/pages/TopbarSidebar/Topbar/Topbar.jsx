@@ -8,7 +8,7 @@ import {
   Typography,
 } from "antd";
 import { BellOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ArrowDown01Icon,
   BookOpen01Icon,
@@ -26,6 +26,7 @@ const { Text } = Typography;
 
 function TopBar({ collapsed }) {
   let userPicLink=localStorage.getItem("pictureLink")
+  const location = useLocation();
 
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
  
@@ -95,20 +96,16 @@ function TopBar({ collapsed }) {
             </Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>{selectedSubject.subject_name}</Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <Dropdown overlay={monthMenu} trigger={["click","hover"]} > 
-              <span
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                {selectedMonth.month_name} <ArrowDown01Icon size={16} />
-              </span>
-            </Dropdown>
-          </Breadcrumb.Item>
+
+          {location.pathname !== "/" && (
+            <Breadcrumb.Item>
+              <Dropdown overlay={monthMenu} trigger={["click", "hover"]}>
+                <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                  {selectedMonth.month_name} <ArrowDown01Icon size={16} />
+                </span>
+              </Dropdown>
+            </Breadcrumb.Item>
+        )}
         </Breadcrumb>
 
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>

@@ -20,7 +20,7 @@ import StudentStatisticsTable from "./Components/Statistics/StudentStatistics";
 
 
 const AttendanceMain = () => {
-  const { setSelectedSubject, year, sectionId } = useMainContext();
+  const {  year, sectionId } = useMainContext();
   const {
     monthId,
     tableData,
@@ -32,10 +32,6 @@ const AttendanceMain = () => {
     remarks,
     setRemarks, setCommentsTableVisible, setHolidaysTableVisible,setDailyStatisticsVisible,setStudentStatisticsVisible
   } = useAttendanceContext();
-
-  useEffect(() => {
-    setSelectedSubject({ id: null, subject_name: "Attendance" });
-  }, []);
 
   const menu = (
     <Menu>
