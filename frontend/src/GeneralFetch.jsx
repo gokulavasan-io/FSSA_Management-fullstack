@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useMainContext } from "./Context/MainContext";
-import { fetchMonths, fetchSubjects, fetchUserData } from "./api/generalAPI";
+import { fetchMonths, fetchSections, fetchSubjects, fetchUserData } from "./api/generalAPI";
 
 const GeneralFetchComponent = () => {
-  const { setMonths, setSubjects,setUserName,setUserRole,setSectionId,setSectionName,setUserId } = useMainContext();
+  const { setMonths, setSubjects,setUserName,setUserRole,setSectionId,setSectionName,setUserId,setSections } = useMainContext();
   let userId=localStorage.getItem("userId")
   useEffect(() => {
     fetchMonths().then((response) => {
@@ -13,6 +13,9 @@ const GeneralFetchComponent = () => {
     fetchSubjects().then((response) => {
       setSubjects(response);
     });
+    fetchSections().then((response)=>{
+      setSections(response)
+    })
 
     fetchUserData(userId).then((response)=>{
       setUserId(userId)

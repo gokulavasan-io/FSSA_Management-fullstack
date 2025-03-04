@@ -11,6 +11,15 @@ export const fetchMonths = async () => {
   }
 };
 
+export const fetchSections = async () => {
+  try {
+    let response= await axios.get(API_PATHS.GET_SECTIONS)
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchSubjects = async () => {
   try {
     let response= await axios.get(API_PATHS.FETCH_SUBJECTS)

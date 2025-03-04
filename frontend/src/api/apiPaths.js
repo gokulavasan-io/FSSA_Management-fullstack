@@ -3,6 +3,7 @@ const API_PATHS = {
     GET_STUDENTS_NAME: 'http://localhost:8000/students/studentsName/',
     GET_STUDENTS_DATA: "http://localhost:8000/students/studentsData/",
     POST_STUDENTS_DATA: "http://localhost:8000/students/studentsData/",
+    GET_SECTIONS:"http://localhost:8000/students/sections/",
 
     // for normal tests
     POST_MARK: "http://127.0.0.1:8000/marks/add_mark/",

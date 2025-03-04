@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 // Create Context
 const MainContext = createContext();
@@ -10,6 +10,7 @@ export const MainContextProvider = ({ children }) => {
     const [selectedMonth, setSelectedMonth] = useState({ id: 1, month_name: "January" });
     const [selectedSubject, setSelectedSubject] = useState({id:1,subject_name:"English"})
     const [sectionId, setSectionId] = useState(3)
+    const [sectionName,setSectionName]=useState(2)
     const [batchNumber, setBatchNumber] = useState(4)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [year, setYear] = useState(2024);
@@ -20,8 +21,13 @@ export const MainContextProvider = ({ children }) => {
     const [userName,setUserName]=useState("")
     const [userRole,setUserRole]=useState("")
     const [userMailId,setUserMailId]=useState("")
-    const [sectionName,setSectionName]=useState(1)
+    const [sections,setSections]=useState([])
+    const [sectionsWithAll,setSectionsWithAll]=useState([])
 
+    useEffect(() => {
+      setSectionsWithAll([{ name: "All", id: null }, ...sections])
+    }, [sections])
+    
 
     
   return (
@@ -29,7 +35,7 @@ export const MainContextProvider = ({ children }) => {
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
         year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,
-        userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole
+        userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
       }}
     >
       {children}

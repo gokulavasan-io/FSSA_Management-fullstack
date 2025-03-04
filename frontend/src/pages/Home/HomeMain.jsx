@@ -1,9 +1,9 @@
 import React from 'react'
-import AttendanceReport from './Components/AttendanceReport'
+import AttendanceReport from './Components/AttendanceReport/AttendanceReport'
 
 function HomeMain() {
   return (
-    <AttendanceReport/>
+    <AttendanceReport />
   )
 }
 
