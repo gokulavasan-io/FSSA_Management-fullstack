@@ -5,3 +5,7 @@
 .ant-drawer-content-wrapper{
     box-shadow: none !important;
 }
+
+.ant-breadcrumb-separator{
+    font-family: poppins !important;
+}

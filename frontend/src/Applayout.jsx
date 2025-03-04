@@ -29,11 +29,11 @@ function AppLayout() {
         {/* Content Area */}
         <Content
           style={{
-            marginTop: 64,
+            marginTop: 60,
             padding: "20px",
-            height: "calc(100vh - 64px)", 
+            height: "calc(100vh - 60px)", 
             overflowY: "auto",
-            background: "#f5f5f5",
+            background: "#ebeff3",
             transition: "all 0.3s ease-in-out",
             
           }}
@@ -46,3 +46,4 @@ function AppLayout() {
 }
 
 export default AppLayout;
+

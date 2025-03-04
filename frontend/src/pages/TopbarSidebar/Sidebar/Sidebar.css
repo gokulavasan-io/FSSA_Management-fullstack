@@ -1,12 +1,14 @@
 .ant-menu-submenu-title svg,
 .ant-menu-item,
 .ant-menu-submenu-title span {
-    color: #737791 !important;
+    color: white !important;
+    
 }
 
 .ant-menu-submenu-arrow {
-    color: black;
+    color: white !important;
 }
+
 .ant-menu{
     background-color: transparent !important;
 }
@@ -15,8 +17,9 @@
 .ant-menu-submenu-selected>.ant-menu-submenu-title svg,
 .ant-menu-submenu-selected>.ant-menu-submenu-title span,
 .ant-menu-submenu-selected .ant-menu-submenu-title {
-    background-color: #5D5FEF !important;
+    background-color: #38556a !important;
     color: white !important;
+    border-radius: 4px !important;
     
 }
 
@@ -30,6 +33,13 @@
 }
 
 .ant-menu-submenu {
-    background: #fff !important;
+    background: #12344d !important;
+}
+
+.ant-menu-item:hover, 
+.ant-menu-submenu-title:hover,.ant-menu-submenu-selected>.ant-menu-submenu-title svg:hover {
+    background-color: #5c7f99 !important;
+    color: white !important;
+    border-radius: 4px !important;
 }
 

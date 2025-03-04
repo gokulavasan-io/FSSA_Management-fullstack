@@ -73,19 +73,18 @@ function TopBar({ collapsed }) {
       <Header
         style={{
           position: "fixed",
-          width: collapsed ? "calc(100% - 70px)" : "calc(100% - 225px)",
+          width: collapsed ? "calc(100% - 65px)" : "calc(100% - 220px)",
+          height:60,
           top: 0,
           right: 0,
           zIndex: 10000,
           background: "#fff",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+          borderBottom:"#d6dbdf 1px solid",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           padding: "0 30px",
-          borderTopLeftRadius: "8px",
-          borderBottomLeftRadius: "8px",
-          transition: "width 0.3s ease-in-out", // Smooth transition
+          transition: "width 0.3s ease-in-out", 
         }}
       >
         <Breadcrumb separator=">">

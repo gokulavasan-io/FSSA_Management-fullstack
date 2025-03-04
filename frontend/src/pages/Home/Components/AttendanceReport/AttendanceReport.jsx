@@ -64,9 +64,9 @@ const AttendanceReport = () => {
   }, [selectedSection]);
 
   return (
-    <Card style={{ borderRadius: 12, overflow: "hidden",boxShadow: "0 4px 10px rgba(0,0,0,0.1)",height:280 }} bodyStyle={{ padding: "8px 10px" }}>
+    <Card style={{ borderRadius: 6, overflow: "hidden",boxShadow: "0 1px 0 0 #cfd7df",height:280 }} bodyStyle={{ padding: "8px 10px" }}>
       <Row justify="space-between" align="middle">
-        <Title level={5} style={{ margin:2, marginLeft: 12, color: "#0047AB" }}>
+        <Title level={5} style={{ margin:2, marginLeft: 12, color: "#183247" }}>
           Today's Attendance Report
         </Title>
         <Button

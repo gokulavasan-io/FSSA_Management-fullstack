@@ -13,7 +13,7 @@ import {
 import { useMarksContext } from "../../Context/MarksContext";
 import ChartForLevelTable from "./Components/Charts/ChartForLevelTable.jsx";
 import { useMainContext } from "../../Context/MainContext.jsx";
-import Loader from "../UxComponents/Loader.jsx";
+import Loader from "../Components/Loader.jsx";
 
 const MarksMain = () => {
   const {

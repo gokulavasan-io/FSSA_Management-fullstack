@@ -54,3 +54,5 @@ class AttendanceReport(APIView):
         }
 
         return Response(attendance_summary, status=http_status.HTTP_200_OK)
+
+

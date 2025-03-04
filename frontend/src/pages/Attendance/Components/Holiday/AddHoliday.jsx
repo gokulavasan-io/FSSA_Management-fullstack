@@ -3,14 +3,23 @@ import { Modal, Button, DatePicker, Input, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { addHoliday, deleteHoliday, checkHoliday } from "../../../../api/attendanceAPI";
+import {
+  addHoliday,
+  deleteHoliday,
+  checkHoliday,
+} from "../../../../api/attendanceAPI";
+import PrimaryBtn from "../../../Components/Buttons/PrimaryBtn";
+
 
 // Validation schema using Yup
 const schema = yup.object().shape({
   reason: yup
     .string()
     .trim()
-    .matches(/^(?![\d!@#$%^&*()_+={}[\]:;"'<>,.?/~`-]+$).*$/, "Reason cannot be only numbers or symbols")
+    .matches(
+      /^(?![\d!@#$%^&*()_+={}[\]:;"'<>,.?/~`-]+$).*$/,
+      "Reason cannot be only numbers or symbols"
+    )
     .required("Holiday reason is required"),
 });
 
@@ -109,7 +118,8 @@ const AddHoliday = () => {
 
   return (
     <div>
-      <Button variant="outlined" color="purple" onClick={openModal}>Add Holiday</Button>
+
+      <PrimaryBtn onClick={openModal} label={"Add Holiday"}  />
 
       <Modal
         title="Manage Holiday"
@@ -117,7 +127,12 @@ const AddHoliday = () => {
         onCancel={() => setModalVisible(false)}
         footer={[
           isExistingHoliday ? (
-            <Button key="delete" type="primary" danger onClick={handleHolidayRemove}>
+            <Button
+              key="delete"
+              type="primary"
+              danger
+              onClick={handleHolidayRemove}
+            >
               Remove Holiday
             </Button>
           ) : (
@@ -125,7 +140,9 @@ const AddHoliday = () => {
               Submit
             </Button>
           ),
-          <Button key="cancel" onClick={() => setModalVisible(false)}>Cancel</Button>,
+          <Button key="cancel" onClick={() => setModalVisible(false)}>
+            Cancel
+          </Button>,
         ]}
       >
         <DatePicker
@@ -134,7 +151,11 @@ const AddHoliday = () => {
           format="DD/MM/YYYY"
           disabledDate={(date) => date.day() === 0 || date.day() === 6} // Disable weekends
         />
-        {dateError && <p style={{ color: "red", marginTop: "5px" }}>Please select a date.</p>}
+        {dateError && (
+          <p style={{ color: "red", marginTop: "5px" }}>
+            Please select a date.
+          </p>
+        )}
 
         <Controller
           name="reason"
@@ -148,7 +169,11 @@ const AddHoliday = () => {
             />
           )}
         />
-        {errors.reason && <p style={{ color: "red", marginTop: "5px" }}>{errors.reason.message}</p>}
+        {errors.reason && (
+          <p style={{ color: "red", marginTop: "5px" }}>
+            {errors.reason.message}
+          </p>
+        )}
       </Modal>
     </div>
   );

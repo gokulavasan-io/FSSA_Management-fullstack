@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Select, Button, Checkbox, Form, Input, Modal, DatePicker, Row, Col } from "antd";
+import {
+  Select,
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Modal,
+  DatePicker,
+  Row,
+  Col,
+} from "antd";
 import { submitTestData } from "../../../../api/marksAPI.js";
 import dayjs from "dayjs";
-import useNotification from "../../../UxComponents/Notification.jsx";
+import useNotification from "../../../Components/Notification.jsx";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
+import SecondaryBtn from "../../../Components/Buttons/Secondary.jsx";
 
 const { Option } = Select;
 
@@ -29,7 +40,7 @@ const AddNewTest = () => {
 
   const handleChange = (e) => {
     const { name, type, checked, value } = e.target || e;
-    
+
     if (name === "test_name") {
       setFormData((prev) => ({
         ...prev,
@@ -37,7 +48,9 @@ const AddNewTest = () => {
       }));
     } else if (name === "subject") {
       const selectedSubject = subjects.find((subject) => subject.id === value);
-      setIsProblemSolving(selectedSubject?.subject_name.toLowerCase().includes("problem") || false);
+      setIsProblemSolving(
+        selectedSubject?.subject_name.toLowerCase().includes("problem") || false
+      );
       setFormData((prev) => ({ ...prev, [name]: value }));
     } else {
       setFormData((prev) => ({
@@ -61,13 +74,19 @@ const AddNewTest = () => {
     const testNameRegex = /^[A-Za-z0-9\s]+$/;
 
     if (!formData.test_name || !testNameRegex.test(formData.test_name)) {
-      newErrors.test_name = "Test Name must contain only letters, numbers, and spaces.";
+      newErrors.test_name =
+        "Test Name must contain only letters, numbers, and spaces.";
     }
 
     if (!formData.month) newErrors.month = "Please select a month";
     if (!formData.subject) newErrors.subject = "Please select a subject.";
 
-    if (!formData.isLevelTest && (!formData.total_marks || isNaN(formData.total_marks) || formData.total_marks <= 0)) {
+    if (
+      !formData.isLevelTest &&
+      (!formData.total_marks ||
+        isNaN(formData.total_marks) ||
+        formData.total_marks <= 0)
+    ) {
       newErrors.total_marks = "Enter a valid total mark.";
     } else if (formData.total_marks >= 1000) {
       newErrors.total_marks = "Total Marks should not be greater than 1000";
@@ -77,7 +96,8 @@ const AddNewTest = () => {
       newErrors.about_test = "About Test must be at least 5 characters long.";
     }
 
-    if (!formData.created_at) newErrors.created_at = "Please select a valid date.";
+    if (!formData.created_at)
+      newErrors.created_at = "Please select a valid date.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -119,30 +139,40 @@ const AddNewTest = () => {
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="pink"
-        onClick={() => setOpenNewTestForm(true)}
-      >
-        Add New Test
-      </Button>
-
+      <SecondaryBtn onClick={() => setOpenNewTestForm(true)} label={"Add New Test"} />
+        
       <Modal
         title="Add New Test"
         open={openNewTestForm}
         onCancel={() => setOpenNewTestForm(false)}
         footer={null}
         width={500}
+        zIndex={10001}
       >
         <Form layout="vertical" onFinish={handleSubmit}>
-          <Form.Item label="Test Name" validateStatus={errors.test_name ? "error" : ""} help={errors.test_name}>
-            <Input name="test_name" value={formData.test_name} onChange={handleChange} />
+          <Form.Item
+            label="Test Name"
+            validateStatus={errors.test_name ? "error" : ""}
+            help={errors.test_name}
+          >
+            <Input
+              name="test_name"
+              value={formData.test_name}
+              onChange={handleChange}
+            />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Subject" validateStatus={errors.subject ? "error" : ""} help={errors.subject}>
-                <Select value={formData.subject} onChange={(value) => handleChange({ name: "subject", value })}>
+              <Form.Item
+                label="Subject"
+                validateStatus={errors.subject ? "error" : ""}
+                help={errors.subject}
+              >
+                <Select
+                  value={formData.subject}
+                  onChange={(value) => handleChange({ name: "subject", value })}
+                >
                   <Option value="">Select Subject</Option>
                   {subjects.map((subject) => (
                     <Option key={subject.id} value={subject.id}>
@@ -153,8 +183,15 @@ const AddNewTest = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Month" validateStatus={errors.month ? "error" : ""} help={errors.month}>
-                <Select value={formData.month} onChange={(value) => handleChange({ name: "month", value })}>
+              <Form.Item
+                label="Month"
+                validateStatus={errors.month ? "error" : ""}
+                help={errors.month}
+              >
+                <Select
+                  value={formData.month}
+                  onChange={(value) => handleChange({ name: "month", value })}
+                >
                   <Option value="">Select Month</Option>
                   {months.map((month) => (
                     <Option key={month.id} value={month.id}>
@@ -167,7 +204,11 @@ const AddNewTest = () => {
           </Row>
 
           {!isProblemSolving && (
-            <Form.Item label="Total Marks" validateStatus={errors.total_marks ? "error" : ""} help={errors.total_marks}>
+            <Form.Item
+              label="Total Marks"
+              validateStatus={errors.total_marks ? "error" : ""}
+              help={errors.total_marks}
+            >
               <Input
                 type="number"
                 name="total_marks"
@@ -179,7 +220,11 @@ const AddNewTest = () => {
 
           {isProblemSolving && (
             <Form.Item>
-              <Checkbox checked={formData.isLevelTest} onChange={handleChange} name="isLevelTest">
+              <Checkbox
+                checked={formData.isLevelTest}
+                onChange={handleChange}
+                name="isLevelTest"
+              >
                 Is level up test?
               </Checkbox>
               {!formData.isLevelTest && (
@@ -194,7 +239,11 @@ const AddNewTest = () => {
             </Form.Item>
           )}
 
-          <Form.Item label="About Test" validateStatus={errors.about_test ? "error" : ""} help={errors.about_test}>
+          <Form.Item
+            label="About Test"
+            validateStatus={errors.about_test ? "error" : ""}
+            help={errors.about_test}
+          >
             <Input.TextArea
               name="about_test"
               value={formData.about_test}
@@ -203,7 +252,11 @@ const AddNewTest = () => {
             />
           </Form.Item>
 
-          <Form.Item label="Date" validateStatus={errors.created_at ? "error" : ""} help={errors.created_at}>
+          <Form.Item
+            label="Date"
+            validateStatus={errors.created_at ? "error" : ""}
+            help={errors.created_at}
+          >
             <DatePicker format="DD-MM-YYYY" onChange={handleDateChange} />
           </Form.Item>
 

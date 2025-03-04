@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Layout, Menu, Button } from "antd";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import {
@@ -7,8 +6,6 @@ import {
   PieChartIcon,
   TaskEdit02Icon,
   NoteIcon,
-  SidebarRight01Icon,
-  SidebarLeft01Icon,
   LibrariesIcon,
 } from "hugeicons-react";
 import "./Sidebar.css";
@@ -20,17 +17,16 @@ const analysis = ["Student", "Subject", "Class"];
 
 function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
-  const { subjects, setSelectedSubject,selectedKey,setSelectedKey } = useMainContext();
-  
+  const { subjects, setSelectedSubject, selectedKey, setSelectedKey } =useMainContext();
 
   const menuItems = [
     {
       key: "1",
       icon: <Home04Icon size={22} />,
-      label: "Home",
+      label: "Dashboard",
       onClick: () => {
         setSelectedKey("1");
-        navigate("/"); // Navigate to home
+        navigate("/"); 
       },
     },
     {
@@ -74,8 +70,6 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
   ];
 
-  
-
   return (
     <Sider
       collapsed={collapsed}
@@ -90,15 +84,12 @@ function Sidebar({ collapsed, setCollapsed }) {
         position: "fixed",
         left: 0,
         zIndex: 10000,
-        borderTopRightRadius: "10px",
-        borderBottomRightRadius: "10px",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#12344d",
       }}
       onMouseLeave={() => {
-        setTimeout(() => setCollapsed(true), 100); // Adds a small delay
+        setTimeout(() => setCollapsed(true), 100); 
       }}
     >
-      {/* Logo (Toodle) */}
       <div
         style={{
           display: "flex",
@@ -110,49 +101,47 @@ function Sidebar({ collapsed, setCollapsed }) {
           whiteSpace: "nowrap",
           overflow: "hidden",
           cursor: "pointer",
+          backgroundColor: "#0e2a3e",
         }}
         onMouseEnter={() => setCollapsed(false)}
         onClick={() => setCollapsed(false)}
       >
-        {/* Icon - Always Visible */}
         <LibrariesIcon
           size={28}
-          color={collapsed ? "#5D5FEF" : "#737791"}
+          color={"white"}
           style={{ transition: "all 0.3s ease" }}
         />
 
-        {/* Text - Smooth Fade & Width Transition */}
         <span
           style={{
             marginLeft: "10px",
-            color: "#5D5FEF",
-            opacity: collapsed ? 0 : 1, // Smooth fade effect
-            maxWidth: collapsed ? "0px" : "100px", // Prevents sudden jumps
-            overflow: "hidden", // Hides text when collapsed
+            color: "white",
+            opacity: collapsed ? 0 : 1,
+            maxWidth: collapsed ? "0px" : "100px",
+            overflow: "hidden",
             transition: "opacity 0.7s ease, max-width 0.7s ease",
-            display: "inline-block", // Ensures proper transition
-            whiteSpace: "nowrap", // Prevents line breaks
+            display: "inline-block",
+            whiteSpace: "nowrap",
           }}
         >
           Toodle
         </span>
       </div>
-
-      
-          <Menu
-            mode="inline"
-            selectedKeys={[selectedKey]}
-            onClick={({ key }) => setSelectedKey(key)} // Avoid unnecessary re-renders
-            className="border-none"
-            inlineCollapsed={collapsed}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "5px",
-            }}
-            theme="light"
-            items={menuItems}
-          />;
+      <Menu
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        onClick={({ key }) => setSelectedKey(key)}
+        className="border-none"
+        inlineCollapsed={collapsed}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+        }}
+        theme="light"
+        items={menuItems}
+      />
+      ;
     </Sider>
   );
 }
