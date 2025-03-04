@@ -20,8 +20,8 @@ const analysis = ["Student", "Subject", "Class"];
 
 function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
-  const { subjects, setSelectedSubject } = useMainContext();
-  const [selectedKey, setSelectedKey] = useState("1");
+  const { subjects, setSelectedSubject,selectedKey,setSelectedKey } = useMainContext();
+  
 
   const menuItems = [
     {

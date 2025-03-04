@@ -7,7 +7,7 @@ import ExportData from "../ExportData.jsx";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import "antd/dist/reset.css";
 import { TableChartOutlined } from "@mui/icons-material";
-import TestButton from "./AddNewTestButton.jsx";
+import AddNewTest from "../AddNewTest/AddNewTest.jsx";
 
 const TestDetailSideBar = () => {
   const { setIsMainTable, sidebarOpen, setSidebarOpen } = useMarksContext();
@@ -70,7 +70,7 @@ const TestDetailSideBar = () => {
             </Button>
           </List.Item>
 
-          <TestButton />
+          <AddNewTest />
 
           {/* Marks Section */}
           <List.Item>

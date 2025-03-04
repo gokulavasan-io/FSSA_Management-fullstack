@@ -52,6 +52,5 @@ class AttendanceReport(APIView):
                 "No Status": len(student_data["No Status"]),
             }
         }
-        print(attendance_summary.get("studentData"))
 
         return Response(attendance_summary, status=http_status.HTTP_200_OK)

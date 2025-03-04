@@ -22,7 +22,7 @@ const SectionDropdown = ({ sections, selectedSection, setSelectedSection }) => {
 
   return (
     <Dropdown overlay={sectionMenu} trigger={["click"]}>
-      <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", position: "absolute", top: 60, right: 20 }}>
+      <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", position: "absolute", top: 60, right: 16 }}>
         <Button>
           <Space>
             {selectedSection?.name || "Loading..."} <DownOutlined />

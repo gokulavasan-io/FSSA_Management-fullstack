@@ -28,13 +28,13 @@ export const MainContextProvider = ({ children }) => {
       setSectionsWithAll([{ name: "All", id: null }, ...sections])
     }, [sections])
     
-
+    const [selectedKey, setSelectedKey] = useState("1");
     
   return (
     <MainContext.Provider
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
-        year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,
+        year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,setSelectedKey,selectedKey,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
       }}
     >

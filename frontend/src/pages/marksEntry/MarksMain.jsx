@@ -6,7 +6,6 @@ import MainTable from "./Components/MarksTable/MainTable";
 import MarkEntryTable from "./Components/MarksTable/MarksEntryTable";
 import LevelEntryTable from "./Components/MarksTable/LevelEntryTable";
 import ChartForCategory from "./Components/Charts/ChartForMarkTable";
-import AdminTestForm from "./Components/AdminTestForm/AdminTestForm";
 import {
   fetchAllTestMarksForMonth,
   fetchTestDetails,
@@ -171,7 +170,6 @@ const MarksMain = () => {
           </>
         )}
 
-        <AdminTestForm />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import StudentPopOver from "./StudentPopOver";
 const { Title } = Typography;
 
 const AttendanceReport = () => {
-  const { batchNumber, sectionsWithAll } = useMainContext();
+  const { batchNumber, sectionsWithAll,setSelectedKey } = useMainContext();
   const [selectedSection, setSelectedSection] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
   const [studentData, setStudentData] = useState({
@@ -22,7 +22,8 @@ const AttendanceReport = () => {
     "No Status": [],
   });
 
-  const today = dayjs().format("YYYY-MM-DD");
+  // const today = dayjs().format("YYYY-MM-DD");
+  let today="2024-01-24"
   const navigate = useNavigate();
 
   // Popover State
@@ -63,19 +64,22 @@ const AttendanceReport = () => {
   }, [selectedSection]);
 
   return (
-    <Card style={{ borderRadius: 12, width: 380, height: 220, overflow: "hidden" }} bodyStyle={{ padding: "8px 10px" }}>
+    <Card style={{ borderRadius: 12, overflow: "hidden",boxShadow: "0 4px 10px rgba(0,0,0,0.1)",height:280 }} bodyStyle={{ padding: "8px 10px" }}>
       <Row justify="space-between" align="middle">
-        <Title level={5} style={{ margin: 0, marginLeft: 8, color: "#0047AB" }}>
+        <Title level={5} style={{ margin:2, marginLeft: 12, color: "#0047AB" }}>
           Today's Attendance Report
         </Title>
         <Button
           type="text"
           icon={<InfoCircleOutlined />}
           style={{ borderRadius: 50, color: "#E97451" }}
-          onClick={() => navigate("/attendance")}
+          onClick={() => {
+            navigate("/attendance")
+            setSelectedKey("2")
+          } }
         />
       </Row>
-      <hr />
+      <hr style={{  backgroundColor: "#839192", height: ".5px", border: "none" }} />
 
       <AttendanceChart 
         attendanceData={attendanceData} 

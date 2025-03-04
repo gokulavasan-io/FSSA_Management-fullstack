@@ -3,7 +3,6 @@ import { Modal, Button, DatePicker, Input, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import useAttendanceContext from "../../../../Context/AttendanceContext";
 import { addHoliday, deleteHoliday, checkHoliday } from "../../../../api/attendanceAPI";
 
 // Validation schema using Yup
@@ -15,8 +14,7 @@ const schema = yup.object().shape({
     .required("Holiday reason is required"),
 });
 
-const HolidayManager = () => {
-  const { sectionId } = useAttendanceContext();
+const AddHoliday = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isExistingHoliday, setIsExistingHoliday] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(true); // Initially disable input
@@ -84,7 +82,7 @@ const HolidayManager = () => {
     handleSubmit(async (data) => {
       try {
         const formattedDate = selectedDate.format("YYYY-MM-DD");
-        await addHoliday({ date: formattedDate, section_id: sectionId, reason: data.reason });
+        await addHoliday({ date: formattedDate, reason: data.reason });
 
         message.success("Holiday marked successfully!");
         setModalVisible(false);
@@ -111,7 +109,7 @@ const HolidayManager = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={openModal}>Add Holiday</Button>
+      <Button variant="outlined" color="purple" onClick={openModal}>Add Holiday</Button>
 
       <Modal
         title="Manage Holiday"
@@ -156,4 +154,4 @@ const HolidayManager = () => {
   );
 };
 
-export default HolidayManager;
+export default AddHoliday;

@@ -10,7 +10,6 @@ import {
 import AttendanceTable from "./Components/Table/AttendanceTable";
 import { useMainContext } from "../../Context/MainContext";
 import "./Styles/attendance.css";
-import HolidayManager from "./Components/Holiday/AddHoliday";
 import { Dropdown, Menu, Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import ShowComments from "./Components/Comments/ShowComments";
@@ -187,7 +186,6 @@ const AttendanceMain = () => {
         >
           {loading ? "Updating..." : " Update"}
         </Button>
-          <HolidayManager />
         <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
             <Button
               shape="circle"

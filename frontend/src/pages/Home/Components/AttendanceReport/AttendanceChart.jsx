@@ -6,10 +6,41 @@ import { Typography } from "antd";
 const { Title } = Typography;
 
 const AttendanceChart = ({ attendanceData, studentData, setPopoverVisible, setPopoverContent, setPopoverPosition }) => {
+
+  const handleChartClick = (event) => {
+    const category = event.point.name;
+    const students = studentData[category] || [];
+    
+    const browserEvent = event.originalEvent || {}; 
+  
+    setPopoverContent(
+      <div>
+        <Title level={5} style={{ color: "#8e44ad" }}>{category} Students</Title>
+        <div style={{ display: "flex", flexWrap: "wrap", maxWidth: "500px", gap: "5px" }}>
+          {students.length > 0
+            ? students.map((student, index) => (
+                <span key={index} style={{ display: "inline-block", color: "#71797E" }}>
+                  {`${student}, `}
+                </span>
+              ))
+            : "No students"}
+        </div>
+      </div>
+    );
+  
+    setPopoverPosition({
+      x: browserEvent.pageX || 0, 
+      y: (browserEvent.pageY || 0),
+    });
+  
+    setPopoverVisible(true);
+  };
+  
+
   const options = {
     chart: {
       type: "pie",
-      height: 180,
+      height: 220,
     },
     title: false,
     series: [
@@ -33,42 +64,22 @@ const AttendanceChart = ({ attendanceData, studentData, setPopoverVisible, setPo
           enabled: false,
         },
         showInLegend: true,
-        center: ["40%", "40%"],
-        events: {
-          click: function (event) {
-            const category = event.point.name;
-            const students = studentData[category] || [];
-
-            setPopoverContent(
-              <div>
-                <Title level={5} style={{ color: "#8e44ad" }}>{category} Students</Title>
-                <div style={{ display: "flex", flexWrap: "wrap", maxWidth: "500px", gap: "5px" }}>
-                  {students.length > 0
-                    ? students.map((student, index) => (
-                        <span key={index} style={{ display: "inline-block", color: "#71797E" }}>
-                          {`${student}, `}
-                        </span>
-                      ))
-                    : "No students"}
-                </div>
-              </div>
-            );
-
-            setPopoverPosition({ x: event.pageX, y: event.pageY - 100 });
-            setPopoverVisible(true);
-          },
-        },
+        center: ["30%", "50%"],
+        events:  { click: handleChartClick }
       },
     },
     legend: {
       itemStyle: {
-        fontSize: "9px",
+        fontSize: "12px"
       },
+      layout: "vertical",
+      align: "right",
+      verticalAlign: "center",
     },
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%",width:"100%" }}>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );
