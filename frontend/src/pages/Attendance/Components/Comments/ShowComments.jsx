@@ -10,9 +10,8 @@ import {
   fetchRemarks,
 } from "../../../../api/attendanceAPI";
 import { useMainContext } from "../../../../Context/MainContext";
-import { Delete03Icon } from "hugeicons-react";
 import { Empty, Modal } from "antd";
-
+import { MdDelete } from "react-icons/md";
 const ShowComments = () => {
   const {
     monthId,
@@ -79,9 +78,9 @@ const ShowComments = () => {
           <IconButton
             onClick={() => handleDeleteRemark(params.row)}
             color="error"
-            sx={{ marginRight: 1 }}
+            sx={{ marginRight: 2 }}
           >
-            <Delete03Icon size={16} />
+            <MdDelete size={22} />
           </IconButton>
         );
       },

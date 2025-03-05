@@ -82,7 +82,7 @@ function HomeMain() {
         </Col>
       </Row>
       
-      <div style={{marginTop:32}} >
+      <div style={{marginTop:16}} >
       <SubjectAnalysis />
       </div>
     </div>

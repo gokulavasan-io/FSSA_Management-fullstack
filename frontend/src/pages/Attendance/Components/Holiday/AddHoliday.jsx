@@ -8,8 +8,7 @@ import {
   deleteHoliday,
   checkHoliday,
 } from "../../../../api/attendanceAPI";
-import PrimaryBtn from "../../../Components/Buttons/PrimaryBtn";
-
+import { FwButton } from "@freshworks/crayons/react";
 
 // Validation schema using Yup
 const schema = yup.object().shape({
@@ -119,8 +118,7 @@ const AddHoliday = () => {
   return (
     <div>
 
-      <PrimaryBtn onClick={openModal} label={"Add Holiday"}  />
-
+      <FwButton  onFwClick={openModal} >Add Holiday</FwButton>
       <Modal
         title="Manage Holiday"
         open={modalVisible}
@@ -144,6 +142,7 @@ const AddHoliday = () => {
             Cancel
           </Button>,
         ]}
+        zIndex={100002}
       >
         <DatePicker
           value={selectedDate}

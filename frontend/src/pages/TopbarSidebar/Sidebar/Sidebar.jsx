@@ -1,19 +1,17 @@
 import { Layout, Menu, Button } from "antd";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import {
-  Home04Icon,
-  Calendar03Icon,
-  PieChartIcon,
-  TaskEdit02Icon,
-  NoteIcon,
-  LibrariesIcon,
-} from "hugeicons-react";
+import { useNavigate } from "react-router-dom"; 
 import "./Sidebar.css";
 import { useMainContext } from "../../../Context/MainContext";
+import { VscDashboard } from "react-icons/vsc";
+import { LuNotebookPen } from "react-icons/lu"
+import { BsCalendarCheck } from "react-icons/bs";
+import { MdInsertChartOutlined } from "react-icons/md";
+import ToodleLogo from "../../../../public/assets/icons/ToodleLogo";
+import { BsJournalBookmark } from "react-icons/bs";
 
 const { Sider } = Layout;
 
-const analysis = ["Student", "Subject", "Class"];
+const analytics = ["Student", "Subject", "Class"];
 
 function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
@@ -22,7 +20,7 @@ function Sidebar({ collapsed, setCollapsed }) {
   const menuItems = [
     {
       key: "1",
-      icon: <Home04Icon size={22} />,
+      icon: <VscDashboard size={22} />,
       label: "Dashboard",
       onClick: () => {
         setSelectedKey("1");
@@ -31,7 +29,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "subject",
-      icon: <TaskEdit02Icon size={22} />,
+      icon: <LuNotebookPen size={21} />,
       label: "Assessments",
       children: subjects
         .filter((subject) => !subject.subject_name.includes("ttendance"))
@@ -47,7 +45,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "2",
-      icon: <Calendar03Icon size={22} />,
+      icon: <BsCalendarCheck size={21} />,
       label: "Attendance",
       onClick: () => {
         setSelectedKey("2");
@@ -56,15 +54,15 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "3",
-      icon: <NoteIcon size={22} />,
+      icon: <BsJournalBookmark size={21} />,
       label: "Monthly Report",
     },
     {
       key: "4",
-      icon: <PieChartIcon size={22} />,
-      label: "Analysis",
-      children: analysis.map((category, index) => ({
-        key: `analysis-${index}`,
+      icon: <MdInsertChartOutlined size={23} />,
+      label: "Analytics",
+      children: analytics.map((category, index) => ({
+        key: `analytics-${index}`,
         label: category,
       })),
     },
@@ -106,8 +104,7 @@ function Sidebar({ collapsed, setCollapsed }) {
         onMouseEnter={() => setCollapsed(false)}
         onClick={() => setCollapsed(false)}
       >
-        <LibrariesIcon
-          size={28}
+        <ToodleLogo
           color={"white"}
           style={{ transition: "all 0.3s ease" }}
         />

@@ -14,8 +14,7 @@ import { submitTestData } from "../../../../api/marksAPI.js";
 import dayjs from "dayjs";
 import useNotification from "../../../Components/Notification.jsx";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
-import SecondaryBtn from "../../../Components/Buttons/Secondary.jsx";
-
+import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
 
 const AddNewTest = () => {
@@ -139,8 +138,7 @@ const AddNewTest = () => {
 
   return (
     <>
-      <SecondaryBtn onClick={() => setOpenNewTestForm(true)} label={"Add New Test"} />
-        
+      <FwButton  color="secondary" onFwClick={() => setOpenNewTestForm(true)} >Add New Test</FwButton>
       <Modal
         title="Add New Test"
         open={openNewTestForm}

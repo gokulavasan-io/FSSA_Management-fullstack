@@ -9,16 +9,14 @@ import {
 } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
-import {
-  ArrowDown01Icon,
-  BookOpen01Icon,
-  Home04Icon,
-  Logout01Icon,
-  UserGroupIcon,
-  UserIcon,
-} from "hugeicons-react";
+import { MdHome } from "react-icons/md";
 import { useMainContext } from "../../../Context/MainContext";
 import "./Topbar.css"
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { TiGroup } from "react-icons/ti";
+import { FaUser } from "react-icons/fa6";
+import { IoMdBookmark } from "react-icons/io";
+import { FiLogOut } from "react-icons/fi";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -47,22 +45,22 @@ function TopBar({ collapsed }) {
     <Menu>
       <Menu.Item key="1">
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <UserIcon size={16} /> Profile
+          <FaUser size={14} /> Profile
         </div>
       </Menu.Item>
       <Menu.Item key="2">
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <BookOpen01Icon size={16} /> Batch : 4
+          <IoMdBookmark size={16} /> Batch : 4
         </div>
       </Menu.Item>
       <Menu.Item key="3">
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <UserGroupIcon size={16} /> Your team
+          <TiGroup size={16} /> Your team
         </div>
       </Menu.Item>
       <Menu.Item key="4">
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Logout01Icon size={16} /> Logout
+          <FiLogOut size={16} /> Logout
         </div>
       </Menu.Item>
     </Menu>
@@ -90,7 +88,7 @@ function TopBar({ collapsed }) {
         <Breadcrumb separator=">">
           <Breadcrumb.Item>
             <Link to="/">
-              <Home04Icon size={20} />
+              <MdHome size={20} />
             </Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>{selectedSubject.subject_name}</Breadcrumb.Item>
@@ -99,7 +97,7 @@ function TopBar({ collapsed }) {
             <Breadcrumb.Item>
               <Dropdown overlay={monthMenu} trigger={["click", "hover"]}>
                 <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-                  {selectedMonth.month_name} <ArrowDown01Icon size={16} />
+                  {selectedMonth.month_name} <MdOutlineKeyboardArrowDown size={16} />
                 </span>
               </Dropdown>
             </Breadcrumb.Item>
@@ -125,7 +123,7 @@ function TopBar({ collapsed }) {
               <Avatar
                 src={userPicLink}
                 size={45}
-                style={{ borderRadius: "8px" }}
+                style={{ borderRadius: "4px" }}
               />
               <div
                 style={{
