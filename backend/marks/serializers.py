@@ -21,27 +21,10 @@ class UpdateMarksSerializer(serializers.Serializer):
     studentsMark = StudentMarkSerializer(many=True)
     
 
-class AddTestAndMarksSerializer(serializers.Serializer):
-    test_name = serializers.CharField(max_length=100)
-    month=serializers.IntegerField()
-    batch = serializers.IntegerField()
-    subject = serializers.IntegerField()
-    total_marks = serializers.IntegerField()
-    about_test = serializers.CharField(max_length=500, allow_blank=True, required=False)
-    created_at = serializers.DateTimeField(required=False)
-    isLevelTest = serializers.BooleanField(default=False)
-
-
-class UpdateTestDetailSerializer(serializers.Serializer):
-    test_name = serializers.CharField(max_length=100)
-    batch = serializers.IntegerField()
-    subject = serializers.IntegerField()
-    total_marks = serializers.IntegerField()
-    about_test = serializers.CharField(max_length=500, allow_blank=True, required=False)
-    created_at = serializers.DateTimeField(required=False)
-    isLevelTest = serializers.BooleanField(default=False)
-    
-    
+class TestDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestDetail
+        fields = '__all__'  
 
 
 class MonthSerializer(serializers.ModelSerializer):

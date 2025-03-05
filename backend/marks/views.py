@@ -18,10 +18,10 @@ class SubjectListView(ListAPIView):
     serializer_class = SubjectSerializer
 
 
-class AddTestAndMarksView(APIView):
+class AddTestView(APIView):
     def post(self, request):
         try:
-            serializer = AddTestAndMarksSerializer(data=request.data)
+            serializer = TestDetailSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
                 subject = get_object_or_404(Subject, id=data['subject'])
@@ -334,7 +334,7 @@ class GetLevelTestView(APIView):
 class UpdateTestDetailsView(APIView):
     def put(self, request, test_detail_id):
         try:
-            serializer = UpdateTestDetailSerializer(data=request.data)
+            serializer = TestDetailSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
                 created_at = data['created_at'] if data['created_at'] else timezone.now()

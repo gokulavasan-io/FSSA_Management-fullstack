@@ -42,5 +42,8 @@ export const ATTENDANCE_API_ENDPOINTS={
 
 export const HOME_API_ENDPOINTS={
     ATTENDANCE_REPORT:"http://127.0.0.1:8000/home/attendance-report/",
+    MONTHLY_REPORT:"http://127.0.0.1:8000/home/monthly-analytics/",
+    SUBJECT_REPORT:"http://127.0.0.1:8000/home/subject-analytics/",
+
 
 }

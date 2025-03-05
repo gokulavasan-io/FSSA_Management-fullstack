@@ -19,6 +19,15 @@ export const HomeContextProvider = ({ children }) => {
     setMonthId(selectedMonth.id)
   }, [selectedMonth])
   
+  const sectionColors = {
+    "A": "#52c41a",  // Green
+    "B": "#faad14",  // Yellow
+    "C": "#ff4d4f",  // Red
+    "D": "#722ed1",  // Purple
+    "E": "#13c2c2",  // Cyan
+    "F": "#eb2f96",  // Pink
+    "All": "#1890ff",      // Blue
+  };
   
 
   return (
@@ -28,6 +37,7 @@ export const HomeContextProvider = ({ children }) => {
         setMonthId,
         loading,
         setLoading,
+        sectionColors,
       }}
     >
       {children}

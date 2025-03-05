@@ -6,13 +6,13 @@ import HighchartsReact from "highcharts-react-official";
 const { Title } = Typography;
 
 
-const Graph = ({data,months,title,height} ) => {
+const Graph = ({data,months,title,chartHeight,marginTop,cardHeight} ) => {
 
   const options = {
     chart: {
       type: "spline",
       width: null,
-      height: height,
+      height: chartHeight,
     },
     title: false,
     xAxis: {
@@ -52,7 +52,7 @@ const Graph = ({data,months,title,height} ) => {
         boxShadow: "0 1px 0 0 #cfd7df",
         width: "100%",
         maxWidth: 1000,
-        height: 350,
+        height: cardHeight,
       }}
       bodyStyle={{ padding: "8px 10px" }}
     >
@@ -63,7 +63,7 @@ const Graph = ({data,months,title,height} ) => {
         style={{ backgroundColor: "#839192", height: ".5px", border: "none" }}
       />
 
-      <div style={{ width: "100%", overflowX: "auto", marginTop: 16,height:"100%" }}>
+      <div style={{ width: "100%", overflowX: "auto", marginTop: marginTop,height:"100%" }}>
         <HighchartsReact highcharts={Highcharts} options={options} />
       </div>
     </Card>

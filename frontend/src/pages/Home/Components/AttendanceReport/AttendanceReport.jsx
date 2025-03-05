@@ -71,6 +71,7 @@ const AttendanceReport = () => {
         </Title>
         <Button
           type="text"
+          title="more info"
           icon={<InfoCircleOutlined />}
           style={{ borderRadius: 50, color: "#E97451" }}
           onClick={() => {

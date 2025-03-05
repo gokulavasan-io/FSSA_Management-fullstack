@@ -3,8 +3,8 @@ import { Row, Col, Flex } from "antd";
 import AttendanceReport from "./Components/AttendanceReport/AttendanceReport";
 import AddNewTest from "../MarksEntry/Components/AddNewTest/AddNewTest";
 import AddHoliday from "../Attendance/Components/Holiday/AddHoliday";
-import SubjectAnalysis from "./Components/MonthlyReport/SubjectAnalysis";
-import Graph from "./Components/MonthlyReport/Graph";
+import SubjectAnalysis from "./Components/Analytics/SubjectAnalytics";
+import Graph from "./Components/Analytics/Graph";
 
 
 
@@ -58,7 +58,7 @@ function HomeMain() {
     <div style={{ overflowX: "hidden", overflowY: "auto", minHeight: "100%" }}>
       <Row gutter={16}>
         <Col span={17}>
-        <Graph title={title} months={months} data={data} height={280} />
+        <Graph title={title} months={months} data={data} marginTop={20} chartHeight={280} cardHeight={350} />
         </Col>
 
         <Col span={7} style={{ height: 350 }}>
