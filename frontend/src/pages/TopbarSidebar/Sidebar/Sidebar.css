@@ -19,17 +19,16 @@
 .ant-menu-submenu-selected .ant-menu-submenu-title {
     background-color: #38556a !important;
     color: white !important;
-    border-radius: 4px !important;
-    
+    border-radius: 4px !important;    
 }
 
 .ant-menu-inline-collapsed .ant-menu-item-icon {
     position: relative;
-    top: 4px;
+    top: 2px;
     transition: all 300ms ease-in-out;
 }
 .ant-menu-item-icon{
-    right: 4px;
+    right: 3px;
 }
 
 .ant-menu-submenu {

@@ -20,7 +20,7 @@ function Sidebar({ collapsed, setCollapsed }) {
   const menuItems = [
     {
       key: "1",
-      icon: <VscDashboard size={22} />,
+      icon: <VscDashboard size={20} />,
       label: "Dashboard",
       onClick: () => {
         setSelectedKey("1");
@@ -29,7 +29,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "subject",
-      icon: <LuNotebookPen size={21} />,
+      icon: <LuNotebookPen size={20} />,
       label: "Assessments",
       children: subjects
         .filter((subject) => !subject.subject_name.includes("ttendance"))
@@ -45,7 +45,7 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "2",
-      icon: <BsCalendarCheck size={21} />,
+      icon: <BsCalendarCheck size={20} />,
       label: "Attendance",
       onClick: () => {
         setSelectedKey("2");
@@ -54,12 +54,12 @@ function Sidebar({ collapsed, setCollapsed }) {
     },
     {
       key: "3",
-      icon: <BsJournalBookmark size={21} />,
+      icon: <BsJournalBookmark size={20} />,
       label: "Monthly Report",
     },
     {
       key: "4",
-      icon: <MdInsertChartOutlined size={23} />,
+      icon: <MdInsertChartOutlined size={22} />,
       label: "Analytics",
       children: analytics.map((category, index) => ({
         key: `analytics-${index}`,

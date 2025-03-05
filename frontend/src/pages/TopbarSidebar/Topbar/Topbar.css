@@ -9,3 +9,7 @@
 .ant-breadcrumb-separator{
     font-family: poppins !important;
 }
+
+.ant-breadcrumb-link{
+    color: #183247 ;
+}
