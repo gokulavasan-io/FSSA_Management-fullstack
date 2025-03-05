@@ -47,7 +47,7 @@ const TestDetailSideBar = () => {
           top: "68px",
           right: 0,
           height: "calc(100vh - 68px)",
-          borderRadius: "16px 0 0 16px",
+          borderRadius: "4px 0 0 4px",
         }}
         maskStyle={{ backgroundColor: "rgba(0, 0, 0, .09)" }}
       >

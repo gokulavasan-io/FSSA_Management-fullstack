@@ -3,6 +3,7 @@ import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import { Button, Typography } from 'antd';
 import { useMarksContext } from "../../../../Context/MarksContext";
+import {colors} from '../../../../constants/colors'
 
 function MainTable(props) {
   const {
@@ -56,10 +57,10 @@ function MainTable(props) {
         justifyContent: "space-between",
         alignItems: "center",
       }}>
-        <div style={{color:"#1677ff"}}>Monthly Average</div>
+        <div style={{color:colors.primaryColor}}>Monthly Average</div>
         <Button
           size="small"
-          color="primary" variant="text"
+          color={colors.primaryColor} variant="text"
           onClick={handleColorButtonClick}
         >
           {showMainTableColor ? "Hide Category" : "Show Category"}

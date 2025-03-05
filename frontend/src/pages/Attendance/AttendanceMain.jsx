@@ -180,7 +180,7 @@ const AttendanceMain = () => {
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Button
           variant="text"
-          color="green"
+          color="black"
           onClick={handleUpdateAttendance}
           disabled={loading}
         >
