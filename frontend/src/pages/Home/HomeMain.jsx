@@ -1,22 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Flex } from "antd";
 import AttendanceReport from "./Components/AttendanceReport/AttendanceReport";
 import AddNewTest from "../MarksEntry/Components/AddNewTest/AddNewTest";
 import AddHoliday from "../Attendance/Components/Holiday/AddHoliday";
 import SubjectAnalysis from "./Components/Analytics/SubjectAnalytics";
-import Graph from "./Components/Analytics/Graph";
 import MonthlyAnalytics from "./Components/Analytics/MonthlyAnalytics";
 
 
-
 function HomeMain() {
+
   return (
     <div style={{ overflowX: "hidden", overflowY: "auto", minHeight: "100%" }}>
       <Row gutter={16}>
         <Col span={17}>
-          <MonthlyAnalytics />
+          <MonthlyAnalytics   />
         </Col>
-
         <Col span={7} style={{ height: 350 }}>
           <Flex
             vertical
@@ -49,32 +47,3 @@ export default HomeMain;
 
 
 
-
-
-
-// let data = [
-//   {
-//     name: "Class A",
-//     data: [20, 30, 25, 50, 80, 60, 90, 70, 50, 65, 80, 40],
-//     color: "#52c41a",
-//     marker: { symbol: "circle" },
-//   },
-//   {
-//     name: "Class B",
-//     data: [10, 20, 30, 40, 60, 45, 70, 55, 45, 50, 60, 35],
-//     color: "#faad14",
-//     marker: { symbol: "circle" },
-//   },
-//   {
-//     name: "Class C",
-//     data: [15, 25, 22, 35, 55, 50, 65, 60, 55, 58, 68, 45],
-//     color: "#ff4d4f",
-//     marker: { symbol: "circle" },
-//   },
-//   {
-//     name: "All",
-//     data: [18, 28, 27, 42, 65, 52, 75, 62, 48, 57, 70, 42],
-//     color: "#1890ff",
-//     marker: { symbol: "circle" },
-//   },
-// ];

@@ -11,20 +11,20 @@ export const fetchAttendanceReport = async (section,date,batch) => {
     }
   };
 
-export const fetchMonthlyReport = async (batch,section) => {
+export const fetchMonthlyReport = async (batch,subjects) => {
     try {
-      let response= await axios.get(`${HOME_API_ENDPOINTS.MONTHLY_REPORT}?batch=${batch}&section_id=${section}`)
-      console.log(response.data);
-      
+      let response= await axios.get(`${HOME_API_ENDPOINTS.MONTHLY_REPORT}?batch=${batch}&subjects=${subjects.join(",")}`)
       return response.data;
     } catch (error) {
       throw error;
     }
   };
   
-export const fetchSubjectReport = async (batch,section,subjects) => {
+export const fetchSubjectReport = async (batch,subjects) => {
     try {
-      let response= await axios.get(`${HOME_API_ENDPOINTS.SUBJECT_REPORT}?batch=${batch}&section_id=${section}&subjects=${subjects.join(",")}`)
+      console.log(subjects);
+      
+      let response= await axios.get(`${HOME_API_ENDPOINTS.SUBJECT_REPORT}?batch=${batch}&subjects=${subjects.join(",")}`)
       return response.data;
     } catch (error) {
       throw error;

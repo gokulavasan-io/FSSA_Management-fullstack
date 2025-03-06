@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HomeMain from "./HomeMain";
-import { HomeContextProvider } from "../../Context/HomeContext";
+import { useMainContext } from "../../Context/MainContext";
+
 
 function HomeApp() {
+
+  const {setSelectedSubject}=  useMainContext()
+  useEffect(() => {
+    setSelectedSubject({ id: null, subject_name: "Dashboard" });
+  }, []);
+
   return (
-    <HomeContextProvider>
-      <HomeMain />
-    </HomeContextProvider>
+    <HomeMain />
   );
 }
 

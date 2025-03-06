@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Graph from "./Graph";
-import { Row, Col } from "antd";
-import useHomeContext from "../../../../Context/HomeContext";
 import { fetchMonthlyReport } from "../../../../api/homeAPI";
+import {sectionColors} from '../../../../constants/colors'
+import { useMainContext } from "../../../../Context/MainContext";
 
 function MonthlyAnalytics() {
-  const { sectionColors } = useHomeContext();
+  
+  const{batchNumber,academicSubjects}=useMainContext()
   const [data, setData] = useState({});
   const [months, setMonths] = useState([]);
+
   const transformMonthlyData = (data) => {
     return Object.keys(data).map((section) => ({
       name: section=="All"?"All":`Class ${section}`,
@@ -20,7 +22,7 @@ function MonthlyAnalytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchMonthlyReport(4, null);
+        const response = await fetchMonthlyReport(batchNumber,academicSubjects.map(s=>s.id));
         setMonths(response.months);
         setData(transformMonthlyData(response.data));
       } catch (error) {
@@ -28,7 +30,7 @@ function MonthlyAnalytics() {
       }
     };
     fetchData();
-  }, []);
+  }, [academicSubjects]);
 
   return (
     <Graph

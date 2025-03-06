@@ -13,7 +13,7 @@ const { Title } = Typography;
 
 const AttendanceReport = () => {
   const { batchNumber, sectionsWithAll,setSelectedKey } = useMainContext();
-  const [selectedSection, setSelectedSection] = useState([]);
+  const [selectedSection, setSelectedSection] = useState({});
   const [attendanceData, setAttendanceData] = useState([]);
   const [studentData, setStudentData] = useState({
     Present: [],
@@ -38,8 +38,8 @@ const AttendanceReport = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!selectedSection || selectedSection.id === undefined) return;
         const response = await fetchAttendanceReport(selectedSection.id, today, batchNumber);
-
         const colors = {
           Present: "#3CD856",
           Absent: "#FA5A7D",

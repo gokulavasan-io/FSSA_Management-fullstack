@@ -11,27 +11,25 @@ from itertools import groupby
 from operator import attrgetter
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
-
+from validators.query_params_validator import validate_query_params
+from validators.null_validator import validate_to_none,validate_not_none
 
 class AttendanceReport(APIView):
+    @validate_query_params(["date","batch","section_id"])
     def get(self, request):
         params=request.query_params
-        date = params.get("date", None)
-        section_id = params.get("section_id", None)
-        batch_id = params.get("batch", None)
-
-        if not date:
-            raise ValidationError({"error": "Date parameter is required."})
-
-        if section_id in [None, "", "null", "None"]:
-            section_id = None
-
+        date = params.get("date")
+        batch_id = params.get("batch")
+        section_id = params.get("section_id")
+        
+        section_id, batch_id = validate_to_none(section_id, batch_id)
+        validate_not_none(batch_id=batch_id)
+        
         filters = {"batch_id": batch_id}
         if section_id is not None:
             filters["section_id"] = section_id
 
         students = Students.objects.filter(**filters)
-
         attendance_records = Attendance.objects.filter(date=date).select_related("student", "status")
 
         # Map student ID to attendance status
@@ -67,27 +65,25 @@ class AttendanceReport(APIView):
 
 
 class MonthlyAnalytics(APIView):
+    @validate_query_params(["batch","subjects"])
     def get(self, request):
         params = request.query_params
-        section_id = params.get("section_id", None)
-        batch_id = params.get("batch", None)
+        batch_id = params.get("batch")
+        subject_ids = params.get("subjects")
 
-        if not batch_id:
-            raise ValidationError({"error": "Batch parameter is required."})
-
-        if section_id in [None, "", "null", "None"]:
-            section_id = None
-
-        # Fetch batch object
+        subject_ids = [int(s) for s in subject_ids.split(",")]
         batch = get_object_or_404(Batch, id=batch_id)
 
-        # Fetch test details and related months
-        test_details = TestDetail.objects.filter(batch=batch).select_related("month").order_by("month__id")
+        # Fetch all test details for the given batch and subjects
+        test_details = TestDetail.objects.filter(
+            batch=batch, 
+            subject_id__in=subject_ids
+        ).select_related("month").order_by("month__id")
 
-        # Fetch sections based on input
-        sections = Section.objects.all() if not section_id else Section.objects.filter(id=section_id)
+        # Fetch all sections
+        sections = Section.objects.all()
 
-        # Fetch all marks in a single query and structure them for fast lookup
+        # Fetch all marks in a single query
         all_marks = Marks.objects.filter(test_detail__batch=batch).select_related("student__section")
 
         marks_lookup = defaultdict(lambda: defaultdict(list))  # {section_id: {test_id: [marks]}}
@@ -97,7 +93,6 @@ class MonthlyAnalytics(APIView):
 
         result = {}
         overall_monthly_averages = defaultdict(list)  # { month_id: [all_class_averages] }
-
         months_set = {}
 
         # Process each section
@@ -138,11 +133,11 @@ class MonthlyAnalytics(APIView):
 
             result[section.name] = monthly_averages
 
-        if not section_id:
-            result["All"] = {
-                months_set[month_id]: round(sum(values) / len(values), 1) if values else 0.0
-                for month_id, values in overall_monthly_averages.items()
-            }
+        # Add an "All" section for overall averages
+        result["All"] = {
+            months_set[month_id]: round(sum(values) / len(values), 1) if values else 0.0
+            for month_id, values in overall_monthly_averages.items()
+        }
 
         # Sort months by month_id
         sorted_months = [months_set[month_id] for month_id in sorted(months_set.keys())]
@@ -158,31 +153,21 @@ class MonthlyAnalytics(APIView):
 
         return Response(formatted_result)
 
-
 class SubjectAnalytics(APIView):
+    @validate_query_params(["batch","subjects"])
     def get(self, request):
         params = request.query_params
-        section_id = params.get("section_id", None)
-        batch_id = params.get("batch", None)
-        subject_ids = params.get("subjects", None)
+        batch_id = params.get("batch")
+        subject_ids = params.get("subjects")
 
-        if not batch_id:
-            raise ValidationError({"error": "Batch parameter is required."})
-
-        if section_id in [None, "", "null", "None"]:
-            section_id = None
-
-        if subject_ids:
-            subject_ids = [int(s) for s in subject_ids.split(",")]
-        else:
-            subject_ids = Subject.objects.values_list("id", flat=True)
+        subject_ids = [int(s) for s in subject_ids.split(",")]
 
         batch = get_object_or_404(Batch, id=batch_id)
         test_details = TestDetail.objects.filter(
             batch=batch, subject_id__in=subject_ids
         ).select_related("month", "subject").order_by("month__id", "subject__id")
 
-        sections = Section.objects.all().order_by("id") if not section_id else Section.objects.filter(id=section_id).order_by("id")
+        sections = Section.objects.all().order_by("id")
         all_marks = Marks.objects.filter(
             test_detail__batch=batch, test_detail__subject_id__in=subject_ids
         ).select_related("student__section", "test_detail__subject")
@@ -192,8 +177,10 @@ class SubjectAnalytics(APIView):
             marks_lookup[mark.student.section_id][mark.test_detail.subject_id][mark.test_detail_id].append(mark)
 
         result = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
-        all_sections = [section.name for section in sections]
-        all_months = sorted(set(test.month.month_name for test in test_details), key=lambda x: Month.objects.get(month_name=x).id)
+        all_months = sorted(
+            set(test.month.month_name for test in test_details),
+            key=lambda x: Month.objects.get(month_name=x).id
+        )
 
         for month, tests in groupby(test_details, key=attrgetter("month")):
             month_name = month.month_name
@@ -226,21 +213,27 @@ class SubjectAnalytics(APIView):
                 overall_marks = []
 
                 for section in sections:
-                    section_avg = round(sum(subject_section_averages[subject_id][section.name]) / len(subject_section_averages[subject_id][section.name]), 1) if subject_section_averages[subject_id][section.name] else 0.0
+                    section_avg = round(
+                        sum(subject_section_averages[subject_id][section.name]) /
+                        len(subject_section_averages[subject_id][section.name]), 1
+                    ) if subject_section_averages[subject_id][section.name] else 0.0
+
                     result[subject_name][month_name][section.name] = section_avg
                     overall_marks.append(section_avg)
 
                 result[subject_name][month_name]["All"] = round(sum(overall_marks) / len(overall_marks), 1) if overall_marks else 0.0
 
         structured_response = {
-            "Sections": all_sections,
             "months": all_months,
             "SubjectsData": {}
         }
 
         for subject, month_data in result.items():
             structured_response["SubjectsData"][subject] = {}
-            for section in structured_response["Sections"] + ["All"]:
-                structured_response["SubjectsData"][subject][section] = [month_data[month].get(section, 0.0) for month in structured_response["months"]]
+            for section in list(sections.values_list("name", flat=True)) + ["All"]:
+                structured_response["SubjectsData"][subject][section] = [
+                    month_data[month].get(section, 0.0) for month in structured_response["months"]
+                ]
 
         return Response(structured_response)
+
