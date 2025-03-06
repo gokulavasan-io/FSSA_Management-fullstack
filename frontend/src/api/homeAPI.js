@@ -14,6 +14,8 @@ export const fetchAttendanceReport = async (section,date,batch) => {
 export const fetchMonthlyReport = async (batch,section) => {
     try {
       let response= await axios.get(`${HOME_API_ENDPOINTS.MONTHLY_REPORT}?batch=${batch}&section_id=${section}`)
+      console.log(response.data);
+      
       return response.data;
     } catch (error) {
       throw error;

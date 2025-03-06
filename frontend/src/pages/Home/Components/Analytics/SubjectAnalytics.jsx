@@ -15,7 +15,7 @@ function SubjectAnalysis() {
   
     Object.keys(subjectsData).forEach((subject) => {
       transformedData[subject] = Object.keys(subjectsData[subject]).map((section) => ({
-        name: `Class ${section}`,
+        name: section=="All"?"All":`Class ${section}`,
         data: subjectsData[subject][section],
         color: sectionColors[section] || "#000",
         marker: { symbol: "circle" }

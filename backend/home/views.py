@@ -66,7 +66,6 @@ class AttendanceReport(APIView):
         return Response(attendance_summary, status=http_status.HTTP_200_OK)
 
 
-
 class MonthlyAnalytics(APIView):
     def get(self, request):
         params = request.query_params
@@ -83,7 +82,7 @@ class MonthlyAnalytics(APIView):
         batch = get_object_or_404(Batch, id=batch_id)
 
         # Fetch test details and related months
-        test_details = TestDetail.objects.filter(batch=batch).select_related("month").order_by("month")
+        test_details = TestDetail.objects.filter(batch=batch).select_related("month").order_by("month__id")
 
         # Fetch sections based on input
         sections = Section.objects.all() if not section_id else Section.objects.filter(id=section_id)
@@ -92,12 +91,14 @@ class MonthlyAnalytics(APIView):
         all_marks = Marks.objects.filter(test_detail__batch=batch).select_related("student__section")
 
         marks_lookup = defaultdict(lambda: defaultdict(list))  # {section_id: {test_id: [marks]}}
+
         for mark in all_marks:
             marks_lookup[mark.student.section_id][mark.test_detail_id].append(mark)
 
-        # Final results dictionary
         result = {}
-        overall_monthly_averages = defaultdict(list)  # { "January": [all_class_averages] }
+        overall_monthly_averages = defaultdict(list)  # { month_id: [all_class_averages] }
+
+        months_set = {}
 
         # Process each section
         for section in sections:
@@ -107,14 +108,14 @@ class MonthlyAnalytics(APIView):
                 test_averages = []
 
                 for test in tests:
-                    marks_list = marks_lookup[section.id].get(test.id, [])  # Get marks for this test in this section
+                    marks_list = marks_lookup[section.id].get(test.id, [])
 
                     total_marks_sum = 0
                     total_students = 0
 
                     for mark in marks_list:
                         mark_value = 0.0 if mark.mark in ["Absent", "a", "A", "", None] else float(mark.mark)
-                        total_marks = float(test.total_marks) if test.total_marks else 1  # Avoid division by zero
+                        total_marks = float(test.total_marks) if test.total_marks else 1
 
                         percentage_mark = (mark_value / total_marks) * 100
                         total_marks_sum += percentage_mark
@@ -124,30 +125,38 @@ class MonthlyAnalytics(APIView):
                         test_average = round(total_marks_sum / total_students, 1)
                         test_averages.append(test_average)
 
-                # Monthly average for this section
+                # Store month by ID to sort later
+                month_name = month.month_name
+                months_set[month.id] = month_name  # Store month_id as key for sorting
+
                 if test_averages:
                     monthly_avg = round(sum(test_averages) / len(test_averages), 1)
-                    monthly_averages[month.month_name] = monthly_avg
-                    overall_monthly_averages[month.month_name].append(monthly_avg)
+                    monthly_averages[month_name] = monthly_avg
+                    overall_monthly_averages[month.id].append(monthly_avg)
                 else:
-                    monthly_averages[month.month_name] = 0.0
+                    monthly_averages[month_name] = 0.0
 
             result[section.name] = monthly_averages
 
-        if section_id:
-            return Response(result)
-        
-        # Compute overall averages for each month
-        result["All"] = {
-            month: round(sum(values) / len(values), 1) if values else 0.0
-            for month, values in overall_monthly_averages.items()
+        if not section_id:
+            result["All"] = {
+                months_set[month_id]: round(sum(values) / len(values), 1) if values else 0.0
+                for month_id, values in overall_monthly_averages.items()
+            }
+
+        # Sort months by month_id
+        sorted_months = [months_set[month_id] for month_id in sorted(months_set.keys())]
+
+        # Convert to required format
+        formatted_result = {
+            "months": sorted_months,
+            "data": {
+                section: [result[section].get(month, 0.0) for month in sorted_months]
+                for section in result
+            }
         }
 
-        return Response(result)
-
-
-
-
+        return Response(formatted_result)
 
 
 class SubjectAnalytics(APIView):
