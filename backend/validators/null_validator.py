@@ -10,7 +10,11 @@ def validate_not_none(**kwargs):
         ValidationError: If any value is null-equivalent, listing the invalid fields.
     """
     
-    invalid_fields = {key: "Value cannot be null or empty." for key, value in kwargs.items() if value is None}
+    invalid_fields = {
+        key: "Value cannot be null, empty, or an empty list."
+        for key, value in kwargs.items()
+        if value is None or value == "" or value == []
+    }
     
     if invalid_fields:
         raise ValidationError(invalid_fields)
@@ -26,7 +30,7 @@ def validate_to_none(*items):
     Returns:
         tuple: A tuple where null-equivalent values are converted to None.
     """
-    null_values = {None,'', '""', "null", "None", "undefined"}
+    null_values = {None,'', '""'," ", "null", "None", "undefined"}
     cleaned_items = tuple(None if str(item).strip().strip("'").strip('"') in null_values else item for item in items)
 
     return cleaned_items if len(cleaned_items) > 1 else cleaned_items[0]

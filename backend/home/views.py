@@ -22,8 +22,8 @@ class AttendanceReport(APIView):
         batch_id = params.get("batch")
         section_id = params.get("section_id")
         
-        section_id, batch_id = validate_to_none(section_id, batch_id)
-        validate_not_none(batch_id=batch_id)
+        section_id, batch_id = validate_to_none(date,section_id, batch_id)
+        validate_not_none(batch_id=batch_id,date=date)
         
         filters = {"batch_id": batch_id}
         if section_id is not None:
@@ -70,6 +70,9 @@ class MonthlyAnalytics(APIView):
         params = request.query_params
         batch_id = params.get("batch")
         subject_ids = params.get("subjects")
+        
+        batch_id,subject_ids=validate_to_none(batch_id,subject_ids)
+        validate_not_none(batch_id=batch_id,subjects=subject_ids)
 
         subject_ids = [int(s) for s in subject_ids.split(",")]
         batch = get_object_or_404(Batch, id=batch_id)
@@ -159,6 +162,9 @@ class SubjectAnalytics(APIView):
         params = request.query_params
         batch_id = params.get("batch")
         subject_ids = params.get("subjects")
+        
+        batch_id,subject_ids=validate_to_none(batch_id,subject_ids)
+        validate_not_none(batch_id=batch_id,subjects=subject_ids)
 
         subject_ids = [int(s) for s in subject_ids.split(",")]
 
