@@ -1,1 +1,0 @@
-export const calendarBgImg='https://img.freepik.com/free-vector/blank-blue-leafy-poster_53876-99945.jpg?semt=ais_hybrid';

@@ -7,6 +7,7 @@ import AppLayout from "./Applayout";
 import MarkApp from "./pages/MarksEntry/MarksApp";
 import AttendanceApp from "./pages/Attendance/AttendanceApp";
 import HomeApp from "./pages/Home/HomeApp";
+import MonthlyReportApp from "./pages/MonthlyReport/MonthlyReportApp";
 
 export default function Main() {
 
@@ -19,6 +20,7 @@ export default function Main() {
               <Route index element={<HomeApp />} />
               <Route path="assessment" element={<MarkApp />} />
               <Route path="attendance" element={<AttendanceApp />} />
+              <Route path="monthly_report" element={<MonthlyReportApp />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -6,12 +6,8 @@ const AttendanceContext = createContext();
 
 // Create a provider component
 export const AttendanceContextProvider = ({ children }) => {
-  const { selectedMonth,setSelectedSubject } = useMainContext();
+  const { selectedMonth } = useMainContext();
   
-  useEffect(() => {
-    setSelectedSubject({ id: null, subject_name: "Attendance" });
-  }, []);
-
   const [monthId, setMonthId] = useState(selectedMonth.id);
   const [tableData, setTableData] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);

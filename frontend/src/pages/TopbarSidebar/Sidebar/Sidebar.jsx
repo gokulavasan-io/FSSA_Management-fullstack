@@ -6,7 +6,7 @@ import { VscDashboard } from "react-icons/vsc";
 import { LuNotebookPen } from "react-icons/lu"
 import { BsCalendarCheck } from "react-icons/bs";
 import { MdInsertChartOutlined } from "react-icons/md";
-import ToodleLogo from "../../../../public/assets/icons/ToodleLogo";
+import ToodleLogo from "../../../../public/assets/Components/ToodleLogo";
 import { BsJournalBookmark } from "react-icons/bs";
 
 const { Sider } = Layout;
@@ -32,12 +32,11 @@ function Sidebar({ collapsed, setCollapsed }) {
       icon: <LuNotebookPen size={20} />,
       label: "Assessments",
       children: subjects
-        .filter((subject) => !subject.subject_name.includes("ttendance"))
+        .filter((subject) => !subject.subject_name.includes("Attendance"))
         .map((subject) => ({
           key: `subject-${subject.id}`,
           label: subject.subject_name,
           onClick: () => {
-            setSelectedKey("1");
             setSelectedSubject(subject);
             navigate("/assessment");
           },
@@ -56,6 +55,10 @@ function Sidebar({ collapsed, setCollapsed }) {
       key: "3",
       icon: <BsJournalBookmark size={20} />,
       label: "Monthly Report",
+      onClick: () => {
+        setSelectedKey("3");
+        navigate("/monthly_report"); 
+      },
     },
     {
       key: "4",

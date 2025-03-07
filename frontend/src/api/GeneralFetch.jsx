@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useMainContext } from "./Context/MainContext";
-import { fetchMonths, fetchSections, fetchSubjects, fetchUserData } from "./api/generalAPI";
+import { useMainContext } from "../Context/MainContext";
+import { fetchMonths, fetchSections, fetchSubjects, fetchUserData } from "./generalAPI";
 
 const GeneralFetchComponent = () => {
   const { setMonths, setSubjects,setUserName,setUserRole,setSectionId,setSectionName,setUserId,setSections } = useMainContext();

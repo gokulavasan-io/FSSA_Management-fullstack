@@ -22,7 +22,7 @@ class AttendanceReport(APIView):
         batch_id = params.get("batch")
         section_id = params.get("section_id")
         
-        section_id, batch_id = validate_to_none(date,section_id, batch_id)
+        date,section_id, batch_id = validate_to_none(date,section_id, batch_id)
         validate_not_none(batch_id=batch_id,date=date)
         
         filters = {"batch_id": batch_id}

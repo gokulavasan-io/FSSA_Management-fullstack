@@ -1,6 +1,6 @@
 import React from "react";
 import { MainContextProvider } from "./Context/MainContext";
-import GeneralFetchComponent from "./GeneralFetch";
+import GeneralFetchComponent from "./api/GeneralFetch";
 import Main from "./Main";
 
 
