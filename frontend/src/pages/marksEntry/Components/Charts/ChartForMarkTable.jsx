@@ -4,7 +4,7 @@ import HighchartsReact from "highcharts-react-official";
 import "highcharts/modules/accessibility"; // Just import, no need to call
 
 import { useMarksContext } from "../../../../Context/MarksContext";
-import { categoryMark } from "../../../../constants/constValues";
+import { categoryMark } from "../../../../constants/MarkCategory";
 import { Card, Typography } from "antd";
 
 const { Title, Text } = Typography;

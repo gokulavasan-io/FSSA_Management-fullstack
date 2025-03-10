@@ -73,6 +73,7 @@ const StudentStatistics = () => {
       width: 120,
       sorter: (a, b) =>
         parseFloat(a.total_percentage) - parseFloat(b.total_percentage), // Convert string to number
+       render: (value) => `${value} %`,
     },
     {
       title: "Present Percentage",
@@ -82,6 +83,7 @@ const StudentStatistics = () => {
       width: 120,
       sorter: (a, b) =>
         parseFloat(a.present_percentage) - parseFloat(b.present_percentage), // Convert string to number
+       render: (value) => `${value} %`,
     },
   ];
 

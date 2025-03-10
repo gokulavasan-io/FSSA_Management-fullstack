@@ -10,3 +10,9 @@ export const categoryMark={
     redStartValue:0,
     redEndValue:50,
 }
+
+export const categoryColor={
+    "Very Good": { bg: "green", color: "white" },
+    "Good": { bg: "#ffde59", color: "black" },
+    "Not Good": { bg: "#ff5757", color: "white" },
+  };

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import dayjs from "dayjs";
-import { categoryMark } from "../constants/constValues";
+import { categoryMark } from "../constants/MarkCategory";
 import { useMainContext } from "./MainContext";
 
 // Create Context
