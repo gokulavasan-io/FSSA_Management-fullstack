@@ -1,6 +1,5 @@
 from django.db import models
 from students.models import *
-from utils import encrypt_value, decrypt_value
 
 class Month(models.Model):
     month_name = models.CharField(max_length=20, unique=True)
@@ -33,31 +32,8 @@ class TestDetail(models.Model):
 class Marks(models.Model):
     student = models.ForeignKey('students.Students', on_delete=models.CASCADE, related_name="marks")
     test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE, related_name="marks")
-    _mark = models.TextField(db_column="mark",null=True, blank=True)  # Encrypted mark field
-    _remark = models.TextField(db_column="remark", null=True, blank=True)  # Encrypted remark field
-
-    @property
-    def mark(self):
-        """Decrypt the mark."""
-        return decrypt_value(self._mark)
-
-    @mark.setter
-    def mark(self, value):
-        """Encrypt the mark before saving."""
-        self._mark = encrypt_value(value)
-
-    @property
-    def remark(self):
-        """Decrypt the remark."""
-        return decrypt_value(self._remark)
-
-    @remark.setter
-    def remark(self, value):
-        """Encrypt the remark before saving."""
-        self._remark = encrypt_value(value)
-
-    def __str__(self):
-        return f"{self.student} - {self.test_detail}"
+    mark = models.TextField(null=True, blank=True)  
+    remark = models.TextField( null=True, blank=True)  
 
 
     

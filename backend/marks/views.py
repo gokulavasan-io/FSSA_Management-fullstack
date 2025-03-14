@@ -24,11 +24,10 @@ class AddTestView(APIView):
             serializer = TestDetailSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
-                subject = get_object_or_404(Subject, id=data['subject'])
+                subject = data['subject']
                 
                 created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = data['month']
-                month = get_object_or_404(Month, id=month_number)
+                month = data['month']
 
                 # Check if a test with the same name already exists for the same month and subject
                 existing_test = TestDetail.objects.filter(
