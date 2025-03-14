@@ -22,6 +22,7 @@ function MonthlyAnalytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if(!batchNumber||!academicSubjects) return;
         const response = await fetchMonthlyReport(batchNumber,academicSubjects.map(s=>s.id));
         setMonths(response.months);
         setData(transformMonthlyData(response.data));

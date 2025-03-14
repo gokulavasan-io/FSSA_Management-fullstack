@@ -4,8 +4,8 @@ import { ATTENDANCE_API_ENDPOINTS } from "./apiPaths";
 export const fetchAttendanceData = async (section, month, year) => {
   try {
     let response = await axios.get(
-      `${ATTENDANCE_API_ENDPOINTS.ATTENDANCE_DATA}?year=${year || ""}&month=${
-        month || ""
+      `${ATTENDANCE_API_ENDPOINTS.ATTENDANCE_DATA}?year=${year}&month=${
+        month
       }&section_id=${section}`
     );
     return response.data;
@@ -27,9 +27,9 @@ export const updateAttendance = async (data) => {
 export const fetchRemarks = async (section, month, year) => {
   try {
     let response = await axios.get(
-      `${ATTENDANCE_API_ENDPOINTS.REMARK}?year=${year || ""}&month=${
-        month || ""
-      }&section_id=${section || ""}`
+      `${ATTENDANCE_API_ENDPOINTS.REMARK}?year=${year}&month=${
+        month
+      }&section_id=${section}`
     );
     return response.data;
   } catch (error) {
@@ -67,9 +67,9 @@ export const checkHoliday = async (date) => {
 export const fetchHolidays = async (section, month, year) => {
   try {
     let response = await axios.get(
-      `${ATTENDANCE_API_ENDPOINTS.HOLIDAY}?year=${year || ""}&month=${
-        month || ""
-      }&section_id=${section || ""}`
+      `${ATTENDANCE_API_ENDPOINTS.HOLIDAY}?year=${year}&month=${
+        month
+      }&section_id=${section}`
     );
     return response.data;
   } catch (error) {
@@ -99,8 +99,8 @@ export const fetchDailyStatistics = async (section, month, year) => {
   try {
     let response = await axios.get(
       `${ATTENDANCE_API_ENDPOINTS.FETCH_DAILY_STATISTICS}?year=${
-        year || ""
-      }&month=${month || ""}&section_id=${section || ""}`
+        year
+      }&month=${month}&section_id=${section}`
     );
     return response.data;
   } catch (error) {
@@ -112,8 +112,8 @@ export const fetchStudentStatistics = async (section, month, year) => {
   try {
     let response = await axios.get(
       `${ATTENDANCE_API_ENDPOINTS.FETCH_STUDENT_STATISTICS}?year=${
-        year || ""
-      }&month=${month || ""}&section_id=${section || ""}`
+        year
+      }&month=${month}&section_id=${section}`
     );
     return response.data;
   } catch (error) {

@@ -8,8 +8,7 @@ import ReportCardPage from "./Components/ReportCard/ReportCardPage";
 
 function MonthlyReportMain() {
   const componentRef = useRef();
-  const { subjects, attendanceBehaviorIds } = useMainContext();
-  const [data, setData] = useState({});
+  const { subjects, attendanceBehaviorIds,sectionId,selectedMonth,year } = useMainContext();
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [studentsData, setStudentsData] = useState({});
   const [classData, setClassData] = useState({});
@@ -18,7 +17,6 @@ function MonthlyReportMain() {
   const [studentNames, setStudentNames] = useState([]);
   const [downloadReportCardPage, setDownloadReportCardPage] = useState(false);
 
-  // Initialize selected subjects (include Attendance & Behavior always)
   useEffect(() => {
     let initialSubjects = new Set([
       "English",
@@ -37,12 +35,10 @@ function MonthlyReportMain() {
     setSelectedSubjects(ids);
   }, [subjects]);
 
-  // Fetch data based on selected subjects
   useEffect(() => {
     if (selectedSubjects.length > 0) {
       async function fetchData() {
-        let response = await fetchMonthlyReport(null, 1, selectedSubjects);
-        setData(response);
+        let response = await fetchMonthlyReport(sectionId, selectedMonth.id, selectedSubjects);
         setStudentsData(response?.students);
         setClassData(response?.class_average);
 
@@ -62,7 +58,7 @@ function MonthlyReportMain() {
       }
       fetchData();
     }
-  }, [selectedSubjects]);
+  }, [selectedSubjects,selectedMonth,year]);
 
   const handleNextStudent = () => {
     if (currentStudentIndex < studentNames.length - 1) {
@@ -108,8 +104,8 @@ function MonthlyReportMain() {
       },
       sec_mon_year: {
         Section: data.section,
-        Month: "Feb",
-        Year: 2025,
+        Month: selectedMonth?.month_name.slice(0,3),
+        Year: year,
       },
       marks: marks,
       attendanceBehavior: {
@@ -137,7 +133,8 @@ function MonthlyReportMain() {
     currentStudentIndex,
     componentRef,
     studentNames,
-    setDownloadReportCardPage,handleSearchStudent,subjects,selectedSubjects,setSelectedSubjects,attendanceBehaviorIds
+    setDownloadReportCardPage,handleSearchStudent,subjects,selectedSubjects,setSelectedSubjects,attendanceBehaviorIds,formatStudentsData,
+    studentsData,setStudentData,classData
   };
   return (
     <>

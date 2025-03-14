@@ -19,28 +19,41 @@ function ReportCardPage(props) {
     subjects,
     selectedSubjects,
     setSelectedSubjects,
-    attendanceBehaviorIds,
+    attendanceBehaviorIds,formatStudentsData,studentsData,setStudentData,classData
   } = props;
 
   const [searchValue, setSearchValue] = useState("");
   const [isDownloadingAll,setIsDownloadingAll]=useState(false)
 
   const handleDownloadAll = async () => {
-    setIsDownloadingAll(true)
+    setIsDownloadingAll(true);
     for (const name of studentNames) {
-        await downloadReportCard(componentRef,name,"A");
-        await new Promise(resolve => setTimeout(resolve, 300)); 
+      const formattedStudentData = formatStudentsData(
+        studentsData[name],
+        classData,
+        name
+      );
+  
+      setStudentData(formattedStudentData);
+  
+      await new Promise((resolve) => setTimeout(resolve, 500)); 
+  
+      await downloadReportCard(componentRef, name, studentsData[name]?.section);
+  
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
-    setIsDownloadingAll(false)
+  
+    setIsDownloadingAll(false);
   };
+  
 
   return (
     <>
       <Row align="stretch">
         <Col span={12}>
           <Space direction="horizontal" align="top" size="large">
-            <FwButton onFwClick={() => setDownloadReportCardPage(false)}>
-              <ArrowLeftOutlined /> Back
+            <FwButton onFwClick={() => setDownloadReportCardPage(false)}  >
+              <ArrowLeftOutlined style={{ marginRight: 8 }} /> Back
             </FwButton>
             <ReportCard ref={componentRef} studentData={studentData} />
           </Space>
@@ -104,7 +117,7 @@ function ReportCardPage(props) {
             </FwButton>
             <FwButton
               onFwClick={() =>
-                downloadReportCard(componentRef, "student-Name", "A")
+                downloadReportCard(componentRef, studentData.names?.Student, studentData.sec_mon_year?.Section)
               }
               disabled={isDownloadingAll}
             >

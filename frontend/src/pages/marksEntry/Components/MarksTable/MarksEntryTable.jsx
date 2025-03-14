@@ -210,7 +210,7 @@ function TestTable() {
           { data: "average_mark", title: `Average`,readOnly:true },
           { data: "remark", title: "Remark" },
         ]}
-        width="90%"
+      width="950"
         height="650"
         autoRowSize={true}
         licenseKey="non-commercial-and-evaluation"

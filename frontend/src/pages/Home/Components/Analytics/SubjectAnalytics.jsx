@@ -28,6 +28,7 @@ function SubjectAnalysis() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if(!batchNumber||!academicSubjects) return;
         const response = await fetchSubjectReport(batchNumber,academicSubjects.map(s=>s.id));
         setMonths(response.months);
         setData(transformSubjectData(response.SubjectsData));

@@ -7,9 +7,7 @@ const StudentScoresTable = ({ studentsData }) => {
   const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-    // Check if studentsData has 'students' key
     if (studentsData) {
-      // Convert JSON to array of objects with 'Name' as key
       const convertedData = Object.entries(studentsData).map(([name, details]) => ({
         Name: name,
         ...details.scores
@@ -19,12 +17,13 @@ const StudentScoresTable = ({ studentsData }) => {
       // Dynamically generate column headers
       if (convertedData.length > 0) {
         const firstRow = convertedData[0];
-        const dynamicColumns = Object.keys(firstRow).map((key) => ({
+        const columns = Object.keys(firstRow).map((key) => ({
           data: key,
           title: key,
-          type: typeof firstRow[key] === 'number' ? 'numeric' : 'text'
-        }));
-        setColumns(dynamicColumns);
+          type: typeof firstRow[key] === 'number' ? 'numeric' : 'text',
+          className: key=="Name"?null:'htCenter' 
+        }));        
+        setColumns(columns);
       }
     }
   }, [studentsData]);
