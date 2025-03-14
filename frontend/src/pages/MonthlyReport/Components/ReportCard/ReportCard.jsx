@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import "../../Styles/ReportCard.css";
 import { categoryColor, categoryMark } from "../../../../constants/MarkCategory";
 
-const ReportCard = React.forwardRef((props, ref) => {
-  let { names, sec_mon_year, marks, absentBehavior } = props;
+const ReportCard = React.forwardRef(({studentData}, ref) => {
+
+    const [names, setNames] = useState({})
+    const [sec_Mon_Year, setSec_Mon_Year] = useState({})
+    const [marks, setMarks] = useState({})
+    const [attendanceBehavior,setAttendanceBehavior]=useState({})
+
+
+    useEffect(() => {
+      setNames(studentData.names);
+      setSec_Mon_Year(studentData.sec_mon_year);
+      setAttendanceBehavior(studentData.attendanceBehavior);
+      setMarks(studentData.marks);
+    }, [studentData]);
+    
 
   const getBgColor = (mark) => {
     if (mark <= categoryMark.redEndValue) return categoryColor["Not Good"].bg;
@@ -21,6 +34,7 @@ const ReportCard = React.forwardRef((props, ref) => {
 
   return (
     <>
+    {names&&
       <div className="reportCard" ref={ref}>
         <div className="header">
           <img
@@ -41,10 +55,10 @@ const ReportCard = React.forwardRef((props, ref) => {
               </div>
             ))}
             <div className="sec_mon_year">
-              {Object.keys(sec_mon_year).map((el, index) => (
+              {Object.keys(sec_Mon_Year).map((el, index) => (
                 <div key={index}>
                   <h3>{el}</h3>
-                  <span>{sec_mon_year[el]}</span>
+                  <span>{sec_Mon_Year[el]}</span>
                 </div>
               ))}
             </div>
@@ -72,7 +86,7 @@ const ReportCard = React.forwardRef((props, ref) => {
                           color: getColor(marks[subject]?.studentMark),
                         }}
                       >
-                        {marks[subject]?.studentMark}
+                        {Math.round(marks[subject]?.studentMark)}
                       </span>
                     </div>
                     <div className="classAvgMark">
@@ -82,7 +96,7 @@ const ReportCard = React.forwardRef((props, ref) => {
                           color: getColor(marks[subject]?.classAvg),
                         }}
                       >
-                        {marks[subject]?.classAvg}
+                        {Math.round(marks[subject]?.classAvg)}
                       </span>
                     </div>
                   </div>
@@ -90,18 +104,18 @@ const ReportCard = React.forwardRef((props, ref) => {
                 <div className="line">
                   <span></span>
                 </div>
-
-                {Object.keys(absentBehavior).map((subject) => (
+               
+                {Object.keys(attendanceBehavior).map((subject) => (
                   <div className="subject" key={subject}>
                     <div className="studentMark">
                       <h3 className="subjectName">{subject}</h3>
                       <span
                         style={{
-                          backgroundColor: getBgColor(absentBehavior[subject]),
-                          color: getColor(absentBehavior[subject]),
+                          backgroundColor: getBgColor(attendanceBehavior[subject]),
+                          color: getColor(attendanceBehavior[subject]),
                         }}
                       >
-                        {absentBehavior[subject]}
+                        {Math.round(attendanceBehavior[subject])}
                       </span>
                     </div>
                   </div>
@@ -130,6 +144,7 @@ const ReportCard = React.forwardRef((props, ref) => {
           />
         </div>
       </div>
+    }
     </>
   );
 });

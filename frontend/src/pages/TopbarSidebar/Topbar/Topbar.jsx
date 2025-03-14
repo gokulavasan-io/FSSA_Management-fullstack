@@ -95,7 +95,7 @@ function TopBar({ collapsed }) {
 
           {location.pathname !== "/" && (
             <Breadcrumb.Item>
-              <Dropdown overlay={monthMenu} trigger={["click", "hover"]}>
+              <Dropdown overlay={monthMenu} trigger={["click"]}>
                 <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
                   {selectedMonth.month_name} <MdOutlineKeyboardArrowDown size={16} />
                 </span>

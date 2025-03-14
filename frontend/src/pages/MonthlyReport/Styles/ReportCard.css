@@ -204,21 +204,20 @@ h3 {
 
 
 .subject .studentMark span{
-    background-color: #f5f5f5;
     border: 1px solid rgb(75, 72, 72);
     padding:.4rem 2rem;
     border-radius: 50px;
     font-weight: 600;
     margin-top: 1.5px;
-
 }
 
+
 .subject .classAvgMark span{
-    background-color: #f5f5f5;
     border: 1px solid rgb(75, 72, 72);
-    padding:.35rem 2rem;
+    padding:.4rem 2rem;
     border-radius: 50px;
-    font-weight: 500;
+    font-weight: 600;
+    
 
 }
 .line{
