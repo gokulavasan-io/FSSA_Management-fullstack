@@ -12,6 +12,7 @@ export const MarksContextProvider = ({ children }) => {
   
   const [monthId, setMonthId] = useState(selectedMonth.id);
   const [subjectId, setSubjectId] = useState(selectedSubject.id);
+  const [subjectName, setSubjectName] = useState(selectedSubject.subject_name);
   const [testDetail, setTestDetail] = useState({});
   const [testTableData, setTestTableData] = useState([]);
   const [levelTableData,setLevelTableData] = useState([]);
@@ -102,7 +103,7 @@ export const MarksContextProvider = ({ children }) => {
         mainTableColumns,
         setMainTableColumns,
         showMainTableColor,
-        setShowMainTableColor,levelTableData,setLevelTableData,
+        setShowMainTableColor,levelTableData,setLevelTableData,subjectName, setSubjectName,
       }}
     >
       {children}

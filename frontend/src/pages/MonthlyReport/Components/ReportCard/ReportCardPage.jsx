@@ -132,7 +132,7 @@ function ReportCardPage(props) {
             </FwButton>
 
             <FwButton color="danger" onFwClick={handleDownloadAll} loading={isDownloadingAll} >
-              Download All Students
+              Download For All Students
             </FwButton>
           </Space>
         </Col>

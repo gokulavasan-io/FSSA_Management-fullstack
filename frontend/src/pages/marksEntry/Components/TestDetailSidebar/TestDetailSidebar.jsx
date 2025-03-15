@@ -1,16 +1,16 @@
 import React from "react";
 import { Button, Drawer, List, Typography } from "antd";
 import { MenuOutlined, } from "@ant-design/icons";
-import LevelSection from "./LevelSection.jsx";
-import TestsSection from "./TestSection.jsx";
+import TestsSection from "./Section.jsx";
 import ExportData from "../ExportData.jsx";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import "antd/dist/reset.css";
 import { TableChartOutlined } from "@mui/icons-material";
-import AddNewTest from "../AddNewTest/AddNewTest.jsx";
+import { FwButton } from "@freshworks/crayons/react";
+
 
 const TestDetailSideBar = () => {
-  const { setIsMainTable, sidebarOpen, setSidebarOpen } = useMarksContext();
+  const { setIsMainTable, sidebarOpen, setSidebarOpen,subjectName } = useMarksContext();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -54,34 +54,30 @@ const TestDetailSideBar = () => {
         <List bordered itemLayout="vertical" style={{ padding: 0 }}>
           {/* Average Table Button */}
           <List.Item>
-            <Button
-              type="primary"
-              onClick={() => setIsMainTable(true)}
-              style={{
-                width: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-              }}
+            <FwButton
+              color="primary"
+              onFWClick={() => setIsMainTable(true)}
             >
-              <TableChartOutlined style={{ fontSize: "18px" }} />
+              <TableChartOutlined style={{ fontSize: "18px",marginRight:10 }} />
               <span>Average Table</span>
-            </Button>
+            </FwButton>
           </List.Item>
-
-          <AddNewTest />
 
           {/* Marks Section */}
-          <List.Item>
-            <Typography.Text strong>Levels</Typography.Text>
-          </List.Item>
-          <LevelSection />
+
+          {subjectName=="Problem Solving"&&
+          <>
+            <List.Item>
+              <Typography.Text strong>Levels</Typography.Text>
+            </List.Item>
+            <TestsSection isLevelSection={true}  />
+          </>
+          }
 
           <List.Item>
             <Typography.Text strong>Tests</Typography.Text>
           </List.Item>
-          <TestsSection />
+          <TestsSection isLevelSection={false}  />
 
           <List.Item>
             <ExportData />

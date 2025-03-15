@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useMarksContext } from "../../../Context/MarksContext";
 import { DownOutlined } from "@ant-design/icons";
+import { FwButton } from "@freshworks/crayons/react";
 
 const ExportData = () => {
   const {
@@ -119,9 +120,9 @@ const ExportData = () => {
 
   return (
     <Dropdown overlay={menu} trigger={["click"]}>
-      <Button type="primary" icon={<DownOutlined />}>
-        Export
-      </Button>
+      <FwButton color="secondary" >
+      <DownOutlined  style={{marginRight:10}} />  Export
+      </FwButton>
     </Dropdown>
   );
 };

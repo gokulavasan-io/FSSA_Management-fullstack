@@ -103,7 +103,7 @@ const StudentStatistics = () => {
             dataSource={attendanceData}
             columns={columns}
             rowKey="id"
-            pagination={{ pageSize: 15,showSizeChanger: false }}
+            pagination={{ pageSize: 10,showSizeChanger: false }}
             scroll={{ x: "max-content" }}
             bordered
             size="small"

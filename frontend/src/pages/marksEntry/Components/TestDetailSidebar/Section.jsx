@@ -4,35 +4,35 @@ import {
   ListItemText,
 
 } from '@mui/material';
-  import { format } from 'date-fns';
+import { format } from 'date-fns';
 
-  import { useMarksContext } from "../../../../Context/MarksContext.jsx";
+  import { useMarksContext } from "../../../../Context/MarksContext";
   
-  const LevelSection = () => {
-    const { testDetails, handleOptionClick } = useMarksContext();
-  
+  const TestSection = ({isLevelSection} ) => {
+    const { handleOptionClick, testDetails } = useMarksContext();
+
     return (
       <List component="div" disablePadding>
         {/* Show message when no items available */}
-        {testDetails.filter((item) => item.test_detail.isLevelTest).length ===
+        {testDetails.filter((item) => isLevelSection ? item.test_detail.isLevelTest : !item.test_detail.isLevelTest ).length ===
         0 ? (
-          <ListItem sx={{ textAlign: "center", padding: "10px", color: "#000" }}>
+          <ListItem sx={{ textAlign: "center", padding: "10px", color: "#000",marginLeft:3 }}>
             No tests available
           </ListItem>
         ) : (
           testDetails
-            .filter((item) => item.test_detail.isLevelTest)
+            .filter((item) => isLevelSection ? item.test_detail.isLevelTest : !item.test_detail.isLevelTest )
             .map((item, index) => {
               return (
                 <ListItem
-                  button
+                  key={index}
+                  button={index.toString()}
                   onClick={() => {
-                    handleOptionClick(item.test_detail.id, true);
+                    handleOptionClick(item.test_detail.id, false);
                   }}
                   sx={{
                     pl: 4,
-                    borderRadius: "8px",
-                    "&:hover": { backgroundColor: "#e3f2fd" },
+                    "&:hover": { backgroundColor: "rgb(235, 239, 243)" },
                     marginBottom: 0.5,
                     cursor: "pointer",
                     opacity: 1,
@@ -41,14 +41,16 @@ import {
                   <ListItemText
                     primary={
                       <>
-                        <span style={{ fontWeight: "bold" }}>
+                        <span style={{ fontWeight: 500 }}>
                           {" "}
                           {item.test_detail.test_name}{" "}
                         </span>
+                        <span  style={{fontSize:14,marginLeft:10}} >
                         {format(
                           new Date(item.test_detail.created_at),
                           "dd/MMM/yy"
                         )}
+                        </span>
                       </>
                     }
                     sx={{ color: "#555", cursor: "pointer" }}
@@ -61,5 +63,5 @@ import {
     );
   };
   
-  export default LevelSection;
+  export default TestSection;
   

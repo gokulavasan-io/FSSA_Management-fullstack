@@ -212,7 +212,7 @@ const ShowComments = () => {
             experimentalFeatures={{ newEditingApi: true }}
             sx={{
               width: "100%",
-              height: "600px",
+              height: "500px",
               overflow: "hidden",
               marginTop: "1rem",
             }}

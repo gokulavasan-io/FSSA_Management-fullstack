@@ -3,7 +3,8 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./pages/TopbarSidebar/Sidebar/Sidebar";
 import TopBar from "./pages/TopbarSidebar/Topbar/Topbar";
 import { useState } from "react";
-
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./pages/Components/ErrorFallback";
 const { Content } = Layout;
 
 function AppLayout() {
@@ -27,23 +28,24 @@ function AppLayout() {
         <TopBar collapsed={collapsed} />
 
         {/* Content Area */}
-        <Content
-          style={{
-            marginTop: 60,
-            padding: "20px",
-            height: "calc(100vh - 60px)", 
-            overflowY: "auto",
-            background: "#ebeff3",
-            transition: "all 0.3s ease-in-out",
-            
-          }}
-        >
-          <Outlet />
-        </Content>
+
+          <Content
+            style={{
+              marginTop: 60,
+              padding: "20px",
+              height: "calc(100vh - 60px)",
+              overflowY: "auto",
+              background: "#ebeff3",
+              transition: "all 0.3s ease-in-out",
+            }}
+          >
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <Outlet />
+            </ErrorBoundary>
+          </Content>
       </Layout>
     </Layout>
   );
 }
 
 export default AppLayout;
-

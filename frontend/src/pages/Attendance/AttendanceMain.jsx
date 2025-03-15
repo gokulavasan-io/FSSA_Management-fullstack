@@ -16,6 +16,8 @@ import ShowComments from "./Components/Comments/ShowComments";
 import ShowHolidays from "./Components/Holiday/ShowHolidays";
 import DailyStatisticsTable from "./Components/Statistics/DailyStatistics";
 import StudentStatisticsTable from "./Components/Statistics/StudentStatistics";
+import { FwButton } from "@freshworks/crayons/react";
+
 
 
 const AttendanceMain = () => {
@@ -41,25 +43,14 @@ const AttendanceMain = () => {
     </Menu>
   );
 
-  const fetchStudentRemarks = async () => {
-    setLoading(true);
-    try {
-      const response = await fetchRemarks(sectionId, monthId, year);
-      return response;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const fetchedRemarks = await fetchStudentRemarks(); // Fetch remarks
-        setRemarks(fetchedRemarks); // Store fetched remarks in the state
+        const fetchedRemarks = await  fetchRemarks(sectionId, monthId, year);
         const response = await fetchAttendanceData(sectionId, monthId, year);
         const { data, status } = response;
+        setRemarks(fetchedRemarks); 
         setTableData(data);
         setStatusOptions(status);
       } catch (error) {
@@ -131,7 +122,7 @@ const AttendanceMain = () => {
         (status) => status !== "Holiday" && status !== "Weekend"
       ),
       allowInvalid: false,
-      readOnly: tableData.some((row) => row[day] === "Holiday"),
+      readOnly: tableData.some((row) => row[day] === "Holiday"||row[day] === "Weekend")  ,
       renderer: function (instance, td, row, col, prop, value, cellProperties) {
         const isHoliday = tableData[row]?.[day] === "Holiday";
         const isWeekend = tableData[row]?.[day] === "Weekend";
@@ -178,14 +169,13 @@ const AttendanceMain = () => {
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Button
-          variant="text"
-          color="black"
-          onClick={handleUpdateAttendance}
+        <FwButton
+          color="secondary"
+          onFWClick={handleUpdateAttendance}
           disabled={loading}
         >
           {loading ? "Updating..." : " Update"}
-        </Button>
+        </FwButton>
         <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
             <Button
               shape="circle"
@@ -202,7 +192,7 @@ const AttendanceMain = () => {
         remarksData={remarks}
       />
 
-     <ShowComments/>
+      <ShowComments/>
       <ShowHolidays/>
       <DailyStatisticsTable />
       <StudentStatisticsTable />
