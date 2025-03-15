@@ -99,11 +99,11 @@ const RemarkPopup = ({ hotTableRef, tableData, remarksData }) => {
             position: "absolute",
             top: `${tooltipPosition.top}px`,
             left: `${tooltipPosition.left}px`,
-            background: "#FF69B9", // Pink background (Hot Pink shade)
+            background: "#12344d", // Pink background (Hot Pink shade)
             color: "#ffffff", // White text color
             padding: "8px 12px",
-            borderRadius: "8px", // Rounded corners
-            boxShadow: "0 4px 12px rgba(255, 105, 180, 0.3)", // Soft pink shadow
+            borderRadius: "4px", // Rounded corners
+            boxShadow: "0 4px 12px #12344d", // Soft pink shadow
             zIndex: 1000,
             fontSize: "14px", // Slightly larger font size
             fontWeight: "500", // Slightly bolder text

@@ -56,7 +56,7 @@ const TestDetailSideBar = () => {
           <List.Item>
             <FwButton
               color="primary"
-              onFWClick={() => setIsMainTable(true)}
+              onFwClick={() => setIsMainTable(true)}
             >
               <TableChartOutlined style={{ fontSize: "18px",marginRight:10 }} />
               <span>Average Table</span>

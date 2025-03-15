@@ -75,7 +75,7 @@ export default function NormalTestChart() {
   }, [mainTableData, testTableData, isMainTable]);
   
 
-  const colors = ["red", "rgb(234, 226, 85)", "green", "rgb(183, 131, 20)", "rgb(22, 212, 249)"];
+  const colors = ["red", "rgb(234, 226, 85)", "green", "rgb(183, 131, 20)", "#e5eaea"];
 
   const options = {
     chart: {

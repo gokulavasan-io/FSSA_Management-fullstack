@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { HotTable } from "@handsontable/react";
 import Handsontable from "handsontable";
 import "handsontable/dist/handsontable.full.css";
@@ -12,6 +12,7 @@ const AttendanceTable = ({
   hotColumns,
   handleAfterChange,
   remarksData,
+  refetchAttendance,
 }) => {
   const { year } = useMainContext();
   const { monthId } = useAttendanceContext();
@@ -32,7 +33,7 @@ const AttendanceTable = ({
       );
       remark = attendanceRecord?.remark;
     }
-    addRemarkAction(studentId, date, studentName, remark);
+    addRemarkAction(studentId, date, studentName, remark, refetchAttendance);
   };
 
   return (

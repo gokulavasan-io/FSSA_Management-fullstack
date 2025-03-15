@@ -3,3 +3,8 @@
 *{
   scrollbar-width: thin !important;
 }
+
+.handsontable th {
+  color: white !important; 
+  background-color: #476275 !important;
+}

@@ -203,22 +203,30 @@ h3 {
 }
 
 
-.subject .studentMark span{
+.studentMark span{
     border: 1px solid rgb(75, 72, 72);
     padding:.4rem 2rem;
     border-radius: 50px;
     font-weight: 600;
-    margin-top: 1.5px;
+    width: 80px;
+    text-align: center;
 }
 
 
-.subject .classAvgMark span{
+.classAvgMark span{
     border: 1px solid rgb(75, 72, 72);
     padding:.4rem 2rem;
     border-radius: 50px;
     font-weight: 600;
-    
+    display: inline-block;
+    width: 80px;
+    text-align: center;
 
+}
+
+.classAvgMark{
+    width: 100%;
+    text-align: center;
 }
 .line{
     display: flex;

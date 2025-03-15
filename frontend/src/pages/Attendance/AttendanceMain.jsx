@@ -18,10 +18,8 @@ import DailyStatisticsTable from "./Components/Statistics/DailyStatistics";
 import StudentStatisticsTable from "./Components/Statistics/StudentStatistics";
 import { FwButton } from "@freshworks/crayons/react";
 
-
-
 const AttendanceMain = () => {
-  const {  year, sectionId } = useMainContext();
+  const { year, sectionId } = useMainContext();
   const {
     monthId,
     tableData,
@@ -31,33 +29,44 @@ const AttendanceMain = () => {
     loading,
     setLoading,
     remarks,
-    setRemarks, setCommentsTableVisible, setHolidaysTableVisible,setDailyStatisticsVisible,setStudentStatisticsVisible
+    setRemarks,
+    setCommentsTableVisible,
+    setHolidaysTableVisible,
+    setDailyStatisticsVisible,
+    setStudentStatisticsVisible,
   } = useAttendanceContext();
 
   const menu = (
     <Menu>
-      <Menu.Item key="1" onClick={()=>setCommentsTableVisible(true)}>Comments</Menu.Item>
-      <Menu.Item key="2" onClick={()=>setHolidaysTableVisible(true)} >Holidays</Menu.Item>
-      <Menu.Item key="3" onClick={()=>setStudentStatisticsVisible(true)} >Student Statistics</Menu.Item>
-      <Menu.Item key="4" onClick={()=>setDailyStatisticsVisible(true)}>Daily Statistics</Menu.Item>
+      <Menu.Item key="1" onClick={() => setCommentsTableVisible(true)}>
+        Comments
+      </Menu.Item>
+      <Menu.Item key="2" onClick={() => setHolidaysTableVisible(true)}>
+        Holidays
+      </Menu.Item>
+      <Menu.Item key="3" onClick={() => setStudentStatisticsVisible(true)}>
+        Student Statistics
+      </Menu.Item>
+      <Menu.Item key="4" onClick={() => setDailyStatisticsVisible(true)}>
+        Daily Statistics
+      </Menu.Item>
     </Menu>
   );
 
+  const fetchAttendance = async () => {
+    try {
+      const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);
+      const response = await fetchAttendanceData(sectionId, monthId, year);
+      const { data, status } = response;
+      setRemarks(fetchedRemarks);
+      setTableData(data);
+      setStatusOptions(status);
+    } catch (error) {
+      console.error("Error fetching attendance data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const fetchedRemarks = await  fetchRemarks(sectionId, monthId, year);
-        const response = await fetchAttendanceData(sectionId, monthId, year);
-        const { data, status } = response;
-        setRemarks(fetchedRemarks); 
-        setTableData(data);
-        setStatusOptions(status);
-      } catch (error) {
-        console.error("Error fetching attendance data:", error);
-      }
-    };
-
     fetchAttendance();
   }, [year, monthId, sectionId]);
 
@@ -87,7 +96,7 @@ const AttendanceMain = () => {
       return {
         student_id: row.student_id,
         year,
-        "month":monthId,
+        month: monthId,
         attendance,
       };
     });
@@ -98,8 +107,7 @@ const AttendanceMain = () => {
     } catch (error) {
       console.error("Error updating attendance:", error);
       alert("Failed to update attendance.");
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -122,7 +130,9 @@ const AttendanceMain = () => {
         (status) => status !== "Holiday" && status !== "Weekend"
       ),
       allowInvalid: false,
-      readOnly: tableData.some((row) => row[day] === "Holiday"||row[day] === "Weekend")  ,
+      readOnly: tableData.some(
+        (row) => row[day] === "Holiday" || row[day] === "Weekend"
+      ),
       renderer: function (instance, td, row, col, prop, value, cellProperties) {
         const isHoliday = tableData[row]?.[day] === "Holiday";
         const isWeekend = tableData[row]?.[day] === "Weekend";
@@ -171,18 +181,18 @@ const AttendanceMain = () => {
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <FwButton
           color="secondary"
-          onFWClick={handleUpdateAttendance}
+          onFwClick={handleUpdateAttendance}
           disabled={loading}
         >
           {loading ? "Updating..." : " Update"}
         </FwButton>
         <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
-            <Button
-              shape="circle"
-              type="text"
-              icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
-            />
-          </Dropdown>
+          <Button
+            shape="circle"
+            type="text"
+            icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
+          />
+        </Dropdown>
       </div>
 
       <AttendanceTable
@@ -190,14 +200,13 @@ const AttendanceMain = () => {
         hotColumns={hotColumns}
         handleAfterChange={handleAfterChange}
         remarksData={remarks}
+        refetchAttendance={fetchAttendance}
       />
 
-      <ShowComments/>
-      <ShowHolidays/>
+      <ShowComments />
+      <ShowHolidays />
       <DailyStatisticsTable />
       <StudentStatisticsTable />
-      
-       
     </div>
   );
 };

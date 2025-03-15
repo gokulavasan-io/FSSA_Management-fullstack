@@ -2,8 +2,10 @@ import React from 'react'
 import dayjs from 'dayjs';
 import { addRemark } from "../../../../api/attendanceAPI";
 import '../../Styles/addCommentDialog.css'
+// import { FwButton } from "@freshworks/crayons/react";
 
-export const addRemarkAction = (studentId,date,studentName,remark) => {
+
+export const addRemarkAction = (studentId,date,studentName,remark,refetchAttendance) => {
   console.log(studentId);
   
   const remarkInfo = document.getElementById("remarkInfo");
@@ -16,9 +18,10 @@ export const addRemarkAction = (studentId,date,studentName,remark) => {
       date: date,
       remark: remark,
     };
-    saveRemark(remarkData);
+    saveRemark(remarkData, refetchAttendance)
   },remark);
 };
+
 
 export function showDialog(onSubmit,remark) {
   const dialogContainer = document.getElementById("dialog-container");
@@ -49,10 +52,11 @@ export function showDialog(onSubmit,remark) {
   };
 }
 
-export async function saveRemark(remarkData) {
+export async function saveRemark(remarkData,refetchAttendance) {
   try {
     await addRemark(remarkData);
     alert("remark added successfully")
+    refetchAttendance()
   } catch (error) {
     console.error("Error adding remark:", error);
     alert("Failed to add remark.");
