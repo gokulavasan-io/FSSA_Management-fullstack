@@ -9,5 +9,6 @@ urlpatterns = [
     path('member/', include("member.urls")),
     path('home/', include("home.urls")),
     path('report/', include("monthly_report.urls")),
+    path('analytics/',include("analytics.urls"))
     
 ]

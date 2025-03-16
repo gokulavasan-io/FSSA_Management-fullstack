@@ -8,9 +8,10 @@ import MarkApp from "./pages/MarksEntry/MarksApp";
 import AttendanceApp from "./pages/Attendance/AttendanceApp";
 import HomeApp from "./pages/Home/HomeApp";
 import MonthlyReportApp from "./pages/MonthlyReport/MonthlyReportApp";
+import  AnalyticsApp  from './pages/Analytics/AnalyticsApp'
+
 
 export default function Main() {
-
   return (
     <SnackbarProvider maxSnack={3}>
         <BrowserRouter>
@@ -21,6 +22,7 @@ export default function Main() {
               <Route path="assessment" element={<MarkApp />} />
               <Route path="attendance" element={<AttendanceApp />} />
               <Route path="monthly_report" element={<MonthlyReportApp />} />
+              <Route path="analytics" element={<AnalyticsApp />} />
             </Route>
           </Routes>
         </BrowserRouter>
