@@ -16,8 +16,7 @@ import { School, Subject as SubjectIcon, Close } from "@mui/icons-material";
 import { useMarksContext } from "../../../../Context/MarksContext";
 
 function TestDetailCard() {
-  const { testDetailCardVisible, setTestDetailCardVisible, testDetail } =
-    useMarksContext();
+  const { testDetailCardVisible, setTestDetailCardVisible, testDetail,isLevelTable } =useMarksContext();
   if (!testDetailCardVisible) return null;
   const formattedDate = dayjs(testDetail.created_at).format("DD/MM/YYYY");
 
@@ -76,11 +75,12 @@ function TestDetailCard() {
               </Typography>
             </Grid>
 
-            <Grid item xs={12}>
+           {!isLevelTable &&  <Grid item xs={12}>
               <Typography variant="body1" color="text.primary">
                 Total Marks: {testDetail.total_marks}
               </Typography>
             </Grid>
+            }
 
             <Grid item xs={12}>
               <Divider sx={{ my: 1 }} />

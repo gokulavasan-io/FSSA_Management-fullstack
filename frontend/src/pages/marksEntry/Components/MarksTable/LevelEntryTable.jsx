@@ -7,6 +7,9 @@ import { levelRegex } from "../../../../constants/regex.js";
 import "../../styles/MarksEntry.css";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import { fetchLevels, updateLevels } from "../../../../api/marksAPI.js";
+import InfoButton from "../TestDetailCard/InfoButton.jsx";
+import TestDetailCard from "../TestDetailCard/TestDetailsCard.jsx";
+
 
 function LevelTestTable() {
   const {
@@ -16,7 +19,7 @@ function LevelTestTable() {
     isUpdated,
     setIsUpdated,
     isEdited,
-    setIsEdited,testDetail
+    setIsEdited,setTestDetail
   } = useMarksContext();
   const [testName,setTestName]=useState("Level Up")
   const hotTableRef = useRef(null);
@@ -38,7 +41,7 @@ function LevelTestTable() {
   const handleUpdate = async () => {
     try {
       const formattedData = transformMarksData(levelTableData);
-      const response = await updateLevels(testId, formattedData);
+       await updateLevels(testId, formattedData);
       setIsUpdated((prev) => !prev);
     } catch (error) {
       console.error("Error submitting marks data:", error.message);
@@ -102,6 +105,7 @@ function LevelTestTable() {
     try {
       const response = await fetchLevels(testId);
       setTestName(response.test_detail.test_name )
+      setTestDetail(response.test_detail)
       return response.marks;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -128,8 +132,10 @@ function LevelTestTable() {
   
   return (
     <div style={{display:'flex',flexDirection:"column",alignItems:"center"}}>
+      <TestDetailCard />
       <Typography.Title level={5} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center",width:"90%", }}>
         <Space>
+        <InfoButton />
           <span style={{color:"#1677ff"}}>{testName}</span>
         </Space>
         <Space>

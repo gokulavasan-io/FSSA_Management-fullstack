@@ -28,6 +28,7 @@ export default function ChartForLevelTable() {
       const chartData = Object.entries(levelCounts).map(([level, count]) => ({
         name: level === "0" ? "No level" : `Lvl ${level} - ${count}`,
         y: count,
+        color: level === "0"?"#ccd1d1":null
       }));
   
       setData(chartData);
