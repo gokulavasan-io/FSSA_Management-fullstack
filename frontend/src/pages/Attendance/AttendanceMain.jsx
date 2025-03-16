@@ -155,11 +155,9 @@ const AttendanceMain = () => {
           td.classList.add("remarkCell");
         }
         if (isHoliday && !isWeekend) {
-          td.innerHTML = "";
           td.classList.remove("handsontableDropdown");
           td.classList.add("holidayCell");
         } else if (isWeekend) {
-          td.innerHTML = "";
           td.classList.remove("handsontableDropdown");
           td.classList.add("weekendCell");
         } else {
