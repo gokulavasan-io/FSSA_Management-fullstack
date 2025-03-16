@@ -127,15 +127,15 @@ const AttendanceMain = () => {
       title: `${day}/${monthId}`,
       type: "dropdown",
       source: statusOptions.filter(
-        (status) => status !== "Holiday" && status !== "Weekend"
+        (status) => status !== "HD" && status !== "WE"
       ),
       allowInvalid: false,
       readOnly: tableData.some(
-        (row) => row[day] === "Holiday" || row[day] === "Weekend"
+        (row) => row[day] === "HD" || row[day] === "WE"
       ),
       renderer: function (instance, td, row, col, prop, value, cellProperties) {
-        const isHoliday = tableData[row]?.[day] === "Holiday";
-        const isWeekend = tableData[row]?.[day] === "Weekend";
+        const isHoliday = tableData[row]?.[day] === "HD";
+        const isWeekend = tableData[row]?.[day] === "WE";
         const date = `${year}-${String(monthId).padStart(2, "0")}-${String(
           day
         ).padStart(2, "0")}`;
