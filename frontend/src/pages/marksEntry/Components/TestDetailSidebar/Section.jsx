@@ -28,7 +28,7 @@ import { format } from 'date-fns';
                   key={index}
                   button={index.toString()}
                   onClick={() => {
-                    handleOptionClick(item.test_detail.id, false);
+                    handleOptionClick(item.test_detail.id, isLevelSection);
                   }}
                   sx={{
                     pl: 4,

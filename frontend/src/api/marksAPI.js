@@ -62,7 +62,7 @@ export const fetchLevels = async (testId) => {
 
 export const updateLevels = async (testId,data) => {
   try {
-    let response = axios.put(`${API_PATHS.UPDATE_LEVEL}${testId}/`, data)
+    let response = await axios.put(`${API_PATHS.UPDATE_LEVEL}${testId}/`, data)
     return response.data;
   } catch (error) {
     throw error;

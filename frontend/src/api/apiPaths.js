@@ -12,8 +12,7 @@ const API_PATHS = {
     FETCH_MONTHS:"http://127.0.0.1:8000/marks/fetch_months/",
     FETCH_SUBJECTS:"http://127.0.0.1:8000/marks/fetch_subjects/",
 
-  // for level test 
-    POST_LEVEL: "http://127.0.0.1:8000/marks/add_level_mark/",
+  // for level test
     GET_LEVEL: "http://127.0.0.1:8000/marks/get_level_mark/",
     UPDATE_LEVEL: "http://127.0.0.1:8000/marks/update_level_mark/",
 

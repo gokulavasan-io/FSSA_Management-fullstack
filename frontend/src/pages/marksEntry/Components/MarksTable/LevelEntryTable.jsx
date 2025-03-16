@@ -39,7 +39,6 @@ function LevelTestTable() {
     try {
       const formattedData = transformMarksData(levelTableData);
       const response = await updateLevels(testId, formattedData);
-      console.log("Marks data updated successfully!", response.data);
       setIsUpdated((prev) => !prev);
     } catch (error) {
       console.error("Error submitting marks data:", error.message);

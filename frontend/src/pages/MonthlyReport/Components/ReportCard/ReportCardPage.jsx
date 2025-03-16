@@ -4,7 +4,7 @@ import { AutoComplete, Row, Col, Space } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import downloadReportCard from "./downloadReportCard";
 import SubjectMultiSelect from "../SubjectDropdown";
-import { FwButton } from "@freshworks/crayons/react";
+import { FwButton,FwCheckbox } from "@freshworks/crayons/react";
 
 function ReportCardPage(props) {
   let {
@@ -97,6 +97,7 @@ function ReportCardPage(props) {
                 setSelectedSubjects(finalSubjects);
               }}
             />
+            <FwCheckbox checked={false} description="Problem solving level instead of mark">PS level</FwCheckbox>
           </Space>
 
           <Space

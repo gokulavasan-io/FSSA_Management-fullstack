@@ -104,6 +104,20 @@ const ReportCard = React.forwardRef(({studentData}, ref) => {
                 <div className="line">
                   <span></span>
                 </div>
+
+                <div className="subject" key={"psLevel"}>
+                    <div className="studentMark">
+                      <h3 className="subjectName">PS Level</h3>
+                      <span
+                        // style={{
+                        //   backgroundColor: getBgColor(attendanceBehavior[subject]),
+                        //   color: getColor(attendanceBehavior[subject]),
+                        // }}
+                      >
+                      { 76}
+                      </span>
+                    </div>
+                  </div>
                
                 {Object.keys(attendanceBehavior).map((subject) => (
                   <div className="subject" key={subject}>
@@ -121,6 +135,7 @@ const ReportCard = React.forwardRef(({studentData}, ref) => {
                   </div>
                 ))}
               </div>
+
 
               <div className="markRange">
                 {Object.keys(categoryColor).map((category) => (

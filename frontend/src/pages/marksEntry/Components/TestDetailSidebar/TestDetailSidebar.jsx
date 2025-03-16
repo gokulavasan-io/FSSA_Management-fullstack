@@ -65,14 +65,13 @@ const TestDetailSideBar = () => {
 
           {/* Marks Section */}
 
-          {subjectName=="Problem Solving"&&
-          <>
+        
             <List.Item>
               <Typography.Text strong>Levels</Typography.Text>
             </List.Item>
             <TestsSection isLevelSection={true}  />
-          </>
-          }
+         
+     
 
           <List.Item>
             <Typography.Text strong>Tests</Typography.Text>

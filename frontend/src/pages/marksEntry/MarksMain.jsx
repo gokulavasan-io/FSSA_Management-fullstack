@@ -145,10 +145,10 @@ const MarksMain = () => {
                 }}
               >
                 <div style={{ flex: 1, width: "100%" }}>
-                  {!isLevelTable && mainTableColumns.length > 3 && (
+                  { mainTableColumns.length > 3 && (
                     <ChartForCategory />
                   )}
-                  {isLevelTable && mainTableColumns.length > 3 && (
+                  {isLevelTable && !isMainTable && (
                     <ChartForLevelTable />
                   )}
                 </div>
