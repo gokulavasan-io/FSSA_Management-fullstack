@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import StudentsMarksTable from "./Components/Table/MarksTable";
 import { useMainContext } from "../../Context/MainContext";
-import SubjectMultiSelect from "./Components/SubjectDropdown";
+import SubjectMultiSelect from "./Components/Dropdown/SubjectDropdown";
 import { fetchMonthlyReport } from "../../api/monthlyReportAPI";
 import { FwButton } from "@freshworks/crayons/react";
 import ReportCardPage from "./Components/ReportCard/ReportCardPage";
@@ -133,7 +133,7 @@ function MonthlyReportMain() {
     currentStudentIndex,
     componentRef,
     studentNames,
-    setDownloadReportCardPage,handleSearchStudent,subjects,selectedSubjects,setSelectedSubjects,attendanceBehaviorIds,formatStudentsData,
+    setDownloadReportCardPage,handleSearchStudent,selectedSubjects,setSelectedSubjects,formatStudentsData,
     studentsData,setStudentData,classData
   };
   return (

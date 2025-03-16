@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Drawer, List, Typography } from "antd";
 import { MenuOutlined, } from "@ant-design/icons";
-import TestsSection from "./Section.jsx";
+import TestDetailSection from "./TestDetailSection.jsx";
 import ExportData from "../ExportData.jsx";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import "antd/dist/reset.css";
@@ -64,19 +64,21 @@ const TestDetailSideBar = () => {
           </List.Item>
 
           {/* Marks Section */}
-
+          {subjectName=="Problem Solving"&&
         
+           <>
             <List.Item>
               <Typography.Text strong>Levels</Typography.Text>
             </List.Item>
-            <TestsSection isLevelSection={true}  />
-         
+            <TestDetailSection   isLevelSection={true}  />
+            </>
+          }
      
 
           <List.Item>
             <Typography.Text strong>Tests</Typography.Text>
           </List.Item>
-          <TestsSection isLevelSection={false}  />
+          <TestDetailSection  isLevelSection={false}  />
 
           <List.Item>
             <ExportData />

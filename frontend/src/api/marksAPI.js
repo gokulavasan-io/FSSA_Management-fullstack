@@ -48,8 +48,6 @@ export const fetchTestData = async (testId,sectionId) => {
 };
 
 
-
-
 export const fetchLevels = async (testId) => {
   try {
     const response = await axios.get(`${API_PATHS.GET_LEVEL}${testId}/`)

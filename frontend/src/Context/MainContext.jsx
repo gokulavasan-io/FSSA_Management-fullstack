@@ -26,7 +26,7 @@ export const MainContextProvider = ({ children }) => {
     const [academicSubjects, setAcademicSubjects] = useState([]);
     const [selectedKey, setSelectedKey] = useState("1");
     const [attendanceBehaviorIds, setAttendanceBehaviorIds] = useState([]);
-    
+    const [problemSolvingId,setProblemSolvingId]=useState(null)
 
 
     useEffect(() => {
@@ -38,22 +38,24 @@ export const MainContextProvider = ({ children }) => {
       let academicSubjectNames = new Set(["English", "Tech", "Life Skills","Problem Solving"]);
       setAcademicSubjects(subjects.filter(subject => academicSubjectNames.has(subject.subject_name)))
 
+      const problemSolvingSubject = subjects.find(subject => subject.subject_name === "Problem Solving");
+      setProblemSolvingId(problemSolvingSubject ? problemSolvingSubject.id : null);
       
-      
+      let attendanceBehavior=["Attendance","Behavior"]
       setAttendanceBehaviorIds(subjects
-        .filter(subject => subject.subject_name === "Attendance" || subject.subject_name === "Behavior")
+        .filter(subject => attendanceBehavior.includes(subject.subject_name) )
         .map(subject => subject.id)); 
     }, [subjects])
+ 
 
-        
-    
+ 
   return (
     <MainContext.Provider
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
         year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,setSelectedKey,selectedKey,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
-        academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds
+        academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId
       }}
     >
       {children}

@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReportCard from "./ReportCard";
 import { AutoComplete, Row, Col, Space } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import downloadReportCard from "./downloadReportCard";
-import SubjectMultiSelect from "../SubjectDropdown";
-import { FwButton,FwCheckbox } from "@freshworks/crayons/react";
+import SubjectMultiSelect from "../Dropdown/SubjectDropdown";
+import { FwButton, FwCheckbox } from "@freshworks/crayons/react";
+import { fetchLevels, fetchTestDetails } from "../../../../api/marksAPI";
+import TestDropdown from '../Dropdown/TestDropdown'
+import { useMainContext } from "../../../../Context/MainContext";
 
 function ReportCardPage(props) {
+    const { subjects, attendanceBehaviorIds,selectedMonth,problemSolvingId } = useMainContext();
+  
   let {
     handleNextStudent,
     handlePrevStudent,
@@ -16,14 +21,40 @@ function ReportCardPage(props) {
     studentNames,
     setDownloadReportCardPage,
     handleSearchStudent,
-    subjects,
     selectedSubjects,
     setSelectedSubjects,
-    attendanceBehaviorIds,formatStudentsData,studentsData,setStudentData,classData
+    formatStudentsData,
+    studentsData,
+    setStudentData,
+    classData,
   } = props;
 
   const [searchValue, setSearchValue] = useState("");
-  const [isDownloadingAll,setIsDownloadingAll]=useState(false)
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  const [psLevel, setPsLevel] = useState(false);
+  const [levelData, setLevelData] = useState({});
+  const [testDetails, setTestDetails] = useState([]);
+  const [selectedTest, setSelectedTest] = useState(null); 
+
+  useEffect(() => {
+      (async () => {
+        const response = await fetchTestDetails(selectedMonth.id,problemSolvingId);
+        setTestDetails(response);
+      })();
+  }, [psLevel]);
+
+  useEffect(() => {
+    if (!selectedTest) return
+    (async () => {
+      const response= await fetchLevels(selectedTest.test_detail.id)
+      const result = response?.marks.reduce((acc, curr) => {
+        acc[curr.student_name] = Number(curr.level);
+        return acc;
+      }, {});
+      setLevelData(result)
+    })();
+  }, [selectedTest])
+
 
   const handleDownloadAll = async () => {
     setIsDownloadingAll(true);
@@ -33,29 +64,28 @@ function ReportCardPage(props) {
         classData,
         name
       );
-  
+
       setStudentData(formattedStudentData);
-  
-      await new Promise((resolve) => setTimeout(resolve, 500)); 
-  
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       await downloadReportCard(componentRef, name, studentsData[name]?.section);
-  
+
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
-  
+
     setIsDownloadingAll(false);
   };
-  
 
   return (
     <>
       <Row align="stretch">
         <Col span={12}>
           <Space direction="horizontal" align="top" size="large">
-            <FwButton onFwClick={() => setDownloadReportCardPage(false)}  >
+            <FwButton onFwClick={() => setDownloadReportCardPage(false)}>
               <ArrowLeftOutlined style={{ marginRight: 8 }} /> Back
             </FwButton>
-            <ReportCard ref={componentRef} studentData={studentData} />
+            <ReportCard ref={componentRef} studentData={studentData} isPSLevel={psLevel} levelData={levelData}   />
           </Space>
         </Col>
 
@@ -97,7 +127,17 @@ function ReportCardPage(props) {
                 setSelectedSubjects(finalSubjects);
               }}
             />
-            <FwCheckbox checked={false} description="Problem solving level instead of mark">PS level</FwCheckbox>
+            <FwCheckbox
+              checked={psLevel}
+              onClick={() => setPsLevel((value) => !value)}
+              description="Include Problem solving level"
+            >
+              PS level
+            </FwCheckbox>
+
+            {psLevel  && testDetails.length >0 && (
+              <TestDropdown testDetails={testDetails}  selectedTest={selectedTest}  setSelectedTest={setSelectedTest} />
+            )}
           </Space>
 
           <Space
@@ -118,7 +158,11 @@ function ReportCardPage(props) {
             </FwButton>
             <FwButton
               onFwClick={() =>
-                downloadReportCard(componentRef, studentData.names?.Student, studentData.sec_mon_year?.Section)
+                downloadReportCard(
+                  componentRef,
+                  studentData.names?.Student,
+                  studentData.sec_mon_year?.Section
+                )
               }
               disabled={isDownloadingAll}
             >
@@ -127,12 +171,19 @@ function ReportCardPage(props) {
             <FwButton
               color="secondary"
               onFwClick={handleNextStudent}
-              disabled={currentStudentIndex === studentNames.length - 1||isDownloadingAll }
+              disabled={
+                currentStudentIndex === studentNames.length - 1 ||
+                isDownloadingAll
+              }
             >
               Next Student
             </FwButton>
 
-            <FwButton color="danger" onFwClick={handleDownloadAll} loading={isDownloadingAll} >
+            <FwButton
+              color="danger"
+              onFwClick={handleDownloadAll}
+              loading={isDownloadingAll}
+            >
               Download For All Students
             </FwButton>
           </Space>

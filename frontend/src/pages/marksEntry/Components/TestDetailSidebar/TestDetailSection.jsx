@@ -1,7 +1,12 @@
 import { List, ListItem, ListItemText } from "@mui/material";
 import { format } from "date-fns";
+import { useMarksContext } from "../../../../Context/MarksContext";
 
-const TestDetailSection = ({ handleOptionClick, testDetails, isLevelSection }) => {
+const TestDetailSection = ({ isLevelSection }) => {
+
+  const { handleOptionClick, testDetails } = useMarksContext();
+
+
   return (
     <List component="div" disablePadding>
       {/* Show message when no items available */}

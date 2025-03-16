@@ -2,8 +2,7 @@ import React, { useState,useEffect } from "react";
 import "../../Styles/ReportCard.css";
 import { categoryColor, categoryMark } from "../../../../constants/MarkCategory";
 
-const ReportCard = React.forwardRef(({studentData}, ref) => {
-
+const ReportCard = React.forwardRef(({studentData,isPSLevel,levelData}, ref) => {
     const [names, setNames] = useState({})
     const [sec_Mon_Year, setSec_Mon_Year] = useState({})
     const [marks, setMarks] = useState({})
@@ -11,10 +10,10 @@ const ReportCard = React.forwardRef(({studentData}, ref) => {
 
 
     useEffect(() => {
-      setNames(studentData.names);
-      setSec_Mon_Year(studentData.sec_mon_year);
-      setAttendanceBehavior(studentData.attendanceBehavior);
-      setMarks(studentData.marks);
+      setNames(studentData?.names);
+      setSec_Mon_Year(studentData?.sec_mon_year);
+      setAttendanceBehavior(studentData?.attendanceBehavior);
+      setMarks(studentData?.marks);
     }, [studentData]);
     
 
@@ -31,6 +30,8 @@ const ReportCard = React.forwardRef(({studentData}, ref) => {
       return categoryColor["Good"].color;
     else return categoryColor["Very Good"].color;
   };
+
+
 
   return (
     <>
@@ -105,19 +106,16 @@ const ReportCard = React.forwardRef(({studentData}, ref) => {
                   <span></span>
                 </div>
 
+                {isPSLevel && Object.keys(levelData).length>0 &&
                 <div className="subject" key={"psLevel"}>
-                    <div className="studentMark">
-                      <h3 className="subjectName">PS Level</h3>
-                      <span
-                        // style={{
-                        //   backgroundColor: getBgColor(attendanceBehavior[subject]),
-                        //   color: getColor(attendanceBehavior[subject]),
-                        // }}
-                      >
-                      { 76}
-                      </span>
-                    </div>
-                  </div>
+                <div className="studentMark">
+                  <h3 className="subjectName">PS Level</h3>
+                  <span  style={{backgroundColor:"white"}} >
+                  {levelData[studentData?.names?.Student]}
+                  </span>
+                </div>
+              </div>
+                }
                
                 {Object.keys(attendanceBehavior).map((subject) => (
                   <div className="subject" key={subject}>

@@ -40,6 +40,7 @@ export const MarksContextProvider = ({ children }) => {
   useEffect(() => {
     setMonthId(selectedMonth.id);
     setSubjectId(selectedSubject.id);
+    setSubjectName(selectedSubject.subject_name)
   }, [selectedSubject, selectedMonth]);
 
   const handleOptionClick = (testId, levelTable) => {
