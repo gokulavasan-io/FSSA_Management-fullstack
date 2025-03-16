@@ -19,7 +19,7 @@ const Graph = ({data,months,title,chartHeight,marginTop,cardHeight} ) => {
       categories: months,
     },
     yAxis: {
-      title: { text: "Score" },
+      title: false,
       max:100,
        tickPositions: [0, 25, 50, 75, 100], 
     },

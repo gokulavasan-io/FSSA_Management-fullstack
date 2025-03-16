@@ -1,8 +1,9 @@
 import React from 'react'
+import ClassAnalytics from './Components/Category/ClassAnalytics'
 
 function AnalyticsMain() {
   return (
-    <div>AnalyticsMain</div>
+    <ClassAnalytics />
   )
 }
 

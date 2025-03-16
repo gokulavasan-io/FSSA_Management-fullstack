@@ -20,10 +20,8 @@ export const fetchMonthlyReport = async (batch,subjects) => {
     }
   };
   
-export const fetchSubjectReport = async (batch,subjects) => {
+  export const fetchSubjectReport = async (batch,subjects) => {
     try {
-      console.log(subjects);
-      
       let response= await axios.get(`${HOME_API_ENDPOINTS.SUBJECT_REPORT}?batch=${batch}&subjects=${subjects.join(",")}`)
       return response.data;
     } catch (error) {
