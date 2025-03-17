@@ -18,9 +18,7 @@ export default function Main() {
           <Routes>
             <Route path="login" element={<Login />} />
             <Route path="/" element={<AppLayout />}>
-              <Route index element={<AnalyticsApp />} />
-              {/* <Route index element={<HomeApp />} /> */}
-              <Route  path="h" element={<HomeApp />} />
+              <Route index element={<HomeApp />} />
               <Route path="assessment" element={<MarkApp />} />
               <Route path="attendance" element={<AttendanceApp />} />
               <Route path="monthly_report" element={<MonthlyReportApp />} />

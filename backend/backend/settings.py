@@ -67,8 +67,7 @@ INSTALLED_APPS = [
     'attendance',
     'member',
     'home',
-    'monthly_report',
-    'analytics'
+    'monthly_report'
   
 ]
 

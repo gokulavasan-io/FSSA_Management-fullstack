@@ -4,9 +4,9 @@ export const colors={
 
 
 export const sectionColors = {
-    "A": "#52c41a",  
-    "B": "#faad14",  
-    "C": "#ff4d4f",  
+    "A": "#2DFF7E",  
+    "B": "#FFD600",  
+    "C": "#FF4C4F",  
     "D": "#722ed1",  
     "E": "#13c2c2",  
     "F": "#eb2f96",  
