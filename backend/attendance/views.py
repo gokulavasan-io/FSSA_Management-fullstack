@@ -7,6 +7,9 @@ from students.models import *
 from datetime import datetime,timedelta
 from calendar import monthrange,weekday
 from .utils import get_student_statistics
+from rest_framework import generics
+from .serializers import *
+
 
 
 class AttendanceView(APIView):
@@ -515,3 +518,17 @@ class DailyStatisticsView(APIView):
             formatted_response.append(row)
 
         return Response({"columns": ["date", "day"] + status_types, "data": formatted_response}, status=http_status.HTTP_200_OK)
+
+
+
+
+
+# List and Create View
+class HolidayListCreateView(generics.ListCreateAPIView):
+    queryset = Holiday.objects.all()
+    serializer_class = HolidaySerializer
+
+# Retrieve, Update, Delete View
+class HolidayRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Holiday.objects.all()
+    serializer_class = HolidaySerializer

@@ -27,6 +27,7 @@ export const MainContextProvider = ({ children }) => {
     const [selectedKey, setSelectedKey] = useState("1");
     const [attendanceBehaviorIds, setAttendanceBehaviorIds] = useState([]);
     const [problemSolvingId,setProblemSolvingId]=useState(null)
+    const [categoryName,setCategoryName]=useState("")
 
 
     useEffect(() => {
@@ -55,7 +56,7 @@ export const MainContextProvider = ({ children }) => {
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
         year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,setSelectedKey,selectedKey,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
-        academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId
+        academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId,categoryName,setCategoryName,
       }}
     >
       {children}

@@ -17,9 +17,10 @@ import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
 
-const AddNewTest = () => {
+const AddNewTest = ({reFetchFunc}) => {
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
-  const { months, subjects, batchNumber } = useMainContext();
+  let { months, subjects, batchNumber } = useMainContext();
+  subjects=subjects.filter(subject=>subject.subject_name!="Attendance")
   const showMessage = useNotification();
 
   const [formData, setFormData] = useState({
@@ -68,6 +69,21 @@ const AddNewTest = () => {
     }));
   };
 
+  const resetForm = () => {
+    setFormData({
+      test_name: "",
+      month: "",
+      subject: "",
+      total_marks: "",
+      about_test: "",
+      created_at: "",
+      isLevelTest: false,
+      batch: batchNumber,
+    });
+    setErrors({});
+  };
+  
+
   const validateForm = () => {
     const newErrors = {};
     const testNameRegex = /^[A-Za-z0-9\s]+$/;
@@ -111,18 +127,10 @@ const AddNewTest = () => {
 
     try {
       const response = await submitTestData(formData);
+      reFetchFunc()
       showMessage(response.message, "s");
 
-      setFormData({
-        test_name: "",
-        month: "",
-        subject: "",
-        total_marks: "",
-        about_test: "",
-        created_at: "",
-        isLevelTest: false,
-        batch: batchNumber,
-      });
+    resetForm()
 
       setOpenNewTestForm(false);
     } catch (error) {
@@ -142,7 +150,10 @@ const AddNewTest = () => {
       <Modal
         title="Add New Test"
         open={openNewTestForm}
-        onCancel={() => setOpenNewTestForm(false)}
+        onCancel={() => {
+          setOpenNewTestForm(false);
+          resetForm(); // Reset form data when closing the modal
+        }}
         footer={null}
         width={500}
         zIndex={10001}
@@ -255,12 +266,20 @@ const AddNewTest = () => {
             validateStatus={errors.created_at ? "error" : ""}
             help={errors.created_at}
           >
-            <DatePicker format="DD-MM-YYYY" onChange={handleDateChange} />
+            <DatePicker 
+  format="DD-MM-YYYY" 
+  value={formData.created_at ? dayjs(formData.created_at, "YYYY-MM-DD") : null}
+  onChange={handleDateChange} 
+/>
+
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Button onClick={() => setOpenNewTestForm(false)}>Cancel</Button>
+              <Button onClick={() => {
+  setOpenNewTestForm(false);
+  resetForm(); // Reset form data when closing the modal
+}}>Cancel</Button>
             </Col>
             <Col span={12}>
               <Button type="primary" htmlType="submit" loading={loading}>

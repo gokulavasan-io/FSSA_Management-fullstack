@@ -8,6 +8,8 @@ urlpatterns = [
     path('check_holiday/',CheckHolidayView.as_view()),
     path('fetch_student_statistics/',StudentStatistics.as_view()),
     path('fetch_daily_statistics/',DailyStatisticsView.as_view()),
+     path('fetch_holidays/', HolidayListCreateView.as_view(), name='fetch_holidays'),
+    path('fetch_holidays/<int:pk>/', HolidayRetrieveUpdateDeleteView.as_view(), name='fetch_holiday_detail'),
 ]
 
 

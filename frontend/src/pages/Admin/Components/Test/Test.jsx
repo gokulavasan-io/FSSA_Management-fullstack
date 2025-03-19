@@ -18,7 +18,7 @@ import { format } from "date-fns";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import { useMainContext } from "../../../../Context/MainContext";
-import AddNewTest from "../../../MarksEntry/Components/AddNewTest/AddNewTest";
+import AddNewTest from "./NewTest";
 
 const TestDetailsTable = () => {
   let { months, subjects } = useMainContext();
@@ -143,7 +143,7 @@ const TestDetailsTable = () => {
 
   return (
     <>
-      <AddNewTest />
+      <AddNewTest  reFetchFunc={fetchTests} />
       <Table
         dataSource={tests}
         columns={columns}

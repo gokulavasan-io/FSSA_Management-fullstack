@@ -25,7 +25,7 @@ function TopBar({ collapsed }) {
   let userPicLink=localStorage.getItem("pictureLink")
   const location = useLocation();
 
-  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName } = useMainContext();
+  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName } = useMainContext();
  
  
   const monthMenu = (
@@ -92,8 +92,9 @@ function TopBar({ collapsed }) {
             </Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>{selectedSubject.subject_name}</Breadcrumb.Item>
+          {location.pathname =="/admin" &&<Breadcrumb.Item>{categoryName}</Breadcrumb.Item>}
 
-          {location.pathname !== "/" && (
+          {location.pathname !== "/" &&location.pathname !== "/admin" && (
             <Breadcrumb.Item>
               <Dropdown overlay={monthMenu} trigger={["click"]}>
                 <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>

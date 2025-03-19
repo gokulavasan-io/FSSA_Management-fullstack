@@ -8,14 +8,15 @@ import { BsCalendarCheck } from "react-icons/bs";
 import { MdInsertChartOutlined } from "react-icons/md";
 import ToodleLogo from "../../../../public/assets/Components/ToodleLogo";
 import { BsJournalBookmark } from "react-icons/bs";
+import { LuUserRoundCog } from "react-icons/lu";
 
 const { Sider } = Layout;
 
-const analytics = ["Student", "Subject", "Class"];
+const analytics = ["Test","Student","Member", "Subject","Batch","Section"];
 
 function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
-  const { subjects, setSelectedSubject, selectedKey, setSelectedKey } =useMainContext();
+  const { subjects, setSelectedSubject, selectedKey, setSelectedKey,setCategoryName } =useMainContext();
 
   const menuItems = [
     {
@@ -60,13 +61,27 @@ function Sidebar({ collapsed, setCollapsed }) {
         navigate("/monthly_report"); 
       },
     },
+    // {
+    //   key: "4",
+    //   icon: <MdInsertChartOutlined size={22} />,
+    //   label: "Analytics",
+    //   children: analytics.map((category, index) => ({
+    //     key: `analytics-${index}`,
+    //     label: category,
+    //   })),
+    // },
     {
-      key: "4",
-      icon: <MdInsertChartOutlined size={22} />,
-      label: "Analytics",
+      key: "5",
+      icon: <LuUserRoundCog size={22} />,
+      label: "admin",
       children: analytics.map((category, index) => ({
-        key: `analytics-${index}`,
+        key: `admin-${index}`,
         label: category,
+        onClick: () => {
+          setSelectedKey("5");
+          setCategoryName(category)
+          navigate("/admin"); 
+        },
       })),
     },
   ];

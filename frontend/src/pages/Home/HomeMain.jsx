@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Flex } from "antd";
 import AttendanceReport from "./Components/AttendanceReport/AttendanceReport";
-import AddNewTest from "../MarksEntry/Components/AddNewTest/AddNewTest";
-import AddHoliday from "../Attendance/Components/Holiday/AddHoliday";
+import AddNewTest from "../Admin/Components/Test/NewTest";
+import AddHoliday from "../Admin/Components/Holiday/NewHoliday";
 import SubjectAnalysis from "./Components/Analytics/SubjectAnalytics";
 import MonthlyAnalytics from "./Components/Analytics/MonthlyAnalytics";
 
 
 function HomeMain() {
 
+  function dummyFunc(){
+    return
+  }
+  
   return (
     <div style={{ overflowX: "hidden", overflowY: "auto", minHeight: "100%" }}>
       <Row gutter={16}>
@@ -28,8 +32,8 @@ function HomeMain() {
               gap={24}
               style={{ height: 56 }}
             >
-              <AddHoliday />
-              <AddNewTest />
+              <AddHoliday reFetchFunction={dummyFunc} />
+              <AddNewTest  reFetchFunc={dummyFunc} />
             </Flex>
             <AttendanceReport />
           </Flex>

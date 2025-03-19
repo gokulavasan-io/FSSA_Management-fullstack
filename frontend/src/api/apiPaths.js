@@ -16,10 +16,13 @@ const API_PATHS = {
     GET_LEVEL: "http://127.0.0.1:8000/marks/get_level_mark/",
     UPDATE_LEVEL: "http://127.0.0.1:8000/marks/update_level_mark/",
 
-    GET_ALL_TEST_DETAILS:'http://127.0.0.1:8000/marks/get_all_test_details/',
+    GET_TEST_DETAILS:'http://127.0.0.1:8000/marks/get_all_test_details/',
     UPDATE_ARCHIVE: "http://127.0.0.1:8000/marks/update_archive/",
     GET_ALL_DATA: "http://127.0.0.1:8000/marks/get_all_test_data/",
   
+    GET_ALL_TEST_DETAILS:'http://127.0.0.1:8000/marks/tests/',
+    DELETE_TEST:"http://127.0.0.1:8000/marks/tests/",
+    UPDATE_TEST:"http://127.0.0.1:8000/marks/tests/",
     
 
     FETCH_USER_DATA:"http://127.0.0.1:8000/member/"
