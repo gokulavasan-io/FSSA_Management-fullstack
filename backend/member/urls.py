@@ -1,12 +1,17 @@
 from django.urls import path
-from .views import *
+from .views import (
+    RoleListCreateAPIView,
+    RoleRetrieveUpdateDestroyAPIView,
+    MemberListCreateAPIView,
+    MemberRetrieveUpdateDestroyAPIView
+)
 
 urlpatterns = [
-    path("add_member/", MemberCreateView.as_view()),
-    path("members/", MemberListView.as_view()),
-    path("update_member/<int:id>/", MemberUpdateView.as_view()),
-    path("delete_member/<int:id>/", MemberDeleteView.as_view()),
-    path("verify/",FirebaseTokenVerifyView.as_view() ),
-    path('roles/', RoleListView.as_view()),
-    path('<int:id>/', MemberDetailView.as_view()),
+    # Role
+    path('roles/', RoleListCreateAPIView.as_view(), name='role-list-create'),
+    path('roles/<int:pk>/', RoleRetrieveUpdateDestroyAPIView.as_view(), name='role-detail'),
+
+    # Member
+    path('members/', MemberListCreateAPIView.as_view(), name='member-list-create'),
+    path('members/<int:pk>/', MemberRetrieveUpdateDestroyAPIView.as_view(), name='member-detail'),
 ]
