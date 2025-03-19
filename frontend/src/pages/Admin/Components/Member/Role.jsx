@@ -9,7 +9,7 @@ const RoleTable = () => {
   const [editingRole, setEditingRole] = useState(null);
 
   const fetchRoles = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/user/roles/');
+    const response = await axios.get('http://127.0.0.1:8000/teacher/roles/');
     setRoles(response.data);
   };
 
@@ -19,10 +19,10 @@ const RoleTable = () => {
 
   const handleAddOrEdit = async (values) => {
     if (editingRole) {
-      await axios.put(`http://127.0.0.1:8000/user/roles/${editingRole.id}/`, values);
+      await axios.put(`http://127.0.0.1:8000/teacher/roles/${editingRole.id}/`, values);
       message.success('Role updated');
     } else {
-      await axios.post('http://127.0.0.1:8000/user/roles/', values);
+      await axios.post('http://127.0.0.1:8000/teacher/roles/', values);
       message.success('Role added');
     }
     setIsModalOpen(false);
@@ -31,7 +31,7 @@ const RoleTable = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://127.0.0.1:8000/user/roles/${id}/`);
+    await axios.delete(`http://127.0.0.1:8000/teacher/roles/${id}/`);
     message.success('Role deleted');
     fetchRoles();
   };
