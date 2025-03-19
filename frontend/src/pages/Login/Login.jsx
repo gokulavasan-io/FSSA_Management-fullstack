@@ -1,51 +1,56 @@
-import { useState } from "react";
-import { auth, provider, signInWithPopup } from "../../api/firebaseAuth"; // import from firebaseAuth.js
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { Button } from "antd";
+import { GoogleOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import LoginUI from "./LoginUI";
 
-const Login = () => {
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async () => {
-    setLoading(true);
+const LoginPage = () => {
+  const handleSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const idToken = await user.getIdToken();
-      
-      const response = await axios.post("http://127.0.0.1:8000/member/verify/", {
-        token: idToken,
-      });
-  
-      if (response.status === 200 && response.data.message === "Token verified and member authenticated.") {
-        alert("Login Successful");
-        localStorage.setItem("userId",response.data.member.id);
-        localStorage.setItem("pictureLink",response.data.picture);
-        navigate("/");
-      } else {
-        alert("You are not a registered member.");
-      }
-    } catch (e) {
-      console.error("Login Failed:", e);
-  
-      if (e.code) {
-        setError(`Firebase Error: ${e.code} - ${e.message}`);
-      } else if (e.response?.data?.error) {
-        setError(`Backend Error: ${e.response.data.error}`);
-      } else {
-        setError("Login Failed. Please try again.");
-      }
-    }finally {
-      setLoading(false);
+      const res = await axios.post(
+        "http://localhost:8000/auth/google/",
+        { token },
+        { withCredentials: true }
+      );
+      console.log("Login successful:", res.data);
+      // Navigate to dashboard after login
+    } catch (error) {
+      console.error("Login failed:", error.response?.data);
     }
   };
 
   return (
-    <LoginUI handleLogin={handleLogin} error={error} loading={loading} />
+    <>
+    <div>Good morning</div>
+    <GoogleOAuthProvider clientId="113196780562-bu0lqo92v9ap0b5tbnnhhgbf00m68tsf.apps.googleusercontent.com">
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
+        <GoogleLogin
+          onSuccess={handleSuccess}
+          onError={() => console.log("Login Failed")}
+          render={(renderProps) => (
+            <Button
+              type="primary"
+              icon={<GoogleOutlined />}
+              onClick={renderProps.onClick}
+              disabled={renderProps.disabled}
+              style={{
+                backgroundColor: "#4285F4",
+                borderColor: "#4285F4",
+                color: "white",
+                fontSize: "16px",
+                padding: "10px 20px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Sign in with Google
+            </Button>
+          )}
+        />
+      </div>
+    </GoogleOAuthProvider>
+    </>
   );
 };
 
-export default Login;
+export default LoginPage;

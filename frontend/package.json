@@ -13,6 +13,7 @@
   "dependencies": {
     "@freshworks/crayons": "^4.2.0",
     "@handsontable/react": "^11.1.0",
+    "@react-oauth/google": "^0.12.1",
     "@vitejs/plugin-react": "^4.3.4",
     "firebase": "^11.2.0",
     "handsontable": "^15.1.0",

@@ -14,8 +14,8 @@ const MemberTable = () => {
 
   const fetchData = async () => {
     const [membersData, rolesData, sectionsData] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/member/members/'),
-      axios.get('http://127.0.0.1:8000/member/roles/'),
+      axios.get('http://127.0.0.1:8000/user/members/'),
+      axios.get('http://127.0.0.1:8000/user/roles/'),
       axios.get('http://127.0.0.1:8000/students/sections/')
     ]);
     setMembers(membersData.data);
@@ -29,10 +29,10 @@ const MemberTable = () => {
 
   const handleAddOrEdit = async (values) => {
     if (editingMember) {
-      await axios.put(`http://127.0.0.1:8000/member/members/${editingMember.id}/`, values);
+      await axios.put(`http://127.0.0.1:8000/user/members/${editingMember.id}/`, values);
       message.success('Member updated');
     } else {
-      await axios.post('http://127.0.0.1:8000/member/members/', values);
+      await axios.post('http://127.0.0.1:8000/user/members/', values);
       message.success('Member added');
     }
     setIsModalOpen(false);
@@ -41,7 +41,7 @@ const MemberTable = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://127.0.0.1:8000/member/members/${id}/`);
+    await axios.delete(`http://127.0.0.1:8000/user/members/${id}/`);
     message.success('Member deleted');
     fetchData();
   };
