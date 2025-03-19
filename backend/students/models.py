@@ -12,6 +12,10 @@ class Section(models.Model):
     
 class Batch(models.Model):
     batch_no = models.IntegerField(unique=True, null=True)  
+
+    def __str__(self):
+        return str(self.batch_no)
+
     
     
 GENDER_CHOICES=[
@@ -57,3 +61,6 @@ class Students(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
