@@ -5,14 +5,13 @@ import { useMainContext } from "../../../Context/MainContext";
 import { VscDashboard } from "react-icons/vsc";
 import { LuNotebookPen } from "react-icons/lu"
 import { BsCalendarCheck } from "react-icons/bs";
-import { MdInsertChartOutlined } from "react-icons/md";
 import ToodleLogo from "../../../../public/assets/Components/ToodleLogo";
 import { BsJournalBookmark } from "react-icons/bs";
 import { LuUserRoundCog } from "react-icons/lu";
 
 const { Sider } = Layout;
 
-const analytics = ["Test","Student","Member", "Subject","Batch","Section"];
+const analytics = ["Test","Student","Member","Role", "Subject","Batch","Section","Holiday"];
 
 function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();

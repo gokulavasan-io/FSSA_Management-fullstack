@@ -4,7 +4,8 @@ from .views import *
 urlpatterns = [
     # for test  marks
     path('add_mark/', AddTestView.as_view()),
-    path('update_test_detail/<int:test_detail_id>/', UpdateTestDetailsView.as_view()),
+     path('tests/', TestDetailListCreateView.as_view(), name='test-list-create'),
+    path('tests/<int:pk>/', TestDetailRetrieveUpdateDestroyView.as_view(), name='test-detail'),
     path('get_mark/<int:test_detail_id>/', GetTestAndMarksView.as_view()),
     path('update_mark/<int:test_detail_id>/', UpdateMarksView.as_view()),
     
@@ -18,5 +19,7 @@ urlpatterns = [
     
     # for get months and subject
     path('fetch_months/', MonthListView.as_view()),
-    path('fetch_subjects/', SubjectListView.as_view()),
+    path('subjects/', SubjectListCreateView.as_view()),
+    path('subjects/<int:pk>/', SubjectRetrieveUpdateDeleteView.as_view(), name='subject-detail'),
 ]
+    

@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from .models import *
@@ -13,9 +13,23 @@ class MonthListView(ListAPIView):
     queryset = Month.objects.all().order_by('id')
     serializer_class = MonthSerializer
 
-class SubjectListView(ListAPIView):
+    
+class SubjectListCreateView(generics.ListCreateAPIView):
     queryset = Subject.objects.all().order_by('id')
     serializer_class = SubjectSerializer
+
+class SubjectRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+
+# List and Create
+class TestDetailListCreateView(generics.ListCreateAPIView):
+    queryset = TestDetail.objects.all()
+    serializer_class = TestDetailSerializer
+
+class TestDetailRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TestDetail.objects.all()
+    serializer_class = TestDetailSerializer
 
 
 class AddTestView(APIView):
@@ -328,42 +342,6 @@ class GetLevelTestView(APIView):
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class UpdateTestDetailsView(APIView):
-    def put(self, request, test_detail_id):
-        try:
-            serializer = TestDetailSerializer(data=request.data)
-            if serializer.is_valid():
-                data = serializer.validated_data
-                created_at = data['created_at'] if data['created_at'] else timezone.now()
-                month_number = data['month']  
-                month = get_object_or_404(Month, id=month_number)
-                subject = get_object_or_404(Subject, subject_id=data['subject'])
-                test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-                
-                test_detail.month=month
-                test_detail.subject=subject
-                test_detail.test_name = data['test_name']
-                test_detail.total_marks = data['total_marks']
-                test_detail.created_at = created_at
-                test_detail.about_test = data.get('about_test', "Nothing about test.")
-                test_detail.isLevelTest=data['isLevelTest']
-                test_detail.batch=data['batch']
-                
-                test_detail.save()
-                return Response({"message": "TestDetail updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Http404 as e:
-            print(f"Object not found: {str(e)}")
-            return Response({"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
 
 class GetAllTestDetailsView(APIView):
     def get(self, request):

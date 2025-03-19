@@ -45,3 +45,5 @@ class TestLevels(models.Model):
 
     def __str__(self):
         return f"{self.student.name}: {self.level}"
+
+

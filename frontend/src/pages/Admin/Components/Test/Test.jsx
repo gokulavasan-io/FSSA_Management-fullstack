@@ -29,6 +29,8 @@ const TestDetailsTable = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [form] = Form.useForm();
+  const [isLevelTest, setIsLevelTest] = useState(false);
+
 
   useEffect(() => {
     fetchTests();
@@ -50,16 +52,19 @@ const TestDetailsTable = () => {
 
   const handleEdit = (record) => {
     setSelectedTest(record);
+    setIsLevelTest(record.isLevelTest); // Store isLevelTest state
     form.setFieldsValue({
       test_name: record.test_name,
-      total_marks: record.total_marks,
+      total_marks: record.isLevelTest ? "N/A" : record.total_marks,
       about_test: record.about_test,
-      month: record.month.id, // Set month id
-      subject: record.subject.id, // Set subject id
+      month: record.month.id,
+      subject: record.subject.id,
       created_at: record.created_at ? dayjs(record.created_at) : null,
     });
     setEditModalVisible(true);
   };
+  
+  
 
   const handleDelete = async (testId) => {
     try {
@@ -108,6 +113,7 @@ const TestDetailsTable = () => {
       title: "Total Mark",
       dataIndex: "total_marks",
       key: "total_mark",
+      render: (_, record) => (record.isLevelTest ? "Level Up" : record.total_marks),
     },
     {
       title: "About Test",
@@ -166,18 +172,19 @@ const TestDetailsTable = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="subject"
-            label="Subject"
-            rules={[{ required: true, message: "Please select a subject" }]}
-          >
-            <Select placeholder="Select Subject">
-              {subjects.map((subject) => (
-                <Select.Option key={subject.id} value={subject.id}>
-                  {subject.subject_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+  name="subject"
+  label="Subject"
+  rules={[{ required: true, message: "Please select a subject" }]}
+>
+  <Select placeholder="Select Subject" disabled={isLevelTest}>
+    {subjects.map((subject) => (
+      <Select.Option key={subject.id} value={subject.id}>
+        {subject.subject_name}
+      </Select.Option>
+    ))}
+  </Select>
+</Form.Item>
+
           <Form.Item
             name="month"
             label="Month"
