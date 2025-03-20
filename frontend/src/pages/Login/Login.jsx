@@ -5,27 +5,36 @@ import { GoogleOutlined } from "@ant-design/icons";
 import axiosInstance from "../../api/axiosInstance";
 
 const LoginPage = () => {
-  const [userEmail, setUserEmail] = useState(null);
+  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail")); // Load session from localStorage
+  const [loading, setLoading] = useState(!userEmail); // If userEmail exists, no need to fetch again
 
-  // Check if the user is already logged in
+  // Check if the user is already logged in (runs only once)
   useEffect(() => {
+    if (userEmail) return; // Prevent unnecessary API calls if user is already logged in
+
     const checkSession = async () => {
+      setLoading(true);
       try {
         const res = await axiosInstance.get("/auth/check-session/");
-        setUserEmail(res.data.email); // Set user email if session is valid
+        setUserEmail(res.data.email);
+        localStorage.setItem("userEmail", res.data.email);
       } catch (error) {
-        setUserEmail(null); // Reset email if session is invalid
+        console.log("Session check failed:", error.response?.status);
+      } finally {
+        setLoading(false);
       }
     };
+
     checkSession();
-  }, []);
+  }, [userEmail]); // Runs only once if userEmail is not set
 
   // Handle Google login success
   const handleSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
     try {
       const res = await axiosInstance.post("/auth/google/", { token });
-      setUserEmail(res.data.email); // Update state after login
+      setUserEmail(res.data.email);
+      localStorage.setItem("userEmail", res.data.email); // Store session
     } catch (error) {
       console.error("Login failed:", error.response?.data);
     }
@@ -34,7 +43,9 @@ const LoginPage = () => {
   return (
     <GoogleOAuthProvider clientId="113196780562-bu0lqo92v9ap0b5tbnnhhgbf00m68tsf.apps.googleusercontent.com">
       <div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
-        {userEmail ? (
+        {loading ? (
+          <p>Loading...</p>
+        ) : userEmail ? (
           <Card style={{ padding: "10px", textAlign: "center" }}>
             <p>You are logged in as:</p>
             <strong>{userEmail}</strong>
