@@ -1,18 +1,13 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load the .env file
 load_dotenv()
 
-
-
-
-
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 
 
 ALLOWED_HOSTS = []
@@ -27,7 +22,6 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "OPTIONS",
 ]
-
 
 
 # settings.py
@@ -65,9 +59,10 @@ INSTALLED_APPS = [
     'students',
     'marks',
     'attendance',
-    'member',
+    'teacher',
     'home',
-    'monthly_report'
+    'monthly_report',
+    'authentication'
   
 ]
 
@@ -144,3 +139,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

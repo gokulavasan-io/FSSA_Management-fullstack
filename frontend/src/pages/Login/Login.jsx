@@ -21,7 +21,6 @@ const LoginPage = () => {
 
   return (
     <>
-    <div>Good morning</div>
     <GoogleOAuthProvider clientId="113196780562-bu0lqo92v9ap0b5tbnnhhgbf00m68tsf.apps.googleusercontent.com">
       <div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
         <GoogleLogin
