@@ -1,14 +1,15 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework import status
 from teacher.models import Member
-
+import jwt
+import datetime
+from django.conf import settings
+from .authenticate_user import authenticate_user
 
 class GoogleAuthView(APIView):
-    permission_classes = [AllowAny]
 
     def post(self, request):
         token = request.data.get("token")
@@ -22,13 +23,39 @@ class GoogleAuthView(APIView):
             if not email:
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if the email exists in our User model
+            # Check if the email exists in the Member model
             user = Member.objects.filter(email=email).first()
-
-            if user:
-                return Response({"message": "Access allowed", "email": email}, status=status.HTTP_200_OK)
-            else:
+            if not user:
                 return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+            # Generate JWT token for session
+            payload = {
+                "email": email,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(days=30), 
+                "iat": datetime.datetime.utcnow(),
+            }
+            session_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+
+            # Set the session token in an HTTP-only cookie
+            response = Response({"message": "Login successful", "email": email})
+            response.set_cookie(
+                key="session_token",
+                value=session_token,
+                httponly=True,
+                secure=True, 
+                samesite="Lax",
+                max_age=30 * 24 * 60 * 60 
+            )
+
+
+            return response
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class CheckSessionView(APIView):
+    @authenticate_user
+    def get(self, request):
+        return Response({"isAuthenticated": True, "email": request.user_email}, status=status.HTTP_200_OK)
