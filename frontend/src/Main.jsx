@@ -10,6 +10,7 @@ import AttendanceApp from "./pages/Attendance/AttendanceApp";
 import HomeApp from "./pages/Home/HomeApp";
 import MonthlyReportApp from "./pages/MonthlyReport/MonthlyReportApp";
 import AdminApp from "./pages/Admin/AdminApp";
+import Team from "./pages/TopbarSidebar/Topbar/Components/Profile/Team";
 
 export default function Main() {
   return (
@@ -25,6 +26,7 @@ export default function Main() {
                 <Route path="attendance" element={<AttendanceApp />} />
                 <Route path="monthly_report" element={<MonthlyReportApp />} />
                 <Route path="admin" element={<AdminApp />} />
+                <Route path="team" element={<Team />} />
               </Route>
             </Route>
           </Routes>

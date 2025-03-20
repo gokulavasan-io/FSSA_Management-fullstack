@@ -7,11 +7,12 @@ class Role(models.Model):
     def __str__(self):
         return self.name
     
-    
+
 class Member(models.Model):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
+    image = models.BinaryField(null=True, blank=True)  # Store image as BLOB
     created_at = models.DateTimeField(auto_now_add=True)

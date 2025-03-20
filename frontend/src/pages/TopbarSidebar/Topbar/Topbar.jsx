@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Layout,
   Avatar,
@@ -7,7 +8,6 @@ import {
   Breadcrumb,
   Typography,
 } from "antd";
-import { BellOutlined } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import { MdHome } from "react-icons/md";
 import { useMainContext } from "../../../Context/MainContext";
@@ -18,17 +18,20 @@ import { FaUser } from "react-icons/fa6";
 import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom"; 
+
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
+    const navigate = useNavigate();
+  
   let userPicLink=localStorage.getItem("pictureLink")
   const location = useLocation();
 
   const { logout } = useAuth();
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName } = useMainContext();
- 
  
   const monthMenu = (
     <Menu
@@ -45,7 +48,7 @@ function TopBar({ collapsed }) {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="1">
+      <Menu.Item key="1" onClick={ () => navigate("/profile")} >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FaUser size={14} /> Profile
         </div>
@@ -55,12 +58,7 @@ function TopBar({ collapsed }) {
           <IoMdBookmark size={16} /> Batch : 4
         </div>
       </Menu.Item>
-      <Menu.Item key="3"  >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <TiGroup size={16} /> Your team
-        </div>
-      </Menu.Item>
-      <Menu.Item key="4" onClick={()=>logout()}  >
+      <Menu.Item key="3" onClick={()=>logout()}  >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FiLogOut size={16} /> Logout
         </div>
@@ -108,11 +106,11 @@ function TopBar({ collapsed }) {
         </Breadcrumb>
 
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          <Badge dot>
+          {/* <Badge dot>
             <BellOutlined
               style={{ fontSize: "20px", cursor: "pointer", color: "#737791" }}
             />
-          </Badge>
+          </Badge> */}
 
           <Dropdown overlay={userMenu} placement="bottomRight">
             <div
