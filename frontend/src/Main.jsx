@@ -1,7 +1,8 @@
 import React from "react";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
-import "handsontable/dist/handsontable.full.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
+import { AuthProvider } from "./Context/AuthContext";
+import PrivateRoute from "./PrivateRoute";
 import Login from "./pages/Login/Login";
 import AppLayout from "./Applayout";
 import MarkApp from "./pages/MarksEntry/MarksApp";
@@ -13,18 +14,22 @@ import AdminApp from "./pages/Admin/AdminApp";
 export default function Main() {
   return (
     <SnackbarProvider maxSnack={3}>
-        <BrowserRouter>
+      <BrowserRouter> {/* Moved AuthProvider inside BrowserRouter */}
+        <AuthProvider>
           <Routes>
             <Route path="login" element={<Login />} />
-            <Route path="/" element={<AppLayout />}>
-              <Route index element={<HomeApp />} />
-              <Route path="assessment" element={<MarkApp />} />
-              <Route path="attendance" element={<AttendanceApp />} />
-              <Route path="monthly_report" element={<MonthlyReportApp />} />
-              <Route path="admin" element={<AdminApp />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/" element={<AppLayout />}>
+                <Route index element={<HomeApp />} />
+                <Route path="assessment" element={<MarkApp />} />
+                <Route path="attendance" element={<AttendanceApp />} />
+                <Route path="monthly_report" element={<MonthlyReportApp />} />
+                <Route path="admin" element={<AdminApp />} />
+              </Route>
             </Route>
           </Routes>
-        </BrowserRouter>
+        </AuthProvider>
+      </BrowserRouter>
     </SnackbarProvider>
   );
 }

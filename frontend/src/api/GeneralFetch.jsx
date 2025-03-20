@@ -17,14 +17,14 @@ const GeneralFetchComponent = () => {
       setSections(response)
     })
 
-    fetchUserData(userId).then((response)=>{
-      setUserId(userId)
-      setUserName(response.name);
-      setSectionId(response.section.id);
-      setSectionName(response.section.name);
-      setUserRole(response.role.name);
+    // fetchUserData(userId).then((response)=>{
+    //   setUserId(userId)
+    //   setUserName(response.name);
+    //   setSectionId(response.section.id);
+    //   setSectionName(response.section.name);
+    //   setUserRole(response.role.name);
 
-    })
+    // })
 
   }, []);
 };
