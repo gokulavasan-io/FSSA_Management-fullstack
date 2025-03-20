@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axiosInstance";
 import { REPORT_API_ENDPOINTS } from "./apiPaths";
 
 export const fetchMonthlyReport = async (section, month, subjects) => {

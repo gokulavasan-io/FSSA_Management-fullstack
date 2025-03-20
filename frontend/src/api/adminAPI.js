@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "./axiosInstance";
 
-const BASE_URL = "http://localhost:8000/marks/subjects/";
+const BASE_URL = "/marks/subjects/";
 
 export const getSubjects = async () => {
   const response = await axios.get(BASE_URL);

@@ -7,10 +7,9 @@ from teacher.models import Member
 import jwt
 import datetime
 from django.conf import settings
-from .authenticate_user import authenticate_user
+
 
 class GoogleAuthView(APIView):
-
     def post(self, request):
         token = request.data.get("token")
         client_id = "113196780562-bu0lqo92v9ap0b5tbnnhhgbf00m68tsf.apps.googleusercontent.com"
@@ -56,6 +55,6 @@ class GoogleAuthView(APIView):
 
 
 class CheckSessionView(APIView):
-    @authenticate_user
     def get(self, request):
         return Response({"isAuthenticated": True, "email": request.user_email}, status=status.HTTP_200_OK)
+

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axiosInstance";
 import API_PATHS from "./apiPaths"
 
 export const submitTestData = async (testData) => {

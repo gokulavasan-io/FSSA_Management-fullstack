@@ -11,7 +11,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.log("Unauthorized request, clearing session...");
-      localStorage.removeItem("userEmail"); // Clear session data
+      localStorage.removeItem("userEmail"); 
       return Promise.reject(error);
     }
     return Promise.reject(error);
