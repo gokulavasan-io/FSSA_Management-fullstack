@@ -17,6 +17,7 @@ import { TiGroup } from "react-icons/ti";
 import { FaUser } from "react-icons/fa6";
 import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
+import { useAuth } from "../../../Context/AuthContext";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -25,6 +26,7 @@ function TopBar({ collapsed }) {
   let userPicLink=localStorage.getItem("pictureLink")
   const location = useLocation();
 
+  const { logout } = useAuth();
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName } = useMainContext();
  
  
@@ -53,12 +55,12 @@ function TopBar({ collapsed }) {
           <IoMdBookmark size={16} /> Batch : 4
         </div>
       </Menu.Item>
-      <Menu.Item key="3">
+      <Menu.Item key="3"  >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <TiGroup size={16} /> Your team
         </div>
       </Menu.Item>
-      <Menu.Item key="4">
+      <Menu.Item key="4" onClick={()=>logout()}  >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FiLogOut size={16} /> Logout
         </div>

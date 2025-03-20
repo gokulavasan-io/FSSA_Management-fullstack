@@ -58,3 +58,8 @@ class CheckSessionView(APIView):
     def get(self, request):
         return Response({"isAuthenticated": True, "email": request.user_email}, status=status.HTTP_200_OK)
 
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+        response.delete_cookie("session_token")
+        return response

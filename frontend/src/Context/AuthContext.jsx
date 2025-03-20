@@ -24,12 +24,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, navigate]);
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/auth/logout/"); 
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
     setUser(null);
     localStorage.removeItem("userEmail");
     navigate("/login");
-  };
 
+  };
+  
   return (
     <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
