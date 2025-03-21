@@ -2,6 +2,7 @@ import jwt
 from django.conf import settings
 from django.http import JsonResponse
 from teacher.models import Member
+from teacher.serializers import MemberSerializer
 
 class AuthenticationMiddleware:
     def __init__(self, get_response):
@@ -21,7 +22,8 @@ class AuthenticationMiddleware:
             user = Member.objects.filter(email=email).first()
             
             if user:
-                request.user_email = email  # ✅ Store authenticated email
+                request.user_email = email  
+                request.user_data=MemberSerializer(user).data
             else:
                 return JsonResponse({"error": "User not found"}, status=403)  # ✅ Return 403 Forbidden if user not found
             

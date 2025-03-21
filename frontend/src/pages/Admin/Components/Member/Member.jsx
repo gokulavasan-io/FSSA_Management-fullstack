@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Checkbox, message, Popconfirm } from 'antd';
-import axios from 'axios';
+import axios from '../../../../api/axiosInstance';
 
 const { Option } = Select;
 
@@ -14,9 +14,9 @@ const MemberTable = () => {
 
   const fetchData = async () => {
     const [membersData, rolesData, sectionsData] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/teacher/members/'),
-      axios.get('http://127.0.0.1:8000/teacher/roles/'),
-      axios.get('http://127.0.0.1:8000/students/sections/')
+      axios.get('/teacher/members/'),
+      axios.get('/teacher/roles/'),
+      axios.get('/students/sections/')
     ]);
     setMembers(membersData.data);
     setRoles(rolesData.data);
@@ -29,10 +29,10 @@ const MemberTable = () => {
 
   const handleAddOrEdit = async (values) => {
     if (editingMember) {
-      await axios.put(`http://127.0.0.1:8000/teacher/members/${editingMember.id}/`, values);
+      await axios.put(`/teacher/members/${editingMember.id}/`, values);
       message.success('Member updated');
     } else {
-      await axios.post('http://127.0.0.1:8000/teacher/members/', values);
+      await axios.post('/teacher/members/', values);
       message.success('Member added');
     }
     setIsModalOpen(false);
@@ -41,7 +41,7 @@ const MemberTable = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://127.0.0.1:8000/teacher/members/${id}/`);
+    await axios.delete(`/teacher/members/${id}/`);
     message.success('Member deleted');
     fetchData();
   };

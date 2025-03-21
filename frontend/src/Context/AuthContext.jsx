@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setUser(localStorage.getItem("userEmail"))
     if (!user) {
       axiosInstance
         .get("/auth/check-session/")

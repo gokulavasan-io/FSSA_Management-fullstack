@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Card, Avatar, Typography, message } from "antd";
 import { CameraOutlined } from "@ant-design/icons";
-import axiosInstance from "../../../../../api/axiosInstance";
 
 const { Title, Text } = Typography;
 
@@ -29,9 +28,10 @@ const ProfileCard = ({user}) => {
         style={{
           width: 380,
           textAlign: "center",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
           borderRadius: "6px",
           background: "#ffffff",
+          boxShadow: "0 1px 0 0 #cfd7df",
+          border:"none"
         }}
       >
         {/* Profile Picture */}
@@ -46,7 +46,7 @@ const ProfileCard = ({user}) => {
           <label htmlFor="fileUpload">
             <Avatar
               size={110}
-              src={profileImage || "https://lh3.googleusercontent.com/a/ACg8ocI4iStf55IlzPUB0DVWqChjAoHnG2MNV9cYviH-HTCb2awn9BnA=s96-c"}
+              src={profileImage || "https://cdn-icons-png.flaticon.com/256/149/149071.png"}
               style={{
                 cursor: "pointer",
                 transition: "0.3s",

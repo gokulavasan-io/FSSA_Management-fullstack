@@ -7,6 +7,7 @@ from teacher.models import Member
 import jwt
 import datetime
 from django.conf import settings
+from teacher.serializers import MemberSerializer
 
 
 class GoogleAuthView(APIView):
@@ -36,7 +37,7 @@ class GoogleAuthView(APIView):
             session_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
             # Set the session token in an HTTP-only cookie
-            response = Response({"message": "Login successful", "email": email})
+            response = Response({"message": "Login successful", "email": email,"userData":MemberSerializer(user).data})
             response.set_cookie(
                 key="session_token",
                 value=session_token,
@@ -56,7 +57,7 @@ class GoogleAuthView(APIView):
 
 class CheckSessionView(APIView):
     def get(self, request):
-        return Response({"isAuthenticated": True, "email": request.user_email}, status=status.HTTP_200_OK)
+        return Response({"isAuthenticated": True, "email": request.user_email,"userData":request.user_data}, status=status.HTTP_200_OK)
 
 class LogoutView(APIView):
     def post(self, request):

@@ -19,14 +19,16 @@ import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../../Context/AuthContext";
 import { useNavigate } from "react-router-dom"; 
+import UserProfile from "./Components/Profile/UserProfile";
 
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   let userPicLink=localStorage.getItem("pictureLink")
   const location = useLocation();
 
@@ -48,7 +50,7 @@ function TopBar({ collapsed }) {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="1" onClick={ () => navigate("/profile")} >
+      <Menu.Item key="1" onClick={ () => setIsModalVisible(true)} >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FaUser size={14} /> Profile
         </div>
@@ -147,6 +149,7 @@ function TopBar({ collapsed }) {
           </Dropdown>
         </div>
       </Header>
+      <UserProfile isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} />
     </>
   );
 }
