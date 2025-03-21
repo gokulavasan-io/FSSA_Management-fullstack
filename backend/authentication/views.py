@@ -8,6 +8,7 @@ import jwt
 import datetime
 from django.conf import settings
 from teacher.serializers import MemberSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class GoogleAuthView(APIView):
@@ -37,7 +38,7 @@ class GoogleAuthView(APIView):
             session_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
             # Set the session token in an HTTP-only cookie
-            response = Response({"message": "Login successful", "email": email,"userData":MemberSerializer(user).data})
+            response = Response({"message": "Login successful", "email": email})
             response.set_cookie(
                 key="session_token",
                 value=session_token,
@@ -54,13 +55,21 @@ class GoogleAuthView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class CheckSessionView(APIView):
+    permission_classes = [IsAuthenticated]  
+
     def get(self, request):
-        return Response({"isAuthenticated": True, "email": request.user_email,"userData":request.user_data}, status=status.HTTP_200_OK)
+        return Response(
+            {"isAuthenticated": True, "email": request.user.email, "userData": request.user.data},
+            status=status.HTTP_200_OK,
+        )
+
 
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         response.delete_cookie("session_token")
         return response
+    
+    from rest_framework.permissions import IsAuthenticated
+

@@ -14,5 +14,9 @@ class Member(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
-    image = models.BinaryField(null=True, blank=True)  # Store image as BLOB
+    image = models.BinaryField(null=True, blank=True)  
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def is_authenticated(self):
+        return True
