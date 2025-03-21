@@ -10,7 +10,7 @@ import { format } from "date-fns";
 
 const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
   const location = useLocation();
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState(null);
 
   function formatData(userData) {
       return {
@@ -26,20 +26,14 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
   const fetchData = async () => {
     let userId = localStorage.getItem("userId") ;
     const response = await axiosInstance.get(`/teacher/members/${userId}/`);
-     setUserData(formatData(response.data));
+    setUserData(formatData(response.data));
   };
 
   useEffect(() => {
-    fetchData();
+    if(isModalVisible){
+      fetchData();
+    }
   }, [isModalVisible]);
-
-  const user = {
-    image: "https://randomuser.me/api/portraits/women/67.jpg",
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    role: "Admin / Coach",
-    section: "Class A",
-  };
 
   const handleClose = () => {
     setIsModalVisible(false);
