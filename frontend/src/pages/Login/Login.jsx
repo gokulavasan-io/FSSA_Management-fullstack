@@ -6,12 +6,12 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 const LoginPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail")); 
-  const [loading, setLoading] = useState(!userEmail); 
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState(localStorage.getItem("userId")); 
+  const [loading, setLoading] = useState(!userId); 
 
   useEffect(() => {
-    if (userEmail) {
+    if (userId&&userId!="undefined"&&userId!="null") {
       navigate("/"); // Redirect to dashboard if already logged in
       return;
     }
@@ -20,8 +20,9 @@ const LoginPage = () => {
       setLoading(true);
       try {
         const res = await axiosInstance.get("/auth/check-session/");
-        setUserEmail(res.data.email);
-        localStorage.setItem("userEmail", res.data.email);
+        if(!res.data.id) return;
+        setUserId(res.data.id);
+        localStorage.setItem("userId",res.data.id)
         navigate("/"); // Redirect if session is valid
       } catch (error) {
         console.log("Session check failed:", error.response?.status);
@@ -31,14 +32,14 @@ const LoginPage = () => {
     };
 
     checkSession();
-  }, [userEmail, navigate]); 
+  }, [userId, navigate]); 
 
   const handleSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
     try {
       const res = await axiosInstance.post("/auth/google/", { token });
-      setUserEmail(res.data.email);
-      localStorage.setItem("userEmail", res.data.email);
+      setUserId(res.data.id);
+      localStorage.setItem("userId", res.data.id);
       navigate("/"); // Redirect after successful login
     } catch (error) {
       console.error("Login failed:", error.response?.data);
@@ -50,10 +51,9 @@ const LoginPage = () => {
       <div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
         {loading ? (
           <p>Loading...</p>
-        ) : userEmail ? (
+        ) : userId ? (
           <Card style={{ padding: "10px", textAlign: "center" }}>
-            <p>You are logged in as:</p>
-            <strong>{userEmail}</strong>
+            <p>You are logged !</p>
           </Card>
         ) : (
           <GoogleLogin

@@ -5,21 +5,21 @@ import axiosInstance from "../api/axiosInstance";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(localStorage.getItem("userEmail"));
+  const [user, setUser] = useState(localStorage.getItem("userId"));
   const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(localStorage.getItem("userEmail"))
-    if (!user) {
+    setUser(localStorage.getItem("userId"))
+    if (!user || user=="undefined"||user=="null" ) {
       axiosInstance
         .get("/auth/check-session/")
         .then((res) => {
-          setUser(res.data.email);
-          localStorage.setItem("userEmail", res.data.email);
+          setUser(res.data.id);
+          localStorage.setItem("userId", res.data.id);
         })
         .catch(() => {
           setUser(null);
-          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userId");
           navigate("/login"); // Redirect to login if session is invalid
         });
     }
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Logout failed", error);
     }
     setUser(null);
-    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
     navigate("/login");
 
   };
