@@ -25,8 +25,7 @@ class TestDetail(models.Model):
     isLevelTest = models.BooleanField(default=False)
 
     def __str__(self):
-        month_str = self.month.strftime('%b') if hasattr(self.month, 'strftime') else str(self.month)[:3]
-        return f"{self.test_name} - {month_str} ({self.subject})"
+        return self.test_name
 
 
 class Marks(models.Model):

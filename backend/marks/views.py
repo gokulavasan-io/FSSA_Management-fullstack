@@ -12,8 +12,7 @@ from django.utils import timezone
 class MonthListView(ListAPIView):
     queryset = Month.objects.all().order_by('id')
     serializer_class = MonthSerializer
-
-    
+  
 class SubjectListCreateView(generics.ListCreateAPIView):
     queryset = Subject.objects.all().order_by('id')
     serializer_class = SubjectSerializer
@@ -22,17 +21,26 @@ class SubjectRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
 
-# List and Create
-class TestDetailListCreateView(generics.ListCreateAPIView):
+class TestDetailListView(generics.ListAPIView):
+    serializer_class = TestDetailSerializer
+
+    def get_queryset(self):
+        queryset = TestDetail.objects.all()
+        subject = self.request.query_params.get("subject")
+        month = self.request.query_params.get("month")
+
+        if subject:
+            queryset = queryset.filter(subject=subject)
+        if month:
+            queryset = queryset.filter(month=month)
+
+        return queryset
+
+class TestDetailsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TestDetail.objects.all()
     serializer_class = TestDetailSerializer
 
-class TestDetailRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TestDetail.objects.all()
-    serializer_class = TestDetailSerializer
-
-
-class AddTestView(APIView):
+class TestView(APIView):
     def post(self, request):
         try:
             serializer = TestDetailSerializer(data=request.data)
@@ -107,8 +115,6 @@ class AddTestView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-class UpdateMarksView(APIView):
     def put(self, request, test_detail_id):
         try:
             serializer = UpdateMarksSerializer(data=request.data)
@@ -135,9 +141,7 @@ class UpdateMarksView(APIView):
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-          
-class GetTestAndMarksView(APIView):
+     
     def get(self, request, test_detail_id):
         section_id = request.query_params.get('section_id')  # Get section_id from query params
         section_id = None if section_id == 'null' else section_id
@@ -192,9 +196,8 @@ class GetTestAndMarksView(APIView):
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class GetAllTestDataView(APIView):
+   
+class MonthlyData(APIView):
     def get(self, request):
         try:
             section_id = request.query_params.get('section_id')
@@ -279,8 +282,7 @@ class GetAllTestDataView(APIView):
             return Response({"error": "Internal Server Error. Please contact support."},
                              status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-class UpdateLevelTestView(APIView):
+class LevelTestView(APIView):
     def put(self, request, test_detail_id):
         try:
             serializer = UpdateLevelMarkSerializer(data=request.data)
@@ -304,9 +306,7 @@ class UpdateLevelTestView(APIView):
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-  
-
-class GetLevelTestView(APIView):
+    
     def get(self, request, test_detail_id):
         try:
             section_id = request.query_params.get('section_id')
@@ -343,49 +343,3 @@ class GetLevelTestView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class GetAllTestDetailsView(APIView):
-    def get(self, request):
-        try:
-            month_id = request.query_params.get('month')
-            subject_id = request.query_params.get('subject')
-
-            # Check if all required parameters are provided
-            if not month_id or not subject_id:
-                return Response({"error": "Missing required parameters: month or subject."}, 
-                                 status=status.HTTP_400_BAD_REQUEST)
-
-            test_details_query = TestDetail.objects.all()
-
-            # Get the related month and subject
-            month = get_object_or_404(Month, id=month_id)
-            subject = get_object_or_404(Subject, id=subject_id)
-
-            # Filter test details based on month and subject
-            test_details_query = test_details_query.filter(month=month, subject=subject)
-
-            if not test_details_query.exists():
-                return Response([], status=status.HTTP_200_OK)
-
-            response_data = []
-
-            for test_detail in test_details_query:
-                test_detail_data = {
-                    "id": test_detail.id,
-                    "test_name": test_detail.test_name,
-                    "total_marks": test_detail.total_marks,
-                    "subject": test_detail.subject.subject_name,
-                    "created_at": test_detail.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    "about_test": test_detail.about_test,
-                    "isLevelTest": test_detail.isLevelTest,
-                }
-
-                response_data.append({
-                    "test_detail": test_detail_data,
-                })
-
-            return Response(response_data,
-                             status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            return Response({"error": "Internal Server Error. Please contact support."},
-                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
