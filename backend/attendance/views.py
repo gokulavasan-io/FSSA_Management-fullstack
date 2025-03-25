@@ -520,15 +520,10 @@ class DailyStatisticsView(APIView):
         return Response({"columns": ["date", "day"] + status_types, "data": formatted_response}, status=http_status.HTTP_200_OK)
 
 
-
-
-
-# List and Create View
 class HolidayListCreateView(generics.ListCreateAPIView):
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializer
 
-# Retrieve, Update, Delete View
 class HolidayRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializer
