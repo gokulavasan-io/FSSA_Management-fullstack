@@ -7,7 +7,7 @@ from teacher.serializers import MemberSerializer
 class AuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.excluded_paths = ["/auth/google/"]
+        self.excluded_paths = ["/api/v1/auth/google/"]
 
     def __call__(self, request):
         if request.path in self.excluded_paths:

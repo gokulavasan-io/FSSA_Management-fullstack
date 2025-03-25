@@ -2,13 +2,13 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('students/', include("students.urls")),
-    path('marks/', include("marks.urls")),
-    path('attendance/', include("attendance.urls")),
-    path('teacher/', include("teacher.urls")),
-    path('home/', include("home.urls")),
-    path('report/', include("monthly_report.urls")),
-    path('auth/', include("authentication.urls")),
+    path('api/v1/admin/', admin.site.urls),
+    path('api/v1/students/', include("students.urls")),
+    path('api/v1/marks/', include("marks.urls")),
+    path('api/v1/attendance/', include("attendance.urls")),
+    path('api/v1/members/', include("teacher.urls")),
+    path('api/v1/home/', include("home.urls")),
+    path('api/v1/monthly-report/', include("monthly_report.urls")),
+    path('api/v1/auth/', include("authentication.urls")),
     
 ]

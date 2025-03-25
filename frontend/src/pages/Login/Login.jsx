@@ -20,9 +20,9 @@ const LoginPage = () => {
       setLoading(true);
       try {
         const res = await fetchUserId();
-        if(!res.data.id) return;
-        setUserId(res.data.id);
-        localStorage.setItem("userId",res.data.id)
+        if(!res.id) return;
+        setUserId(res.id);
+        localStorage.setItem("userId",res.id)
         navigate("/"); 
       } catch (error) {
         console.log("Session check failed:", error.response?.status);
@@ -38,8 +38,8 @@ const LoginPage = () => {
     const token = credentialResponse.credential;
     try {
       const res = await login(token);
-      setUserId(res.data.id);
-      localStorage.setItem("userId", res.data.id);
+      setUserId(res.id);
+      localStorage.setItem("userId", res.id);
       navigate("/"); // Redirect after successful login
     } catch (error) {
       console.error("Login failed:", error.response?.data);

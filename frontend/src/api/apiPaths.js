@@ -2,7 +2,7 @@ export const MARKS_API_ENDPOINTS={
     TESTDETAILS:'marks/test-details/',
     TESTS:"marks/tests/",
     LEVELTESTS:'marks/level-tests/',
-    MONTHLY_TEST_DATA:"marks/monthly-test-data/"
+    MONTHLY_DATA:"marks/monthly-data/"
     
 
 }
@@ -40,8 +40,8 @@ export const STUDENT_API_ENDPOINTS = {
 };
 
 export const MEMBER_API_ENDPOINTS = {
-    MEMBERS: "/teachers/members/",
-    ROLES:'/teachers/roles',
+    MEMBERS: "/members/",
+    ROLES:'/members/roles/',
 };
 
 export const GENERAL_API_ENDPOINTS={
@@ -50,4 +50,8 @@ export const GENERAL_API_ENDPOINTS={
     SECTIONS: "/students/sections/",
     BATCHES: "/students/batches/",
     BASEDATACHOICE: "/students/base-data-choices/",
+}
+
+export const MONTHLY_REPORT_API_ENDPOINTS={
+    MONTHLY_REPORT:'/monthly-report/'
 }

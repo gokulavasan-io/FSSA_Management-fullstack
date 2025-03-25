@@ -40,7 +40,7 @@ class TestDetailsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     queryset = TestDetail.objects.all()
     serializer_class = TestDetailSerializer
 
-class TestView(APIView):
+class TestCreateView(APIView):
     def post(self, request):
         try:
             serializer = TestDetailSerializer(data=request.data)
@@ -115,33 +115,9 @@ class TestView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def put(self, request, test_detail_id):
-        try:
-            serializer = UpdateMarksSerializer(data=request.data)
-            if serializer.is_valid():
-                data = serializer.validated_data
-                test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-                
-                students = data['studentsMark']
-                for student_data in students:
-                    student = get_object_or_404(Students, id=student_data['student_id'])
-                    Marks.objects.update_or_create(
-                        student=student,
-                        test_detail=test_detail,
-                        defaults={
-                            'mark': student_data['mark'],
-                            'remark': student_data.get('remark', "")
-                        }
-                    )
-                return Response({"message": "TestDetail and Marks updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Http404 as e:
-            print(f"Object not found: {str(e)}")
-            return Response({"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-     
+    
+
+class TestDataRetrieveUpdateView(APIView):
     def get(self, request, test_detail_id):
         section_id = request.query_params.get('section_id')  # Get section_id from query params
         section_id = None if section_id == 'null' else section_id
@@ -196,7 +172,36 @@ class TestView(APIView):
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-   
+       
+    def put(self, request, test_detail_id):
+        try:
+            serializer = UpdateMarksSerializer(data=request.data)
+            if serializer.is_valid():
+                data = serializer.validated_data
+                test_detail = get_object_or_404(TestDetail, id=test_detail_id)
+                
+                students = data['studentsMark']
+                for student_data in students:
+                    student = get_object_or_404(Students, id=student_data['student_id'])
+                    Marks.objects.update_or_create(
+                        student=student,
+                        test_detail=test_detail,
+                        defaults={
+                            'mark': student_data['mark'],
+                            'remark': student_data.get('remark', "")
+                        }
+                    )
+                return Response({"message": "TestDetail and Marks updated successfully", "test_detail_id": test_detail.id}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Http404 as e:
+            print(f"Object not found: {str(e)}")
+            return Response({"error": "Object not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+     
+
+
 class MonthlyData(APIView):
     def get(self, request):
         try:

@@ -18,7 +18,6 @@ import { FaUser } from "react-icons/fa6";
 import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../../Context/AuthContext";
-import { useNavigate } from "react-router-dom"; 
 import UserProfile from "./Components/Profile/UserProfile";
 
 
@@ -26,14 +25,11 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 function TopBar({ collapsed }) {
-  const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  let userPicLink=localStorage.getItem("pictureLink")
   const location = useLocation();
 
   const { logout } = useAuth();
-  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName } = useMainContext();
+  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName,userImageUrl } = useMainContext();
  
   const monthMenu = (
     <Menu
@@ -124,7 +120,7 @@ function TopBar({ collapsed }) {
               }}
             >
               <Avatar
-                src={userPicLink}
+                src={userImageUrl}
                 size={45}
                 style={{ borderRadius: "4px" }}
               />
@@ -136,7 +132,7 @@ function TopBar({ collapsed }) {
                 }}
               >
                 <Text strong style={{ fontSize: "15px", color: "#333" }}>
-                  {userName.split(" ")[0]}
+                  {userName}
                 </Text>
                 <Text
                   type="secondary"

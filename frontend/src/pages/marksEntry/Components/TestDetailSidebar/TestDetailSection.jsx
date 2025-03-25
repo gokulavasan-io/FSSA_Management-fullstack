@@ -5,15 +5,13 @@ import { useMarksContext } from "../../../../Context/MarksContext";
 const TestDetailSection = ({ isLevelSection }) => {
 
   const { handleOptionClick, testDetails } = useMarksContext();
-
-
   return (
     <List component="div" disablePadding>
       {/* Show message when no items available */}
       {testDetails.filter((item) =>
         isLevelSection
-          ? item.test_detail.isLevelTest
-          : !item.test_detail.isLevelTest
+          ? item.isLevelTest
+          : !item.isLevelTest
       ).length === 0 ? (
         <ListItem
           sx={{
@@ -29,8 +27,8 @@ const TestDetailSection = ({ isLevelSection }) => {
         testDetails
           .filter((item) =>
             isLevelSection
-              ? item.test_detail.isLevelTest
-              : !item.test_detail.isLevelTest
+              ? item.isLevelTest
+              : !item.isLevelTest
           )
           .map((item, index) => {
             return (
@@ -38,7 +36,7 @@ const TestDetailSection = ({ isLevelSection }) => {
                 key={index}
                 button={index.toString()}
                 onClick={() => {
-                  handleOptionClick(item.test_detail.id, isLevelSection);
+                  handleOptionClick(item.id, isLevelSection);
                 }}
                 sx={{
                   pl: 4,
@@ -53,11 +51,11 @@ const TestDetailSection = ({ isLevelSection }) => {
                     <>
                       <span style={{ fontWeight: 500 }}>
                         {" "}
-                        {item.test_detail.test_name}{" "}
+                        {item.test_name}{" "}
                       </span>
                       <span style={{ fontSize: 14, marginLeft: 10 }}>
                         {format(
-                          new Date(item.test_detail.created_at),
+                          new Date(item.created_at),
                           "dd/MMM/yy"
                         )}
                       </span>

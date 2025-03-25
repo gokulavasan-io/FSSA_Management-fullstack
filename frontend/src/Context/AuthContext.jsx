@@ -15,9 +15,9 @@ export const AuthProvider = ({ children }) => {
       const fetchUser = async () => {
         try {
           let res = await fetchUserId();
-          if (res?.data?.id) {
-            setUser(res.data.id);
-            localStorage.setItem("userId", res.data.id);
+          if (res?.id) {
+            setUser(res.id);
+            localStorage.setItem("userId", res.id);
           } else {
             throw new Error("Invalid user data");
           }
