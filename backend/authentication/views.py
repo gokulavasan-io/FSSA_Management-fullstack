@@ -8,15 +8,14 @@ import jwt
 import datetime
 from django.conf import settings
 from teacher.serializers import MemberSerializer
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from django.conf import settings
 
 
 class GoogleAuthView(APIView):
-    permission_classes = [AllowAny]  
     
     def post(self, request):
         token = request.data.get("token")
-        client_id = "113196780562-bu0lqo92v9ap0b5tbnnhhgbf00m68tsf.apps.googleusercontent.com"
+        client_id = settings.GOOGLE_CLIENT_ID
 
         try:
             # Verify the token with Google's OAuth API
@@ -56,13 +55,10 @@ class GoogleAuthView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class CheckSessionView(APIView):
-    permission_classes = [IsAuthenticated]  
-
+class GetUserId(APIView): 
     def get(self, request):
         return Response(
-            {"isAuthenticated": True, "email": request.user.email, "id": request.user.id},
+            {"email": request.user.email, "id": request.user.id},
             status=status.HTTP_200_OK,
         )
 
@@ -73,5 +69,4 @@ class LogoutView(APIView):
         response.delete_cookie("session_token")
         return response
     
-    from rest_framework.permissions import IsAuthenticated
 

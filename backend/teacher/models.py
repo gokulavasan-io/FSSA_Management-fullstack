@@ -18,5 +18,5 @@ class Member(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     @property
-    def is_authenticated(self):
+    def is_active(self):
         return True

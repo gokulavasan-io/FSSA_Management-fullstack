@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 ||error.response?.status === 403  ) {
       console.log("Unauthorized request, clearing session...");
       localStorage.removeItem("userId"); 
       return Promise.reject(error);
