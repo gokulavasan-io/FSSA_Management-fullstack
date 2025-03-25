@@ -9,18 +9,10 @@ export const MainContextProvider = ({ children }) => {
     const [monthNow,setMonthNow]=useState({ id: 1, month_name: "January" })
     const [selectedMonth, setSelectedMonth] = useState({ id: 1, month_name: "January" });
     const [selectedSubject, setSelectedSubject] = useState({id:1,subject_name:"English"})
-    const [sectionId, setSectionId] = useState(null)
-    const [sectionName,setSectionName]=useState(2)
-    const [batchNumber, setBatchNumber] = useState(4)
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [year, setYear] = useState(2024);
     const [months, setMonths] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [userId,setUserId]=useState(1)
-    const [userName,setUserName]=useState("")
-    const [userRole,setUserRole]=useState("")
-    const [userMailId,setUserMailId]=useState("")
     const [sections,setSections]=useState([])
     const [sectionsWithAll,setSectionsWithAll]=useState([])
     const [academicSubjects, setAcademicSubjects] = useState([]);
@@ -28,6 +20,14 @@ export const MainContextProvider = ({ children }) => {
     const [attendanceBehaviorIds, setAttendanceBehaviorIds] = useState([]);
     const [problemSolvingId,setProblemSolvingId]=useState(null)
     const [categoryName,setCategoryName]=useState("")
+
+    const [userId,setUserId]=useState(localStorage.getItem("userId"))
+    const [userName,setUserName]=useState("")
+    const [userRole,setUserRole]=useState("")
+    const [userMailId,setUserMailId]=useState("")
+    const [sectionId, setSectionId] = useState(null)
+    const [sectionName,setSectionName]=useState("")
+    const [batchNumber, setBatchNumber] = useState(4)
 
 
     useEffect(() => {
@@ -53,7 +53,7 @@ export const MainContextProvider = ({ children }) => {
   return (
     <MainContext.Provider
       value={{
-        selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,isLoggedIn,setIsLoggedIn,
+        selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,
         year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,setSelectedKey,selectedKey,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
         academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId,categoryName,setCategoryName,

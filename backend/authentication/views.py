@@ -55,10 +55,10 @@ class GoogleAuthView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class GetUserInfoView(APIView): 
+class UserIdView(APIView): 
     def get(self, request):
         return Response(
-            {"email": request.user.email, "id": request.user.id},
+            {"id": request.user.id},
             status=status.HTTP_200_OK,
         )
 

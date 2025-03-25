@@ -24,8 +24,8 @@ export const ADMIN_API_ENDPOINTS={
 
 
 export const AUTH_API_ENDPOINTS={
-    GOOGLE_AUTH:'/auth/google/',
-    USER_INFO:'/auth/user-info/',
+    LOGIN:'/auth/google/',
+    USER_ID:'/auth/user-id/',
     LOGOUT:'/auth/logout/'
 }
 
@@ -39,11 +39,15 @@ export const STUDENT_API_ENDPOINTS = {
     STUDENTS: "/students/students/",
 };
 
+export const MEMBER_API_ENDPOINTS = {
+    MEMBERS: "/teachers/members/",
+    ROLES:'/teachers/roles',
+};
+
 export const GENERAL_API_ENDPOINTS={
     MONTHS:'/marks/months',
     SUBJECTS:"/marks/subjects/",
     SECTIONS: "/students/sections/",
     BATCHES: "/students/batches/",
     BASEDATACHOICE: "/students/base-data-choices/",
-    ROLES:"teacher/roles/",
 }

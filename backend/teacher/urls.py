@@ -2,11 +2,9 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    # Role
-    path('roles/', RoleListCreateAPIView.as_view(), name='role-list-create'),
-    path('roles/<int:pk>/', RoleRetrieveUpdateDestroyAPIView.as_view(), name='role-detail'),
+    path('roles/', RoleListCreateAPIView.as_view()),
+    path('roles/<int:pk>/', RoleRetrieveUpdateDestroyAPIView.as_view()),
 
-    # # Member
-    path('members/', MemberListCreateAPIView.as_view(), name='member-list-create'),
-    path('members/<int:pk>/', MemberRetrieveUpdateDestroyAPIView.as_view(), name='member-detail'),
+    path('members/', MemberListCreateAPIView.as_view()),
+    path('members/<int:pk>/', MemberRetrieveUpdateDestroyAPIView.as_view()),
 ]

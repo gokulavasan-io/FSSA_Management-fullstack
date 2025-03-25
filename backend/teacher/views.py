@@ -11,8 +11,6 @@ class RoleRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
-
-# --- Member CRUD ---
 class MemberListCreateAPIView(generics.ListCreateAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer

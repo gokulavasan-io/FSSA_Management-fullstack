@@ -1,10 +1,10 @@
 import axios from "./axiosInstance";
-import API_PATHS from "./apiPaths"
+import {GENERAL_API_ENDPOINTS,MEMBER_API_ENDPOINTS} from "./apiPaths"
 
 
 export const fetchMonths = async () => {
   try {
-    let response= await axios.get(API_PATHS.FETCH_MONTHS)
+    let response= await axios.get(GENERAL_API_ENDPOINTS.MONTHS)
     return response.data;
   } catch (error) {
     throw error;
@@ -13,7 +13,7 @@ export const fetchMonths = async () => {
 
 export const fetchSections = async () => {
   try {
-    let response= await axios.get(API_PATHS.GET_SECTIONS)
+    let response= await axios.get(GENERAL_API_ENDPOINTS.SECTIONS)
     return response.data;
   } catch (error) {
     throw error;
@@ -22,7 +22,7 @@ export const fetchSections = async () => {
 
 export const fetchSubjects = async () => {
   try {
-    let response= await axios.get(API_PATHS.FETCH_SUBJECTS)
+    let response= await axios.get(GENERAL_API_ENDPOINTS.SUBJECTS)
     return response.data;
   } catch (error) {
     throw error;
@@ -31,7 +31,7 @@ export const fetchSubjects = async () => {
 
 export const fetchUserData = async (userId) => {
   try {
-    let response= await axios.get(`${API_PATHS.FETCH_USER_DATA}${userId}/`)
+    let response= await axios.get(`${MEMBER_API_ENDPOINTS}${userId}/`)
     return response.data;
 
   } catch (error) {

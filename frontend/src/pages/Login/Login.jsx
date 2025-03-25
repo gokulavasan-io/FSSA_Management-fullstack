@@ -3,7 +3,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { Button, Card } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../api/axiosInstance";
+import { login,fetchUserId } from "../../api/AuthAPI";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,11 +19,11 @@ const LoginPage = () => {
     const checkSession = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get("/auth/check-session/");
+        const res = await fetchUserId();
         if(!res.data.id) return;
         setUserId(res.data.id);
         localStorage.setItem("userId",res.data.id)
-        navigate("/"); // Redirect if session is valid
+        navigate("/"); 
       } catch (error) {
         console.log("Session check failed:", error.response?.status);
       } finally {
@@ -37,7 +37,7 @@ const LoginPage = () => {
   const handleSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
     try {
-      const res = await axiosInstance.post("/auth/google/", { token });
+      const res = await login(token);
       setUserId(res.data.id);
       localStorage.setItem("userId", res.data.id);
       navigate("/"); // Redirect after successful login
