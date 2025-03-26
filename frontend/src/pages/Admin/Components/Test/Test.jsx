@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import { useMainContext } from "../../../../Context/MainContext";
 import AddNewTest from "./NewTest";
+import { FwButton } from "@freshworks/crayons/react";
 
 const TestDetailsTable = () => {
   let { months, subjects } = useMainContext();
@@ -26,11 +27,10 @@ const TestDetailsTable = () => {
 
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [form] = Form.useForm();
   const [isLevelTest, setIsLevelTest] = useState(false);
-
 
   useEffect(() => {
     fetchTests();
@@ -42,7 +42,7 @@ const TestDetailsTable = () => {
       const data = await getTestDetails();
       setTests(data);
     } catch (error) {
-      console.error("Failed to load test details");
+      console.error("Failed to load test details", error);
     } finally {
       setLoading(false);
     }
@@ -59,10 +59,8 @@ const TestDetailsTable = () => {
       subject: record.subject.id,
       created_at: record.created_at ? dayjs(record.created_at) : null,
     });
-    setEditModalVisible(true);
+    setIsModalOpen(true);
   };
-  
-  
 
   const handleDelete = async (testId) => {
     try {
@@ -78,12 +76,13 @@ const TestDetailsTable = () => {
       const values = await form.validateFields();
       await updateTest(selectedTest.id, {
         ...values,
+        total_marks: isLevelTest ? 0 : values.total_marks,
         created_at: values.created_at ? values.created_at.toISOString() : null,
       });
-      setEditModalVisible(false);
+      setIsModalOpen(false);
       fetchTests();
     } catch (error) {
-      console.error("Failed to update test");
+      console.error("Failed to update test", error);
     }
   };
 
@@ -107,7 +106,8 @@ const TestDetailsTable = () => {
       title: "Total Mark",
       dataIndex: "total_marks",
       key: "total_mark",
-      render: (_, record) => (record.isLevelTest ? "Level Up" : record.total_marks),
+      render: (_, record) =>
+        record.isLevelTest ? "Level Up" : record.total_marks,
     },
     {
       title: "About Test",
@@ -143,7 +143,15 @@ const TestDetailsTable = () => {
 
   return (
     <>
-      <div style={{marginBottom:10,display:"flex",justifyContent:"flex-end"}} ><AddNewTest  reFetchFunc={fetchTests} buttonType={"primary"} /></div>
+      <div
+        style={{
+          marginBottom: 10,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <AddNewTest reFetchFunc={fetchTests} buttonType={"primary"} />
+      </div>
       <Table
         dataSource={tests}
         columns={columns}
@@ -153,11 +161,11 @@ const TestDetailsTable = () => {
       />
       <Modal
         title="Edit Test"
-        visible={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
-        onOk={handleUpdate}
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleUpdate}>
           <Form.Item
             name="test_name"
             label="Name"
@@ -216,6 +224,14 @@ const TestDetailsTable = () => {
           >
             <DatePicker format="DD/MMM/YY" style={{ width: "100%" }} />
           </Form.Item>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+            <FwButton color="secondary" onFwClick={() => setIsModalOpen(false)}>
+              Cancel
+            </FwButton>
+            <FwButton color="primary" onFwClick={() => form.submit()}>
+              Confirm
+            </FwButton>
+          </div>
         </Form>
       </Modal>
     </>
