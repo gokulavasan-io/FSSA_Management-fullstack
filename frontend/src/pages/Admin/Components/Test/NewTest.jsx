@@ -17,10 +17,10 @@ import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
 
-const AddNewTest = ({reFetchFunc}) => {
+const AddNewTest = ({ reFetchFunc }) => {
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   let { months, subjects, batchNumber } = useMainContext();
-  subjects=subjects.filter(subject=>subject.subject_name!="Attendance")
+  subjects = subjects.filter((subject) => subject.subject_name != "Attendance");
   const showMessage = useNotification();
 
   const [formData, setFormData] = useState({
@@ -82,7 +82,6 @@ const AddNewTest = ({reFetchFunc}) => {
     });
     setErrors({});
   };
-  
 
   const validateForm = () => {
     const newErrors = {};
@@ -127,10 +126,10 @@ const AddNewTest = ({reFetchFunc}) => {
 
     try {
       const response = await submitTestData(formData);
-      reFetchFunc()
+      reFetchFunc();
       showMessage(response.message, "s");
 
-    resetForm()
+      resetForm();
 
       setOpenNewTestForm(false);
     } catch (error) {
@@ -146,13 +145,15 @@ const AddNewTest = ({reFetchFunc}) => {
 
   return (
     <>
-      <FwButton  color="secondary" onFwClick={() => setOpenNewTestForm(true)} >Add New Test</FwButton>
+      <FwButton color="secondary" onFwClick={() => setOpenNewTestForm(true)}>
+        Add New Test
+      </FwButton>
       <Modal
         title="Add New Test"
         open={openNewTestForm}
         onCancel={() => {
           setOpenNewTestForm(false);
-          resetForm(); // Reset form data when closing the modal
+          resetForm();
         }}
         footer={null}
         width={500}
@@ -181,8 +182,8 @@ const AddNewTest = ({reFetchFunc}) => {
                 <Select
                   value={formData.subject}
                   onChange={(value) => handleChange({ name: "subject", value })}
+                  placeholder="Select Subject"
                 >
-                  <Option value="">Select Subject</Option>
                   {subjects.map((subject) => (
                     <Option key={subject.id} value={subject.id}>
                       {subject.subject_name}
@@ -200,8 +201,8 @@ const AddNewTest = ({reFetchFunc}) => {
                 <Select
                   value={formData.month}
                   onChange={(value) => handleChange({ name: "month", value })}
+                  placeholder="Select Month"
                 >
-                  <Option value="">Select Month</Option>
                   {months.map((month) => (
                     <Option key={month.id} value={month.id}>
                       {month.month_name}
@@ -212,7 +213,7 @@ const AddNewTest = ({reFetchFunc}) => {
             </Col>
           </Row>
 
-          {!isProblemSolving && (
+          {!isProblemSolving ? (
             <Form.Item
               label="Total Marks"
               validateStatus={errors.total_marks ? "error" : ""}
@@ -225,25 +226,29 @@ const AddNewTest = ({reFetchFunc}) => {
                 onChange={handleChange}
               />
             </Form.Item>
-          )}
-
-          {isProblemSolving && (
-            <Form.Item>
+          ) : (
+            <Form.Item label="Test Type">
               <Checkbox
                 checked={formData.isLevelTest}
                 onChange={handleChange}
                 name="isLevelTest"
               >
-                Is level up test?
+                Is Level Up Test?
               </Checkbox>
               {!formData.isLevelTest && (
-                <Input
-                  type="number"
-                  name="total_marks"
-                  value={formData.total_marks}
-                  onChange={handleChange}
-                  placeholder="Enter Total Marks"
-                />
+                <Form.Item
+                  validateStatus={errors.total_marks ? "error" : ""}
+                  help={errors.total_marks}
+                  style={{marginTop:10}}
+                >
+                  <Input
+                    type="number"
+                    name="total_marks"
+                    value={formData.total_marks}
+                    onChange={handleChange}
+                    placeholder="Enter Total Marks"
+                  />
+                </Form.Item>
               )}
             </Form.Item>
           )}
@@ -266,22 +271,30 @@ const AddNewTest = ({reFetchFunc}) => {
             validateStatus={errors.created_at ? "error" : ""}
             help={errors.created_at}
           >
-            <DatePicker 
-  format="DD-MM-YYYY" 
-  value={formData.created_at ? dayjs(formData.created_at, "YYYY-MM-DD") : null}
-  onChange={handleDateChange} 
-/>
-
+            <DatePicker
+              format="DD-MM-YYYY"
+              value={
+                formData.created_at
+                  ? dayjs(formData.created_at, "YYYY-MM-DD")
+                  : null
+              }
+              onChange={handleDateChange}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Button onClick={() => {
-  setOpenNewTestForm(false);
-  resetForm(); // Reset form data when closing the modal
-}}>Cancel</Button>
+          <Row gutter={16} justify="end">
+            <Col>
+              <Button
+                onClick={() => {
+                  setOpenNewTestForm(false);
+                  resetForm();
+                }}
+              >
+                Cancel
+              </Button>
             </Col>
-            <Col span={12}>
+            <Col>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Submit
               </Button>
