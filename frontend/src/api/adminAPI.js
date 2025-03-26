@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { GENERAL_API_ENDPOINTS } from "./apiPaths";
+import { GENERAL_API_ENDPOINTS,ATTENDANCE_API_ENDPOINTS } from "./apiPaths";
 
 // Subjects API Function
 export const getSubjects = async () => {
@@ -27,14 +27,31 @@ export const getBatches = async () => {
   return response.data;
 };
 
-export const addBatches = async (values) => {
+export const addBatch = async (values) => {
   return await axiosInstance.post(GENERAL_API_ENDPOINTS.BATCHES, values);
 };
 
-export const updateBatches = async (id, values) => {
+export const updateBatch = async (id, values) => {
   return await axiosInstance.put(`${GENERAL_API_ENDPOINTS.BATCHES}${id}/`, values);
 };
 
-export const deleteBatches = async (id) => {
+export const deleteBatch = async (id) => {
   return await axiosInstance.delete(`${GENERAL_API_ENDPOINTS.BATCHES}${id}/`);
+};
+
+
+// Holiday API Function
+
+export const getHolidays = async () => {
+  const response = await axiosInstance.get(ATTENDANCE_API_ENDPOINTS.HOLIDAYS_ADMIN);
+  return response.data;
+};
+
+export const updateHoliday = async (id, values) => {
+  return await axiosInstance.put(`${ATTENDANCE_API_ENDPOINTS.HOLIDAYS_ADMIN}${id}/`, values);
+};
+
+
+export const deleteHoliday = async (id) => {
+  return await axiosInstance.delete(`${ATTENDANCE_API_ENDPOINTS.HOLIDAYS_ADMIN}${id}/`);
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, InputNumber, Popconfirm, message } from 'antd';
-import axios from 'axios';
-import { addBatches, deleteBatches, getBatches, updateBatches } from '../../../../api/adminAPI';
+import { addBatch, deleteBatch, getBatches, updateBatch } from '../../../../api/adminAPI';
 
 const BatchTable = () => {
   const [batches, setBatches] = useState([]);
@@ -45,10 +44,10 @@ const BatchTable = () => {
     try {
       const values = await form.validateFields();
       if (editingBatch) {
-        await updateBatches(editingBatch.id,values)
+        await updateBatch(editingBatch.id,values)
         message.success('Batch updated successfully');
       } else {
-        await addBatches(values)
+        await addBatch(values)
         message.success('Batch created successfully');
       }
       fetchBatches();
@@ -61,7 +60,7 @@ const BatchTable = () => {
   // ✅ Delete
   const handleDelete = async (id) => {
     try {
-      await deleteBatches(id)
+      await deleteBatch(id)
       message.success('Batch deleted successfully');
       fetchBatches();
     } catch (error) {
