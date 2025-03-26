@@ -13,13 +13,11 @@ import { MdHome } from "react-icons/md";
 import { useMainContext } from "../../../Context/MainContext";
 import "./Topbar.css"
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { TiGroup } from "react-icons/ti";
 import { FaUser } from "react-icons/fa6";
 import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../../Context/AuthContext";
 import UserProfile from "./Components/Profile/UserProfile";
-import { ja } from "date-fns/locale";
 
 
 const { Header } = Layout;
@@ -29,7 +27,7 @@ function TopBar({ collapsed }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const location = useLocation();
 
-  const { logout } = useAuth();
+  const { handleLogout } = useAuth();
   const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName,userImageUrl } = useMainContext();
  
   const monthMenu = (
@@ -60,7 +58,7 @@ function TopBar({ collapsed }) {
           <IoMdBookmark size={16} /> Batch : 4
         </div>
       </Menu.Item>
-      <Menu.Item key="3" onClick={()=>logout()}  >
+      <Menu.Item key="3" onClick={handleLogout}  >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FiLogOut size={16} /> Logout
         </div>

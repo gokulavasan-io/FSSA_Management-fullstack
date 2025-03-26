@@ -14,7 +14,7 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
 
   function formatData(userData) {
       return {
-        image: userData.image,
+        image: userData.image_link,
         name: userData.name || "",
         email: userData.email,
         role: userData.role_name,
@@ -53,7 +53,7 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
         centered
         width={"fit-content"}
       >
-        <ProfileCard user={userData} isProfile={true} />
+        <ProfileCard user={userData}  />
         {location.pathname != "/team" && (
           <Link
             to="/team"

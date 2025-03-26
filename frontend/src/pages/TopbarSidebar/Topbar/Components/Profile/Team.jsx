@@ -8,7 +8,6 @@ function Team() {
   const { setSelectedSubject, setSelectedKey } = useMainContext();
 
   const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   function formatData(usersData) {
@@ -16,7 +15,7 @@ function Team() {
       .filter((user) => user.id != userId)
       .map((user) => {
         return {
-          image: user.image,
+          image: user.image_link,
           name: user.name || "",
           email: user.email,
           role: user.role_name,
@@ -37,17 +36,16 @@ function Team() {
     try {
       const response = await getMembers();
       setMembers(formatData(response));
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching members:", error);
-      setLoading(false);
+  
     }
   };
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
       {members.map((member) => (
-        <ProfileCard user={member} isProfile={false} />
+        <ProfileCard user={member} />
       ))}
     </div>
   );

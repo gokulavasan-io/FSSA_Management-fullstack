@@ -30,11 +30,12 @@ export const MainContextProvider = ({ children }) => {
     const [userImageUrl, setUserImageUrl] = useState(null)
 
 
+
     useEffect(() => {
       setSectionsWithAll([{ name: "All", id: null }, ...sections])
     }, [sections])
     
-
+    const requiredSubjects=new Set(["English", "Tech", "Life Skills","Problem Solving","PET","Project"])
     useEffect(() => {
       let academicSubjectNames = new Set(["English", "Tech", "Life Skills","Problem Solving"]);
       setAcademicSubjects(subjects.filter(subject => academicSubjectNames.has(subject.subject_name)))
@@ -54,7 +55,7 @@ export const MainContextProvider = ({ children }) => {
     <MainContext.Provider
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,userImageUrl, setUserImageUrl,
-        year,setYear,months, setMonths,subjects, setSubjects,loading, setLoading,setSelectedKey,selectedKey,
+        year,setYear,months, setMonths,subjects, setSubjects,loading, setLoading,setSelectedKey,selectedKey,requiredSubjects,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
         academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId,categoryName,setCategoryName,
       }}

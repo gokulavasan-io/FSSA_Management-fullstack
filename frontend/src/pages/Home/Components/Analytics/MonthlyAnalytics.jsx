@@ -31,7 +31,7 @@ function MonthlyAnalytics() {
       }
     };
     fetchData();
-  }, [academicSubjects]);
+  }, [academicSubjects,batchNumber]);
 
   return (
     <Graph

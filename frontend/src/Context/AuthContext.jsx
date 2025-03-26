@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserId,logout } from "../api/AuthAPI";
+import { fetchUserId, logout as apiLogout } from "../api/AuthAPI"; // Renaming imported logout
 
 const AuthContext = createContext();
 
@@ -9,8 +9,9 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setUser(localStorage.getItem("userId"))
-    if (!user || user=="undefined"||user=="null" ) {
+    const storedUserId = localStorage.getItem("userId");
+
+    if (!storedUserId || storedUserId === "undefined" || storedUserId === "null") {
       const fetchUser = async () => {
         try {
           let res = await fetchUserId();
@@ -26,26 +27,25 @@ export const AuthProvider = ({ children }) => {
           navigate("/login");
         }
       };
-
       fetchUser();
-
+    } else {
+      setUser(storedUserId);
     }
-  }, [user, navigate]);
+  }, [navigate]); 
 
-  const logout = async () => {
+  const handleLogout = async () => {
     try {
-      await logout()
+      await apiLogout(); 
     } catch (error) {
       console.error("Logout failed", error);
     }
     setUser(null);
     localStorage.removeItem("userId");
     navigate("/login");
-
   };
-  
+
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

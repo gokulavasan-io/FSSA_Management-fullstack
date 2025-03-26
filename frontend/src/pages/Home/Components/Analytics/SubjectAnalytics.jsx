@@ -38,7 +38,7 @@ function SubjectAnalysis() {
       }
     };
     fetchData();
-  }, [academicSubjects]);
+  }, [academicSubjects,batchNumber]);
   
 
   return (

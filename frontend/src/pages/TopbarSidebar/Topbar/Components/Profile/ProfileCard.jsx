@@ -1,32 +1,19 @@
 import React, { useState,useEffect } from "react";
 import { Card, Avatar, Typography } from "antd";
-import { CameraOutlined } from "@ant-design/icons";
 import ProfileCardSkeleton from './Skeleton/ProfileCardSkeleton'
 const { Title, Text } = Typography;
 
-
-const ProfileCard = ({ user,isProfile }) => {
-  const [profileImage, setProfileImage] = useState(null);
+const ProfileCard = ({ user }) => {
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
-      setProfileImage(user.image);
       setLoading(false);
     }, 1500);
   }, [user]);
 
-  const handleUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-
-    if (uploadedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(uploadedFile);
-    }
-  };
+ 
 
   if (loading) return <ProfileCardSkeleton />; 
 
@@ -42,37 +29,15 @@ const ProfileCard = ({ user,isProfile }) => {
       }}
     >
       <div style={{ position: "relative", display: "inline-block", cursor: "pointer" }}>
-        <input
-          type="file"
-          accept=".png, .jpeg, .jpg"
-          style={{ display: "none" }}
-          id="fileUpload"
-          onChange={handleUpload}
-        />
-        <label htmlFor="fileUpload">
-          <Avatar
+        <Avatar
             size={110}
-            src={profileImage || "https://cdn-icons-png.flaticon.com/256/149/149071.png"}
+            src={user.image || "https://cdn-icons-png.flaticon.com/256/149/149071.png"}
             style={{
               cursor: "pointer",
               transition: "0.3s",
               border: "4px solid #e6e6e6",
             }}
           />
-          {isProfile && <CameraOutlined
-            style={{
-              position: "absolute",
-              bottom: 5,
-              right: 5,
-              fontSize: "16px",
-              background: "white",
-              borderRadius: "50%",
-              padding: "6px",
-              boxShadow: "0 0 8px rgba(0, 0, 0, 0.15)",
-            }}
-          />
-          }
-        </label>
       </div>
 
       <div style={{ marginTop: "25px", textAlign: "center" }}>

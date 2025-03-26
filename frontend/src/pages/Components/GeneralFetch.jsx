@@ -54,7 +54,7 @@ const GeneralFetchComponent = () => {
       fetchUserData(userId)
         .then((response) => {
           setUserImageUrl(
-            response.image ||
+            response.image_link ||
               "https://cdn-icons-png.flaticon.com/256/149/149071.png"
           );
           setUserId(userId);
