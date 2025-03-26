@@ -55,8 +55,8 @@ const AttendanceMain = () => {
 
   const fetchAttendance = async () => {
     try {
-      const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);
       const response = await fetchAttendanceData(sectionId, monthId, year);
+      const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);
       const { data, status } = response;
       setRemarks(fetchedRemarks);
       setTableData(data);

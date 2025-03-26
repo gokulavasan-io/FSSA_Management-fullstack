@@ -98,7 +98,7 @@ export const deleteHoliday = async (date) => {
 export const fetchDailyStatistics = async (section, month, year) => {
   try {
     let response = await axios.get(
-      `${ATTENDANCE_API_ENDPOINTS.FETCH_DAILY_STATISTICS}?year=${
+      `${ATTENDANCE_API_ENDPOINTS.DAILY_STATISTICS}?year=${
         year
       }&month=${month}&section_id=${section}`
     );
@@ -111,7 +111,7 @@ export const fetchDailyStatistics = async (section, month, year) => {
 export const fetchStudentStatistics = async (section, month, year) => {
   try {
     let response = await axios.get(
-      `${ATTENDANCE_API_ENDPOINTS.FETCH_STUDENT_STATISTICS}?year=${
+      `${ATTENDANCE_API_ENDPOINTS.STUDENT_STATISTICS}?year=${
         year
       }&month=${month}&section_id=${section}`
     );

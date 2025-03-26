@@ -45,7 +45,7 @@ export const MEMBER_API_ENDPOINTS = {
 };
 
 export const GENERAL_API_ENDPOINTS={
-    MONTHS:'/marks/months',
+    MONTHS:'/marks/months/',
     SUBJECTS:"/marks/subjects/",
     SECTIONS: "/students/sections/",
     BATCHES: "/students/batches/",
