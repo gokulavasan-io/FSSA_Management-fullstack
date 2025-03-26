@@ -28,7 +28,7 @@ class GoogleAuthView(APIView):
             # Check if the email exists in the Member model
             user = Member.objects.filter(email=email).first()
             if not user:
-                return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+                return Response({"error": "Access denied"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Generate JWT token for session
             payload = {

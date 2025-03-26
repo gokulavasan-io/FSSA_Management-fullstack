@@ -9,7 +9,7 @@ urlpatterns = [
     path("test-details/<int:test_detail_id>",TestDetailsRetrieveUpdateDestroyView.as_view()),
     path('tests/', TestCreateView.as_view()),
     path('tests/<int:test_detail_id>/', TestDataRetrieveUpdateView.as_view()),
-    path('level-tests/',LevelTestView.as_view()),
+    path('level-tests/<int:test_detail_id>/',LevelTestRetrieveUpdateView.as_view()),
     path("monthly-data/",MonthlyData.as_view()),
    
 ]

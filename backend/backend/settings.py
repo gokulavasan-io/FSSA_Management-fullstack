@@ -26,7 +26,7 @@ CORS_ALLOW_METHODS = [
 
 # settings.py
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')  # Use a default as fallback
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')  
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1')
 GOOGLE_CLIENT_ID=os.getenv("GOOGLE_CLIENT_ID")
 

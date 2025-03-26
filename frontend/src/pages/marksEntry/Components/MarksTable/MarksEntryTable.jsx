@@ -3,7 +3,7 @@ import Handsontable from 'handsontable';
 import { HotTable } from '@handsontable/react';
 import { Button, Typography, Space } from 'antd';
 import { ReloadOutlined, SaveOutlined } from '@ant-design/icons';
-import { fetchTestData, updateMarks } from "../../../../api/marksAPI.js";
+import { fetchMarks,  updateMarks } from "../../../../api/marksAPI.js";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import TestDetailCard from "../TestDetailCard/TestDetailsCard.jsx";
 import InfoButton from "../TestDetailCard/InfoButton.jsx";
@@ -142,7 +142,7 @@ function TestTable() {
 
   const handleReset = async () => {
     try {
-        const response = await fetchTestData(testId,sectionId);
+        const response = await fetchMarks(testId,sectionId);
         setTotalMark(response.test_detail.total_marks);
         setTestDetail(response.test_detail);
         setTestTableData(response.marks);
@@ -159,7 +159,7 @@ function TestTable() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetchTestData(testId,sectionId);
+        const response = await fetchMarks(testId,sectionId);
         setTotalMark(response.test_detail.total_marks);
         setTestDetail(response.test_detail);
         setTestTableData(response.marks);

@@ -287,7 +287,7 @@ class MonthlyData(APIView):
             return Response({"error": "Internal Server Error. Please contact support."},
                              status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class LevelTestView(APIView):
+class LevelTestRetrieveUpdateView(APIView):
     def put(self, request, test_detail_id):
         try:
             serializer = UpdateLevelMarkSerializer(data=request.data)

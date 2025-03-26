@@ -30,6 +30,7 @@ export const fetchSubjects = async () => {
 };
 
 export const fetchUserData = async (userId) => {
+  if(!userId) return;
   try {
     let response= await axios.get(`${MEMBER_API_ENDPOINTS.MEMBERS}${userId}/`)
     return response.data;
