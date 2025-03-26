@@ -47,7 +47,7 @@ function Team() {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
       {members.map((member) => (
-        <ProfileCard user={member} />
+        <ProfileCard user={member} isProfile={false} />
       ))}
     </div>
   );

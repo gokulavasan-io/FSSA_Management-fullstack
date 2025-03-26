@@ -53,7 +53,7 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
         centered
         width={"fit-content"}
       >
-        <ProfileCard user={userData} />
+        <ProfileCard user={userData} isProfile={true} />
         {location.pathname != "/team" && (
           <Link
             to="/team"

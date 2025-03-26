@@ -155,7 +155,7 @@ const AddNewTest = ({ reFetchFunc }) => {
         width={500}
         zIndex={10001}
       >
-        <Form layout="vertical" onFinish={handleSubmit}>
+        <Form layout="vertical" >
           <Form.Item
             label="Test Name"
             validateStatus={errors.test_name ? "error" : ""}
@@ -281,19 +281,15 @@ const AddNewTest = ({ reFetchFunc }) => {
 
           <Row gutter={16} justify="end">
             <Col>
-              <Button
-                onClick={() => {
-                  setOpenNewTestForm(false);
-                  resetForm();
-                }}
-              >
-                Cancel
-              </Button>
+              <FwButton color="secondary"  onFwClick={()=>{
+                setOpenNewTestForm(false);
+                resetForm();
+              }}>Cancel</FwButton>
             </Col>
             <Col>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Submit
-              </Button>
+              <FwButton color="primary" loading={loading} onFwClick={()=>{
+                handleSubmit()
+              }}  >Submit</FwButton>
             </Col>
           </Row>
         </Form>

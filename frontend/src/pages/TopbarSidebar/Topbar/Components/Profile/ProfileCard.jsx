@@ -5,7 +5,7 @@ import ProfileCardSkeleton from './Skeleton/ProfileCardSkeleton'
 const { Title, Text } = Typography;
 
 
-const ProfileCard = ({ user }) => {
+const ProfileCard = ({ user,isProfile }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +60,7 @@ const ProfileCard = ({ user }) => {
               border: "4px solid #e6e6e6",
             }}
           />
-          <CameraOutlined
+          {isProfile && <CameraOutlined
             style={{
               position: "absolute",
               bottom: 5,
@@ -72,6 +72,7 @@ const ProfileCard = ({ user }) => {
               boxShadow: "0 0 8px rgba(0, 0, 0, 0.15)",
             }}
           />
+          }
         </label>
       </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, DatePicker, Input, message } from "antd";
+import { Modal, DatePicker, Input, message } from "antd";
 import {
   addHoliday,
   deleteHoliday,
@@ -97,18 +97,14 @@ const AddHoliday = ({ reFetchFunction }) => {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
-          isExistingHoliday ? (
-            <Button key="delete" type="primary" danger onClick={handleHolidayRemove}>
-              Remove Holiday
-            </Button>
-          ) : (
-            <Button key="submit" type="primary" onClick={handleHolidaySubmit}>
-              Submit
-            </Button>
-          ),
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
+          
+            <FwButton  color={isExistingHoliday?"danger":"primary"} onFwClick={isExistingHoliday?handleHolidayRemove:   handleHolidaySubmit}>
+              {isExistingHoliday?"Remove Holiday":"Submit"}
+            </FwButton>
+          ,
+          <FwButton key="cancel" color="secondary" style={{marginLeft:10}}  onFwClick={() => setModalVisible(false)}>
             Cancel
-          </Button>,
+          </FwButton>,
         ]}
         zIndex={100002}
       >

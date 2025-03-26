@@ -148,7 +148,7 @@ function TopBar({ collapsed }) {
           </Dropdown>
         </div>
       </Header>
-      <UserProfile isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} />
+      <UserProfile isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible}  />
     </>
   );
 }

@@ -5,7 +5,6 @@ import AddNewTest from "../Admin/Components/Test/NewTest";
 import AddHoliday from "../Admin/Components/Holiday/NewHoliday";
 import SubjectAnalysis from "./Components/Analytics/SubjectAnalytics";
 import MonthlyAnalytics from "./Components/Analytics/MonthlyAnalytics";
-import GeneralFetch from '../Components/GeneralFetch'
 
 
 function HomeApp() {
@@ -16,7 +15,6 @@ function HomeApp() {
   
   return (
     <>
-    <GeneralFetch />
     <div style={{ overflowX: "hidden", overflowY: "auto", minHeight: "100%" }}>
       <Row gutter={16}>
         <Col span={17}>
