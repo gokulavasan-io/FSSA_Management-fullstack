@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import { Card, Avatar, Typography, message } from "antd";
+import { Card, Avatar, Typography } from "antd";
 import { CameraOutlined } from "@ant-design/icons";
 import ProfileCardSkeleton from './Skeleton/ProfileCardSkeleton'
 const { Title, Text } = Typography;
@@ -23,7 +23,6 @@ const ProfileCard = ({ user,isProfile }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
-        message.success("Profile picture updated successfully!");
       };
       reader.readAsDataURL(uploadedFile);
     }

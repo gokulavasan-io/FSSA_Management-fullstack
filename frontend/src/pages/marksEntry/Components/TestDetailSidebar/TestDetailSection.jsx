@@ -7,7 +7,6 @@ const TestDetailSection = ({ isLevelSection }) => {
   const { handleOptionClick, testDetails } = useMarksContext();
   return (
     <List component="div" disablePadding>
-      {/* Show message when no items available */}
       {testDetails.filter((item) =>
         isLevelSection
           ? item.isLevelTest

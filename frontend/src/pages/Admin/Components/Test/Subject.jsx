@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, message, Popconfirm } from "antd";
-import { getSubjects, addSubject, updateSubject, deleteSubject } from "../../../../api/adminAPI";
+import { Table, Button, Modal, Form, Input, Popconfirm } from "antd";
+import {
+  getSubjects,
+  addSubject,
+  updateSubject,
+  deleteSubject,
+} from "../../../../api/adminAPI";
+import { FwButton } from "@freshworks/crayons/react";
 
 const SubjectTable = () => {
   const [subjects, setSubjects] = useState([]);
@@ -17,10 +23,14 @@ const SubjectTable = () => {
     setLoading(true);
     try {
       let data = await getSubjects();
-      data=data.filter(subject=>subject.subject_name!="Attendance"&&subject.subject_name!="Behavior")
+      data = data.filter(
+        (subject) =>
+          subject.subject_name != "Attendance" &&
+          subject.subject_name != "Behavior"
+      );
       setSubjects(data);
     } catch (error) {
-      message.error("Failed to fetch subjects");
+      console.error("error fetching subject : ", error);
     }
     setLoading(false);
   };
@@ -31,36 +41,27 @@ const SubjectTable = () => {
     setModalVisible(true);
   };
 
-  const handleEdit = (subject) => {
-    setEditingSubject(subject);
-    form.setFieldsValue(subject);
-    setModalVisible(true);
-  };
 
   const handleDelete = async (id) => {
     try {
       await deleteSubject(id);
-      message.success("Subject deleted successfully");
       fetchSubjects();
     } catch (error) {
-      message.error("Failed to delete subject");
+      console.error("error deleting subject : ", error);
     }
   };
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async (values) => {
     try {
-      const values = await form.validateFields();
       if (editingSubject) {
         await updateSubject(editingSubject.id, values);
-        message.success("Subject updated successfully");
       } else {
         await addSubject(values);
-        message.success("Subject added successfully");
       }
       setModalVisible(false);
       fetchSubjects();
     } catch (error) {
-      message.error("Failed to save subject");
+      console.error("error adding/updating subject : ", error);
     }
   };
 
@@ -69,11 +70,22 @@ const SubjectTable = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text, record) => (
+      render: (_, record) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)}>Edit</Button>
-          <Popconfirm title="Are you sure?" onConfirm={() => handleDelete(record.id)}>
-            <Button type="link" danger>Delete</Button>
+          <Button type="link" onClick={() => {
+            setEditingSubject(record);
+            form.setFieldsValue(record);
+            setModalVisible(true);
+          }}>
+            Edit
+          </Button>
+          <Popconfirm
+            title="Are you sure?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Button type="link" danger>
+              Delete
+            </Button>
           </Popconfirm>
         </>
       ),
@@ -82,16 +94,31 @@ const SubjectTable = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>Add Subject</Button>
-      <Table columns={columns} dataSource={subjects} rowKey="id" loading={loading} />
+      <div
+        style={{
+          marginBottom: 10,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <FwButton type="primary" onClick={handleAdd}>
+          Add Subject
+        </FwButton>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={subjects}
+        rowKey="id"
+        loading={loading}
+      />
 
       <Modal
         title={editingSubject ? "Edit Subject" : "Add Subject"}
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
-        onOk={handleFormSubmit}
+        footer={null}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Form.Item
             name="subject_name"
             label="Subject Name"
@@ -99,6 +126,14 @@ const SubjectTable = () => {
           >
             <Input />
           </Form.Item>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+            <FwButton color="secondary" onFwClick={() => setIsModalOpen(false)}>
+              Cancel
+            </FwButton>
+            <FwButton color="primary" onFwClick={() => form.submit()}>
+              Confirm
+            </FwButton>
+          </div>
         </Form>
       </Modal>
     </div>

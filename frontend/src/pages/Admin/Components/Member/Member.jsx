@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Checkbox, message, Popconfirm } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, Checkbox, Popconfirm } from 'antd';
 import { addMember, deleteMember, getMembers, getRoles, updateMember } from '../../../../api/adminAPI';
 import { fetchSections } from '../../../../api/generalAPI';
+import { FwButton } from "@freshworks/crayons/react";
 
 const { Option } = Select;
 
@@ -29,21 +30,24 @@ const MemberTable = () => {
   }, []);
 
   const handleAddOrEdit = async (values) => {
-    if (editingMember) {
-      await updateMember(editingMember.id,values)
-      message.success('Member updated');
-    } else {
-      await addMember(values)
-      message.success('Member added');
+    try {
+      if (editingMember) {
+        await updateMember(editingMember.id,values)
+      } else {
+        await addMember(values)
+      }
+      setIsModalOpen(false);
+      fetchData();
+      form.resetFields();
+      
+    } catch (error) {
+      console.error("Error adding/updating error : ",error);
+      
     }
-    setIsModalOpen(false);
-    fetchData();
-    form.resetFields();
   };
 
   const handleDelete = async (id) => {
     await deleteMember(id)
-    message.success('Member deleted');
     fetchData();
   };
 
@@ -57,9 +61,9 @@ const MemberTable = () => {
       title: 'Actions',
       render: (_, record) => (
         <>
-          <Button onClick={() => { setEditingMember(record); form.setFieldsValue(record); setIsModalOpen(true); }}>Edit</Button>
+          <Button type='link' onClick={() => { setEditingMember(record); form.setFieldsValue(record); setIsModalOpen(true); }}>Edit</Button>
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
-            <Button danger>Delete</Button>
+            <Button type='link' danger>Delete</Button>
           </Popconfirm>
         </>
       )
@@ -68,10 +72,13 @@ const MemberTable = () => {
 
   return (
     <>
-      <Button type="primary" onClick={() => { setEditingMember(null); form.resetFields(); setIsModalOpen(true); }}>Add Member</Button>
+      <div  style={{ marginBottom: 10,display:"flex",justifyContent:"flex-end"}} >
+      <FwButton type="primary" onClick={() => { setEditingMember(null); form.resetFields(); setIsModalOpen(true); }}>Add Member</FwButton>
+      </div>
+
       <Table dataSource={members} columns={columns} rowKey="id" />
 
-      <Modal visible={isModalOpen} onCancel={() => setIsModalOpen(false)} onOk={() => form.submit()} title={editingMember ? 'Edit Member' : 'Add Member'}>
+      <Modal visible={isModalOpen} onCancel={() => setIsModalOpen(false)}  footer={null} title={editingMember ? 'Edit Member' : 'Add Member'}>
         <Form form={form} onFinish={handleAddOrEdit} layout="vertical">
           <Form.Item name="name" label="Name" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="email" label="Email" rules={[{ required: true }]}><Input /></Form.Item>
@@ -82,6 +89,10 @@ const MemberTable = () => {
             <Select>{sections.map(sec => <Option key={sec.id} value={sec.id}>{sec.name}</Option>)}</Select>
           </Form.Item>
           <Form.Item name="is_admin" valuePropName="checked"><Checkbox>Is Admin?</Checkbox></Form.Item>
+          <div style={{display:"flex",justifyContent:"flex-end",gap:10}} >
+            <FwButton color="secondary" onFwClick={() => setIsModalOpen(false)} >Cancel</FwButton>
+            <FwButton color="primary" onFwClick={() => form.submit()} >Confirm</FwButton>
+          </div>
         </Form>
       </Modal>
     </>

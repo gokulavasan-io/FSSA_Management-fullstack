@@ -16,7 +16,7 @@ import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
 
-const AddNewTest = ({ reFetchFunc }) => {
+const AddNewTest = ({ reFetchFunc,buttonType }) => {
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   let { months, subjects, batchNumber } = useMainContext();
   subjects = subjects.filter((subject) => subject.subject_name != "Attendance");
@@ -125,10 +125,9 @@ const AddNewTest = ({ reFetchFunc }) => {
     try {
       const response = await submitTestData(formData);
       reFetchFunc();
-
       resetForm();
-
       setOpenNewTestForm(false);
+      alert("New Test Added")
     } catch (error) {
       if (error.response && error.response.data.message) {
         setErrors({ test_name: error.response.data.message });
@@ -141,7 +140,7 @@ const AddNewTest = ({ reFetchFunc }) => {
 
   return (
     <>
-      <FwButton color="secondary" onFwClick={() => setOpenNewTestForm(true)}>
+      <FwButton color={buttonType} onFwClick={() => setOpenNewTestForm(true)}>
         Add New Test
       </FwButton>
       <Modal

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, DatePicker, Input, message } from "antd";
+import { Modal, DatePicker, Input } from "antd";
 import {
   addHoliday,
   deleteHoliday,
@@ -48,7 +48,7 @@ const AddHoliday = ({ reFetchFunction }) => {
       }
     } catch (error) {
       console.error("Error checking holiday:", error);
-      message.error("Failed to check holiday status.");
+      console.error("Failed to check holiday status.");
     } finally {
       setLoading(false);
     }
@@ -69,11 +69,10 @@ const AddHoliday = ({ reFetchFunction }) => {
       const formattedDate = selectedDate.format("YYYY-MM-DD");
       await addHoliday({ date: formattedDate, reason });
       reFetchFunction();
-      message.success("Holiday marked successfully!");
       setModalVisible(false);
     } catch (error) {
       console.error("Error marking holiday:", error);
-      message.error("Failed to mark holiday.");
+      console.error("Failed to mark holiday.");
     }
   };
 
@@ -81,11 +80,10 @@ const AddHoliday = ({ reFetchFunction }) => {
     try {
       const formattedDate = selectedDate.format("YYYY-MM-DD");
       await deleteHoliday(formattedDate);
-      message.success("Holiday removed successfully!");
       setModalVisible(false);
     } catch (error) {
       console.error("Error removing holiday:", error);
-      message.error("Failed to remove holiday.");
+      console.error("Failed to remove holiday.");
     }
   };
 

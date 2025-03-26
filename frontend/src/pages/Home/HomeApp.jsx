@@ -34,7 +34,7 @@ function HomeApp() {
               style={{ height: 56 }}
             >
               <AddHoliday reFetchFunction={dummyFunc} />
-              <AddNewTest  reFetchFunc={dummyFunc} />
+              <AddNewTest  reFetchFunc={dummyFunc} buttonType={"secondary"} />
             </Flex>
             <AttendanceReport />
           </Flex>

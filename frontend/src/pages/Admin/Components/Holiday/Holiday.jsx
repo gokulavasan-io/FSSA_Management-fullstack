@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, DatePicker, message, Popconfirm } from "antd";
+import { Table, Button, Modal, Form, Input, DatePicker, Popconfirm } from "antd";
 import dayjs from "dayjs";
 import AddHoliday from "./NewHoliday";
 import { deleteHoliday, getHolidays, updateHoliday } from "../../../../api/adminAPI";
@@ -22,7 +22,7 @@ const HolidayTable = () => {
       const response = await getHolidays()
       setHolidays(response);
     } catch (error) {
-      message.error("Failed to fetch holidays");
+      console.error("Failed to fetch holidays");
     }
     setLoading(false);
   };
@@ -41,10 +41,9 @@ const HolidayTable = () => {
   const handleDelete = async (id) => {
     try {
       await deleteHoliday(id)
-      message.success("Holiday deleted");
       fetchHolidays();
     } catch (error) {
-      message.error("Failed to delete holiday");
+      console.error("Failed to delete holiday",error);
     }
   };
   const handleSave = async (values) => {
@@ -54,13 +53,12 @@ const HolidayTable = () => {
     };
     try {
       await updateHoliday(editingHolidayId, data); 
-      message.success("Holiday updated");
       fetchHolidays();
       setIsModalOpen(false);
       setIsEditing(false);
       setEditingHolidayId(null);
     } catch (error) {
-      message.error("Failed to update holiday");
+      console.error("Failed to update holiday",error);
     }
   };
   
@@ -81,14 +79,14 @@ const HolidayTable = () => {
       key: "actions",
       render: (text, record) => (
         <>
-          <Button onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>
+          <Button type="link" onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>
           <Popconfirm
             title="Are you sure to delete this holiday?"
             onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >
-            <Button danger>Delete</Button>
+            <Button type="link" danger>Delete</Button>
           </Popconfirm>
         </>
       ),
@@ -96,8 +94,12 @@ const HolidayTable = () => {
   ];
 
   return (
-    <div>
-      <AddHoliday  reFetchFunction={fetchHolidays} />
+    <>
+          <div style={{marginBottom:10,display:"flex",justifyContent:"flex-end"}} >
+          <AddHoliday  reFetchFunction={fetchHolidays} />
+            </div>
+    
+      
       <Table columns={columns} dataSource={holidays} loading={loading} rowKey="id" />
       
       <Modal
@@ -121,9 +123,10 @@ const HolidayTable = () => {
           <Form.Item name="reason" label="Reason" rules={[{ required: true, message: "Reason is required" }]}> 
             <Input.TextArea />
           </Form.Item>
+
         </Form>
       </Modal>
-    </div>
+    </>
   );
 };
 

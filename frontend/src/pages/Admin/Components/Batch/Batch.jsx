@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, InputNumber, Popconfirm, message } from 'antd';
+import { Table, Button, Modal, Form, InputNumber, Popconfirm } from 'antd';
 import { addBatch, deleteBatch, getBatches, updateBatch } from '../../../../api/adminAPI';
+import { FwButton } from "@freshworks/crayons/react";
 
 const BatchTable = () => {
   const [batches, setBatches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBatch, setEditingBatch] = useState(null);
+  const [errorText, setErrorText] = useState("");
   const [form] = Form.useForm();
 
 
@@ -16,7 +18,7 @@ const BatchTable = () => {
       let res=await getBatches()
       setBatches(res);
     } catch (error) {
-      message.error('Failed to fetch batches');
+      console.error('Failed to fetch batches',error);
     }
     setLoading(false);
   };
@@ -25,56 +27,46 @@ const BatchTable = () => {
     fetchBatches();
   }, []);
 
-  // ✅ Add Modal
   const showAddModal = () => {
     setEditingBatch(null);
     form.resetFields();
     setIsModalVisible(true);
+    setErrorText("")
   };
 
-  // ✅ Edit Modal
   const showEditModal = (record) => {
     setEditingBatch(record);
     form.setFieldsValue({ batch_no: record.batch_no });
     setIsModalVisible(true);
+    setErrorText("")
+
   };
 
-  // ✅ Form Submit (Add / Edit)
-  const handleOk = async () => {
+  const handleSubmit = async (values) => {
     try {
-      const values = await form.validateFields();
       if (editingBatch) {
         await updateBatch(editingBatch.id,values)
-        message.success('Batch updated successfully');
       } else {
         await addBatch(values)
-        message.success('Batch created successfully');
       }
       fetchBatches();
       setIsModalVisible(false);
     } catch (error) {
-      message.error('Failed to save batch');
+      console.error('Failed to save batch',error);
+      setErrorText(error.response.data?.batch_no[0])
     }
   };
 
-  // ✅ Delete
   const handleDelete = async (id) => {
     try {
       await deleteBatch(id)
-      message.success('Batch deleted successfully');
       fetchBatches();
     } catch (error) {
-      message.error('Failed to delete batch');
+      console.error('Failed to delete batch',error);
     }
   };
 
-  // ✅ Table Columns
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-    },
     {
       title: 'Batch No',
       dataIndex: 'batch_no',
@@ -100,37 +92,44 @@ const BatchTable = () => {
   ];
 
   return (
-    <div>
-      <Button type="primary" onClick={showAddModal} style={{ marginBottom: 16 }}>
-        Add Batch
-      </Button>
+    <>
+      <div  style={{ marginBottom: 10,display:"flex",justifyContent:"flex-end"}} >
+          <FwButton type="primary" onFwClick={showAddModal}>Add Batch</FwButton>
+      </div>
       <Table
         dataSource={batches}
         columns={columns}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
       />
       
-      {/* Modal for Add/Edit */}
       <Modal
         title={editingBatch ? 'Edit Batch' : 'Add Batch'}
         open={isModalVisible}
-        onOk={handleOk}
         onCancel={() => setIsModalVisible(false)}
-        okText="Save"
+        footer={null}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleSubmit} >
           <Form.Item
             name="batch_no"
             label="Batch No"
             rules={[{ required: true, message: 'Please enter batch number' }]}
+            help={errorText}
           >
             <InputNumber placeholder="Enter batch number" style={{ width: '100%' }} />
           </Form.Item>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+            <FwButton color="secondary" onFwClick={() => setIsModalVisible(false)}>
+              Cancel
+            </FwButton>
+            <FwButton color="primary" onFwClick={() => form.submit()}>
+              Confirm
+            </FwButton>
+          </div>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 };
 

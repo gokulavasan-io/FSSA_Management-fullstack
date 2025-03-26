@@ -40,11 +40,9 @@ const TestDetailsTable = () => {
     setLoading(true);
     try {
       const data = await getTestDetails();
-      console.log(data);
-
       setTests(data);
     } catch (error) {
-      message.error("Failed to load test details");
+      console.error("Failed to load test details");
     } finally {
       setLoading(false);
     }
@@ -69,10 +67,9 @@ const TestDetailsTable = () => {
   const handleDelete = async (testId) => {
     try {
       await deleteTest(testId);
-      message.success("Test deleted successfully");
       fetchTests();
     } catch (error) {
-      message.error("Failed to delete test");
+      console.error("Failed to delete test");
     }
   };
 
@@ -83,13 +80,10 @@ const TestDetailsTable = () => {
         ...values,
         created_at: values.created_at ? values.created_at.toISOString() : null,
       });
-      message.success("Test updated successfully");
-      console.log(values);
-
       setEditModalVisible(false);
       fetchTests();
     } catch (error) {
-      message.error("Failed to update test");
+      console.error("Failed to update test");
     }
   };
 
@@ -149,7 +143,7 @@ const TestDetailsTable = () => {
 
   return (
     <>
-      <AddNewTest  reFetchFunc={fetchTests} />
+      <div style={{marginBottom:10,display:"flex",justifyContent:"flex-end"}} ><AddNewTest  reFetchFunc={fetchTests} buttonType={"primary"} /></div>
       <Table
         dataSource={tests}
         columns={columns}
@@ -172,18 +166,18 @@ const TestDetailsTable = () => {
             <Input />
           </Form.Item>
           <Form.Item
-  name="subject"
-  label="Subject"
-  rules={[{ required: true, message: "Please select a subject" }]}
->
-  <Select placeholder="Select Subject" disabled={isLevelTest}>
-    {subjects.map((subject) => (
-      <Select.Option key={subject.id} value={subject.id}>
-        {subject.subject_name}
-      </Select.Option>
-    ))}
-  </Select>
-</Form.Item>
+            name="subject"
+            label="Subject"
+            rules={[{ required: true, message: "Please select a subject" }]}
+          >
+            <Select placeholder="Select Subject" disabled={isLevelTest}>
+              {subjects.map((subject) => (
+                <Select.Option key={subject.id} value={subject.id}>
+                  {subject.subject_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
 
           <Form.Item
             name="month"
