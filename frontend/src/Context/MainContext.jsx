@@ -6,9 +6,8 @@ const MainContext = createContext();
 // Create a Provider Component
 export const MainContextProvider = ({ children }) => {
 
-    const [monthNow,setMonthNow]=useState({ id: 1, month_name: "January" })
-    const [selectedMonth, setSelectedMonth] = useState({ id: 1, month_name: "January" });
-    const [selectedSubject, setSelectedSubject] = useState({id:1,subject_name:"English"})
+    const [selectedMonth, setSelectedMonth] = useState({});
+    const [selectedSubject, setSelectedSubject] = useState({})
     const [year, setYear] = useState(2024);
     const [months, setMonths] = useState([]);
     const [subjects, setSubjects] = useState([]);
@@ -55,7 +54,7 @@ export const MainContextProvider = ({ children }) => {
     <MainContext.Provider
       value={{
         selectedMonth,setSelectedMonth,batchNumber,setBatchNumber,selectedSubject,setSelectedSubject,sectionId,setSectionId,userId,setUserId,userImageUrl, setUserImageUrl,
-        year,setYear,months, setMonths,subjects, setSubjects,monthNow,setMonthNow,loading, setLoading,setSelectedKey,selectedKey,
+        year,setYear,months, setMonths,subjects, setSubjects,loading, setLoading,setSelectedKey,selectedKey,
         userName,setUserName,userMailId,setUserMailId,sectionName,setSectionName,setUserRole,userRole,sections,setSections,sectionsWithAll,setSectionsWithAll,
         academicSubjects,setAcademicSubjects,attendanceBehaviorIds, setAttendanceBehaviorIds,problemSolvingId,setProblemSolvingId,categoryName,setCategoryName,
       }}

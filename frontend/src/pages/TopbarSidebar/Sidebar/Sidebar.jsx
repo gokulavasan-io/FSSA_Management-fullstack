@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { Layout, Menu, Button } from "antd";
-import { useNavigate } from "react-router-dom"; 
+import { json, useNavigate } from "react-router-dom"; 
 import "./Sidebar.css";
 import { useMainContext } from "../../../Context/MainContext";
 import { VscDashboard } from "react-icons/vsc";
@@ -8,6 +9,7 @@ import { BsCalendarCheck } from "react-icons/bs";
 import ToodleLogo from "../../../../public/assets/Components/ToodleLogo";
 import { BsJournalBookmark } from "react-icons/bs";
 import { LuUserRoundCog } from "react-icons/lu";
+import { Dashboard } from "@mui/icons-material";
 
 const { Sider } = Layout;
 
@@ -24,6 +26,9 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Dashboard",
       onClick: () => {
         setSelectedKey("1");
+        sessionStorage.setItem("selectedKey", 1);
+        setSelectedSubject({subject_name:"Dashboard"});
+        sessionStorage.setItem("selectedSubject", JSON.stringify({subject_name:"Dashboard"}));
         navigate("/"); 
       },
     },
@@ -37,7 +42,11 @@ function Sidebar({ collapsed, setCollapsed }) {
           key: `subject-${subject.id}`,
           label: subject.subject_name,
           onClick: () => {
+            const selectedKey = `subject-${subject.id}`;
+            setSelectedKey(selectedKey);
             setSelectedSubject(subject);
+            sessionStorage.setItem("selectedSubject", JSON.stringify(subject));
+            sessionStorage.setItem("selectedKey", selectedKey);
             navigate("/assessment");
           },
         })),
@@ -48,6 +57,9 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Attendance",
       onClick: () => {
         setSelectedKey("2");
+        sessionStorage.setItem("selectedKey", 2);
+        setSelectedSubject({subject_name:"Attendance"});
+        sessionStorage.setItem("selectedSubject", JSON.stringify({subject_name:"Attendance"}));
         navigate("/attendance");
       },
     },
@@ -57,6 +69,9 @@ function Sidebar({ collapsed, setCollapsed }) {
       label: "Monthly Report",
       onClick: () => {
         setSelectedKey("3");
+        sessionStorage.setItem("selectedKey", 3);
+        setSelectedSubject({subject_name:"Monthly Report"});
+        sessionStorage.setItem("selectedSubject", JSON.stringify({subject_name:"Monthly Report"}));
         navigate("/monthly_report"); 
       },
     },
@@ -77,9 +92,14 @@ function Sidebar({ collapsed, setCollapsed }) {
         key: `admin-${index}`,
         label: category,
         onClick: () => {
-          setSelectedKey("5");
-          setCategoryName(category)
-          navigate("/admin"); 
+          const selectedKey = `admin-${index}`;
+          setSelectedKey(selectedKey);
+          setCategoryName(category);
+          setSelectedSubject({subject_name:"Admin"});
+          sessionStorage.setItem("selectedSubject", JSON.stringify({subject_name:"Admin"}));
+          sessionStorage.setItem("selectedKey", selectedKey);
+          sessionStorage.setItem("categoryName", category);
+          navigate("/admin");
         },
       })),
     },

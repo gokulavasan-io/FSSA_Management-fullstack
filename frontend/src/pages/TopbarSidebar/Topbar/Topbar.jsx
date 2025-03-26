@@ -19,6 +19,7 @@ import { IoMdBookmark } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../../Context/AuthContext";
 import UserProfile from "./Components/Profile/UserProfile";
+import { ja } from "date-fns/locale";
 
 
 const { Header } = Layout;
@@ -35,7 +36,10 @@ function TopBar({ collapsed }) {
     <Menu
       onClick={(e) => {
         const selected = months.find((month) => month.id.toString() === e.key);
-        if (selected) setSelectedMonth(selected);
+        if (selected) {
+          setSelectedMonth(selected)
+          sessionStorage.setItem("selectedMonth",JSON.stringify(selected))
+        }
       }}
     >
       {months.map((month) => (
@@ -91,8 +95,7 @@ function TopBar({ collapsed }) {
           </Breadcrumb.Item>
           <Breadcrumb.Item>{selectedSubject.subject_name}</Breadcrumb.Item>
           {location.pathname =="/admin" &&<Breadcrumb.Item>{categoryName}</Breadcrumb.Item>}
-
-          {location.pathname !== "/" &&location.pathname !== "/admin" && (
+          {location.pathname !== "/" &&location.pathname !== "/admin" && location.pathname !== "/team" && (
             <Breadcrumb.Item>
               <Dropdown overlay={monthMenu} trigger={["click"]}>
                 <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>

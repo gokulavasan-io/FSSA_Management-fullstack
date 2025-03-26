@@ -15,7 +15,7 @@ import Team from "./pages/TopbarSidebar/Topbar/Components/Profile/Team";
 export default function Main() {
   return (
     <SnackbarProvider maxSnack={3}>
-      <BrowserRouter> {/* Moved AuthProvider inside BrowserRouter */}
+      <BrowserRouter> 
         <AuthProvider>
           <Routes>
             <Route path="login" element={<Login />} />
