@@ -31,6 +31,7 @@ export const HOME_API_ENDPOINTS={
 
 export const STUDENT_API_ENDPOINTS = {
     STUDENTS: "/students/students/",
+    CHOICES: "/students/base-data-choices/",
 };
 
 export const MEMBER_API_ENDPOINTS = {

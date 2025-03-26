@@ -8,5 +8,5 @@ urlpatterns = [
     path('sections/<int:pk>/', SectionRetrieveUpdateDeleteAPIView.as_view()),
     path('batches/', BatchListCreateView.as_view()),
     path('batches/<int:pk>/', BatchDetailView.as_view()),
-    path('base-data-choice/', StudentBaseDataChoice.as_view()),
+    path('base-data-choices/', StudentBaseDataChoicesView.as_view()),
 ]

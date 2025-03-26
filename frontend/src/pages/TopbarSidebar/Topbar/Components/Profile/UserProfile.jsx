@@ -4,8 +4,8 @@ import ProfileCard from "./ProfileCard";
 import { TiGroup } from "react-icons/ti";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import axiosInstance from "../../../../../api/axiosInstance";
 import { format } from "date-fns";
+import { fetchUserData } from "../../../../../api/generalAPI";
 
 
 const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
@@ -25,8 +25,8 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
 
   const fetchData = async () => {
     let userId = localStorage.getItem("userId") ;
-    const response = await axiosInstance.get(`/teacher/members/${userId}/`);
-    setUserData(formatData(response.data));
+    const response = await fetchUserData(userId)
+    setUserData(formatData(response));
   };
 
   useEffect(() => {

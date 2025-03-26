@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Checkbox, message, Popconfirm } from 'antd';
-import axios from '../../../../api/axiosInstance';
 import { addMember, deleteMember, getMembers, getRoles, updateMember } from '../../../../api/adminAPI';
 import { fetchSections } from '../../../../api/generalAPI';
 

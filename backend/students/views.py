@@ -28,7 +28,7 @@ class BatchDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Batch.objects.all()
     serializer_class = BatchSerializer
 
-class StudentBaseDataChoice(APIView):
+class StudentBaseDataChoicesView(APIView):
     def get(self, request):
         return Response({
             "categories": [{"value": c[0], "label": c[1]} for c in CATEGORY_CHOICES],

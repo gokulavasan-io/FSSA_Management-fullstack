@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react'
-import axiosInstance from '../../../../../api/axiosInstance';
 import ProfileCard from './ProfileCard';
 import { format } from "date-fns";
+import { getMembers } from '../../../../../api/adminAPI';
 
 
 function Team() {
@@ -27,8 +27,8 @@ function Team() {
     
       const fetchMembers = async () => {
         try {
-          const response = await axiosInstance.get("teacher/members/");
-          console.log(response.data);
+          const response = getMembers()
+          console.log(response);
           setMembers(formatData(response.data));
           setLoading(false);
         } catch (error) {

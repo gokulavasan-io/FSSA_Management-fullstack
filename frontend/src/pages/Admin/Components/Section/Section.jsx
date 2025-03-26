@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Popconfirm, message } from 'antd';
-import axios from 'axios';
+import { addSection, deleteSection, getSections, updateSection } from '../../../../api/adminAPI';
 
 const SectionTable = () => {
   const [sections, setSections] = useState([]);
@@ -9,14 +9,13 @@ const SectionTable = () => {
   const [editingSection, setEditingSection] = useState(null);
   const [form] = Form.useForm();
 
-  const apiUrl = 'http://127.0.0.1:8000/students/sections/'; // Adjust your API URL if needed
 
   // ✅ Fetch sections
   const fetchSections = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(apiUrl);
-      setSections(response.data);
+      const response = await getSections()
+      setSections(response);
     } catch (error) {
       message.error('Failed to fetch sections');
     }
@@ -47,11 +46,11 @@ const SectionTable = () => {
       const values = await form.validateFields();
       if (editingSection) {
         // Update existing
-        await axios.put(`${apiUrl}${editingSection.id}/`, values);
+        await updateSection(editingSection.id,values)
         message.success('Section updated successfully');
       } else {
         // Create new
-        await axios.post(apiUrl, values);
+        await addSection(values)
         message.success('Section created successfully');
       }
       fetchSections();
@@ -64,7 +63,7 @@ const SectionTable = () => {
   // ✅ Handle delete section
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${apiUrl}${id}/`);
+      await deleteSection(id)
       message.success('Section deleted successfully');
       fetchSections();
     } catch (error) {
