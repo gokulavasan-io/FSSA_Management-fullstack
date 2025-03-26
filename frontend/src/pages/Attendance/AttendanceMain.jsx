@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import "dayjs/locale/en";
 import Handsontable from "handsontable";
 import useAttendanceContext from "../../Context/AttendanceContext";
@@ -17,6 +17,8 @@ import ShowHolidays from "./Components/Holiday/ShowHolidays";
 import DailyStatisticsTable from "./Components/Statistics/DailyStatistics";
 import StudentStatisticsTable from "./Components/Statistics/StudentStatistics";
 import { FwButton } from "@freshworks/crayons/react";
+import Loader from "../Components/Loader";
+
 
 const AttendanceMain = () => {
   const { year, sectionId } = useMainContext();
@@ -35,6 +37,7 @@ const AttendanceMain = () => {
     setDailyStatisticsVisible,
     setStudentStatisticsVisible,
   } = useAttendanceContext();
+  const [pageLoading, setPageLoading] = useState(false)
 
   const menu = (
     <Menu>
@@ -54,6 +57,7 @@ const AttendanceMain = () => {
   );
 
   const fetchAttendance = async () => {
+    setPageLoading(true)
     try {
       const response = await fetchAttendanceData(sectionId, monthId, year);
       const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);
@@ -63,6 +67,9 @@ const AttendanceMain = () => {
       setStatusOptions(status);
     } catch (error) {
       console.error("Error fetching attendance data:", error);
+    }finally{
+    setPageLoading(false)
+
     }
   };
 
@@ -150,7 +157,7 @@ const AttendanceMain = () => {
           )
         );
 
-        // If remark exists, highlight the cell
+
         if (remarkForThisDay) {
           td.classList.add("remarkCell");
         }
@@ -161,51 +168,52 @@ const AttendanceMain = () => {
           td.classList.remove("handsontableDropdown");
           td.classList.add("weekendCell");
         } else {
-          Handsontable.renderers.DropdownRenderer.apply(this, arguments); // Default dropdown renderer
+          Handsontable.renderers.DropdownRenderer.apply(this, arguments); 
         }
       },
     })),
   ];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-        marginTop: -12,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <FwButton
-          color="secondary"
-          onFwClick={handleUpdateAttendance}
-          disabled={loading}
-        >
-          {loading ? "Updating..." : " Update"}
-        </FwButton>
-        <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
-          <Button
-            shape="circle"
-            type="text"
-            icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
-          />
-        </Dropdown>
+      pageLoading ? <Loader/> : 
+        <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          marginTop: -12,
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <FwButton
+            color="secondary"
+            onFwClick={handleUpdateAttendance}
+            disabled={loading}
+          >
+            {loading ? "Updating..." : " Update"}
+          </FwButton>
+          <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
+            <Button
+              shape="circle"
+              type="text"
+              icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
+            />
+          </Dropdown>
+        </div>
+  
+        <AttendanceTable
+          tableData={tableData}
+          hotColumns={hotColumns}
+          handleAfterChange={handleAfterChange}
+          remarksData={remarks}
+          refetchAttendance={fetchAttendance}
+        />
+  
+        <ShowComments />
+        <ShowHolidays />
+        <DailyStatisticsTable />
+        <StudentStatisticsTable />
       </div>
-
-      <AttendanceTable
-        tableData={tableData}
-        hotColumns={hotColumns}
-        handleAfterChange={handleAfterChange}
-        remarksData={remarks}
-        refetchAttendance={fetchAttendance}
-      />
-
-      <ShowComments />
-      <ShowHolidays />
-      <DailyStatisticsTable />
-      <StudentStatisticsTable />
-    </div>
   );
 };
 

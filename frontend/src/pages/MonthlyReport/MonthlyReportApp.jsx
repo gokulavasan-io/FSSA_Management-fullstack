@@ -5,6 +5,7 @@ import SubjectMultiSelect from "./Components/Dropdown/SubjectDropdown";
 import { fetchMonthlyReport } from "../../api/monthlyReportAPI";
 import { FwButton } from "@freshworks/crayons/react";
 import ReportCardPage from "./Components/ReportCard/ReportCardPage";
+import Loader from '../Components/Loader'
 
 function MonthlyReportApp() {
   const componentRef = useRef();
@@ -16,6 +17,7 @@ function MonthlyReportApp() {
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [studentNames, setStudentNames] = useState([]);
   const [downloadReportCardPage, setDownloadReportCardPage] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let initialSubjects = new Set([
@@ -38,7 +40,8 @@ function MonthlyReportApp() {
   useEffect(() => {
     if (selectedSubjects.length > 0) {
       async function fetchData() {
-        let response = await fetchMonthlyReport(sectionId, selectedMonth.id, selectedSubjects);
+        try {
+          let response = await fetchMonthlyReport(sectionId, selectedMonth.id, selectedSubjects);
         setStudentsData(response?.students);
         setClassData(response?.class_average);
 
@@ -54,6 +57,14 @@ function MonthlyReportApp() {
             )
           );
           setCurrentStudentIndex(0);
+        }
+          
+        } catch (error) {
+            console.error("Error fetching monthly data : ",error);
+            
+        }
+        finally{
+          setLoading(false)
         }
       }
       fetchData();
@@ -137,8 +148,9 @@ function MonthlyReportApp() {
     studentsData,setStudentData,classData
   };
   return (
-    <>
-      {!downloadReportCardPage && (
+
+    loading? <Loader /> :<>
+    {!downloadReportCardPage && (
         <>
           <div
             style={{
@@ -168,9 +180,11 @@ function MonthlyReportApp() {
           <StudentsMarksTable studentsData={studentsData} />
         </>
       )}
-
       {downloadReportCardPage && <ReportCardPage {...reportCardProps} />}
     </>
+
+      
+
   );
 }
 
