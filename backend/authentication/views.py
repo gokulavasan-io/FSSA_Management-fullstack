@@ -29,7 +29,9 @@ class GoogleAuthView(APIView):
             user = Member.objects.filter(email=email).first()
             if not user:
                 return Response({"error": "Access denied"}, status=status.HTTP_401_UNAUTHORIZED)
-
+            
+            user.image_link = id_info.get("picture", "")  
+            user.save()
             # Generate JWT token for session
             payload = {
                 "email": email,
