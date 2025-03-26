@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { GENERAL_API_ENDPOINTS,ATTENDANCE_API_ENDPOINTS } from "./apiPaths";
+import { GENERAL_API_ENDPOINTS,ATTENDANCE_API_ENDPOINTS,MEMBER_API_ENDPOINTS } from "./apiPaths";
 
 // Subjects API Function
 export const getSubjects = async () => {
@@ -54,4 +54,44 @@ export const updateHoliday = async (id, values) => {
 
 export const deleteHoliday = async (id) => {
   return await axiosInstance.delete(`${ATTENDANCE_API_ENDPOINTS.HOLIDAYS_ADMIN}${id}/`);
+};
+
+
+//  Role API Functions
+
+export const getRoles = async () => {
+  const response = await axiosInstance.get(MEMBER_API_ENDPOINTS.ROLES);
+  return response.data;
+};
+
+export const addRole = async (values) => {
+  return await axiosInstance.post(MEMBER_API_ENDPOINTS.ROLES, values);
+};
+
+export const updateRole = async (id, values) => {
+  return await axiosInstance.put(`${MEMBER_API_ENDPOINTS.ROLES}${id}/`, values);
+};
+
+export const deleteRole = async (id) => {
+  return await axiosInstance.delete(`${MEMBER_API_ENDPOINTS.ROLES}${id}/`);
+};
+
+
+//  Member API Functions
+
+export const getMembers = async () => {
+  const response = await axiosInstance.get(MEMBER_API_ENDPOINTS.MEMBERS);
+  return response.data;
+};
+
+export const addMember = async (values) => {
+  return await axiosInstance.post(MEMBER_API_ENDPOINTS.MEMBERS, values);
+};
+
+export const updateMember = async (id, values) => {
+  return await axiosInstance.put(`${MEMBER_API_ENDPOINTS.MEMBERS}${id}/`, values);
+};
+
+export const deleteMember = async (id) => {
+  return await axiosInstance.delete(`${MEMBER_API_ENDPOINTS.MEMBERS}${id}/`);
 };

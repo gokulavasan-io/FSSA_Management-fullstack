@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, message, Popconfirm } from 'antd';
-import axios from 'axios';
+import { addRole, deleteRole, getRoles, updateRole } from '../../../../api/adminAPI';
 
 const RoleTable = () => {
   const [roles, setRoles] = useState([]);
@@ -9,8 +9,8 @@ const RoleTable = () => {
   const [editingRole, setEditingRole] = useState(null);
 
   const fetchRoles = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/teacher/roles/');
-    setRoles(response.data);
+    const response = await getRoles()
+    setRoles(response);
   };
 
   useEffect(() => {
@@ -19,10 +19,10 @@ const RoleTable = () => {
 
   const handleAddOrEdit = async (values) => {
     if (editingRole) {
-      await axios.put(`http://127.0.0.1:8000/teacher/roles/${editingRole.id}/`, values);
+      await updateRole(editingRole.id,values)
       message.success('Role updated');
     } else {
-      await axios.post('http://127.0.0.1:8000/teacher/roles/', values);
+      await addRole(values)
       message.success('Role added');
     }
     setIsModalOpen(false);
@@ -31,7 +31,7 @@ const RoleTable = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://127.0.0.1:8000/teacher/roles/${id}/`);
+    await deleteRole(id)
     message.success('Role deleted');
     fetchRoles();
   };

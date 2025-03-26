@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Checkbox, message, Popconfirm } from 'antd';
 import axios from '../../../../api/axiosInstance';
+import { addMember, deleteMember, getMembers, getRoles, updateMember } from '../../../../api/adminAPI';
+import { fetchSections } from '../../../../api/generalAPI';
 
 const { Option } = Select;
 
@@ -14,13 +16,13 @@ const MemberTable = () => {
 
   const fetchData = async () => {
     const [membersData, rolesData, sectionsData] = await Promise.all([
-      axios.get('/teacher/members/'),
-      axios.get('/teacher/roles/'),
-      axios.get('/students/sections/')
+      getMembers(),
+      getRoles(),
+      fetchSections()
     ]);
-    setMembers(membersData.data);
-    setRoles(rolesData.data);
-    setSections(sectionsData.data);
+    setMembers(membersData);
+    setRoles(rolesData);
+    setSections(sectionsData);
   };
 
   useEffect(() => {
@@ -29,10 +31,10 @@ const MemberTable = () => {
 
   const handleAddOrEdit = async (values) => {
     if (editingMember) {
-      await axios.put(`/teacher/members/${editingMember.id}/`, values);
+      await updateMember(editingMember.id,values)
       message.success('Member updated');
     } else {
-      await axios.post('/teacher/members/', values);
+      await addMember(values)
       message.success('Member added');
     }
     setIsModalOpen(false);
@@ -41,7 +43,7 @@ const MemberTable = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`/teacher/members/${id}/`);
+    await deleteMember(id)
     message.success('Member deleted');
     fetchData();
   };
