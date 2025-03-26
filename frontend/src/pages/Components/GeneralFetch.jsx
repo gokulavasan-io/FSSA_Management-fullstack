@@ -26,28 +26,47 @@ const GeneralFetchComponent = () => {
   } = useMainContext();
 
   useEffect(() => {
-    fetchMonths().then((response) => {
-      setMonths(response);
-    });
 
-    fetchSubjects().then((response) => {
-      setSubjects(response);
-    });
-    fetchSections().then((response) => {
-      setSections(response);
-    });
-
-    fetchUserData(userId).then((response) => {
-      setUserImageUrl(
-        response.image ||
-          "https://cdn-icons-png.flaticon.com/256/149/149071.png"
-      );
-      setUserId(userId);
-      setUserName(response?.name.split(" ")[0]);
-      setSectionId(response.section);
-      setSectionName(response.section_name);
-      setUserRole(response.role_name);
-    });
+      fetchMonths()
+        .then((response) => {
+          setMonths(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching months:", error);
+        });
+    
+      fetchSubjects()
+        .then((response) => {
+          setSubjects(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching subjects:", error);
+        });
+    
+      fetchSections()
+        .then((response) => {
+          setSections(response);
+        })
+        .catch((error) => {
+          console.error("Error fetching sections:", error);
+        });
+    
+      fetchUserData(userId)
+        .then((response) => {
+          setUserImageUrl(
+            response.image ||
+              "https://cdn-icons-png.flaticon.com/256/149/149071.png"
+          );
+          setUserId(userId);
+          setUserName(response?.name.split(" ")[0]);
+          setSectionId(response.section);
+          setSectionName(response.section_name);
+          setUserRole(response.role_name);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    
 
     const storedKey = sessionStorage.getItem("selectedKey");
     const storedCategory = sessionStorage.getItem("categoryName");

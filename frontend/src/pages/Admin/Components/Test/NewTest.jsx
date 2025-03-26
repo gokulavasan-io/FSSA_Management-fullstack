@@ -12,7 +12,6 @@ import {
 } from "antd";
 import { submitTestData } from "../../../../api/marksAPI.js";
 import dayjs from "dayjs";
-import useNotification from "../../../Components/Notification.jsx";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
@@ -21,7 +20,6 @@ const AddNewTest = ({ reFetchFunc }) => {
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   let { months, subjects, batchNumber } = useMainContext();
   subjects = subjects.filter((subject) => subject.subject_name != "Attendance");
-  const showMessage = useNotification();
 
   const [formData, setFormData] = useState({
     test_name: "",
@@ -127,7 +125,6 @@ const AddNewTest = ({ reFetchFunc }) => {
     try {
       const response = await submitTestData(formData);
       reFetchFunc();
-      showMessage(response.message, "s");
 
       resetForm();
 
@@ -136,7 +133,6 @@ const AddNewTest = ({ reFetchFunc }) => {
       if (error.response && error.response.data.message) {
         setErrors({ test_name: error.response.data.message });
       } else {
-        showMessage("Failed to submit test data. Please try again.", "e");
       }
     } finally {
       setLoading(false);

@@ -1,43 +1,23 @@
 import axios from "./axiosInstance";
-import {GENERAL_API_ENDPOINTS,MEMBER_API_ENDPOINTS} from "./apiPaths"
-
+import { GENERAL_API_ENDPOINTS, MEMBER_API_ENDPOINTS } from "./apiPaths";
 
 export const fetchMonths = async () => {
-  try {
-    let response= await axios.get(GENERAL_API_ENDPOINTS.MONTHS)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  let response = await axios.get(GENERAL_API_ENDPOINTS.MONTHS);
+  return response.data;
 };
 
 export const fetchSections = async () => {
-  try {
-    let response= await axios.get(GENERAL_API_ENDPOINTS.SECTIONS)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  let response = await axios.get(GENERAL_API_ENDPOINTS.SECTIONS);
+  return response.data;
 };
 
 export const fetchSubjects = async () => {
-  try {
-    let response= await axios.get(GENERAL_API_ENDPOINTS.SUBJECTS)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  let response = await axios.get(GENERAL_API_ENDPOINTS.SUBJECTS);
+  return response.data;
 };
 
 export const fetchUserData = async (userId) => {
-  if(!userId) return;
-  try {
-    let response= await axios.get(`${MEMBER_API_ENDPOINTS.MEMBERS}${userId}/`)
-    return response.data;
-
-  } catch (error) {
-    throw error;
-  }
+  if (!userId) return;
+  let response = await axios.get(`${MEMBER_API_ENDPOINTS.MEMBERS}${userId}/`);
+  return response.data;
 };
-
-
