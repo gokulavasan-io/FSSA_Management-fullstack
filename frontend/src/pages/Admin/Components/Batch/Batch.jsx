@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, InputNumber, Popconfirm, message } from 'antd';
 import axios from 'axios';
+import { addBatches, deleteBatches, getBatches, updateBatches } from '../../../../api/adminAPI';
 
 const BatchTable = () => {
   const [batches, setBatches] = useState([]);
@@ -9,14 +10,12 @@ const BatchTable = () => {
   const [editingBatch, setEditingBatch] = useState(null);
   const [form] = Form.useForm();
 
-  const apiUrl = 'http://127.0.0.1:8000/students/batches/'; // Adjust if needed
 
-  // ✅ Fetch Batches
   const fetchBatches = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(apiUrl);
-      setBatches(response.data);
+      let res=await getBatches()
+      setBatches(res);
     } catch (error) {
       message.error('Failed to fetch batches');
     }
@@ -46,10 +45,10 @@ const BatchTable = () => {
     try {
       const values = await form.validateFields();
       if (editingBatch) {
-        await axios.put(`${apiUrl}${editingBatch.id}/`, values);
+        await updateBatches(editingBatch.id,values)
         message.success('Batch updated successfully');
       } else {
-        await axios.post(`${apiUrl}create/`, values);
+        await addBatches(values)
         message.success('Batch created successfully');
       }
       fetchBatches();
@@ -62,7 +61,7 @@ const BatchTable = () => {
   // ✅ Delete
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${apiUrl}${id}/`);
+      await deleteBatches(id)
       message.success('Batch deleted successfully');
       fetchBatches();
     } catch (error) {

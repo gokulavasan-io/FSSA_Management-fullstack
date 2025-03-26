@@ -14,14 +14,8 @@ export const ATTENDANCE_API_ENDPOINTS={
     CHECK_HOLIDAY:'/attendance/check-holiday/',
     STUDENT_STATISTICS:'/attendance/student-statistics/',
     DAILY_STATISTICS:'/attendance/daily-statistics/',
+    HOLIDAYS_ADMIN:"/attendance/holidays-admin/",
 }
-
-export const ADMIN_API_ENDPOINTS={
-    HOLIDAYS:"/admin/holidays-admin/",
-    MEMBERS:"teacher/members/",
-    STUDENTS:"/students/students/"
-}
-
 
 export const AUTH_API_ENDPOINTS={
     LOGIN:'/auth/google/',
@@ -55,3 +49,4 @@ export const GENERAL_API_ENDPOINTS={
 export const MONTHLY_REPORT_API_ENDPOINTS={
     MONTHLY_REPORT:'/monthly-report/'
 }
+
