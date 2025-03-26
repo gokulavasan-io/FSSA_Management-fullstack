@@ -18,3 +18,4 @@ export const updateSubject = async (id, subject) => {
 export const deleteSubject = async (id) => {
   return await axios.delete(`${BASE_URL}${id}/`);
 };
+

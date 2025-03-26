@@ -13,8 +13,7 @@ export const fetchUserId = async () => {
 
 export const logout = async () => {
     try {
-      let response= await axiosInstance.post(AUTH_API_ENDPOINTS.LOGOUT); 
-      return 
+       await axiosInstance.post(AUTH_API_ENDPOINTS.LOGOUT); 
     } catch (error) {
       throw error;
     }

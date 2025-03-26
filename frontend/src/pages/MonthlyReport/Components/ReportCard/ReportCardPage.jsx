@@ -46,7 +46,7 @@ function ReportCardPage(props) {
   useEffect(() => {
     if (!selectedTest) return
     (async () => {
-      const response= await fetchLevels(selectedTest.test_detail.id)
+      const response= await fetchLevels(selectedTest.id)
       const result = response?.marks.reduce((acc, curr) => {
         acc[curr.student_name] = Number(curr.level);
         return acc;
