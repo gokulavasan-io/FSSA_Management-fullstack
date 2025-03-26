@@ -1,96 +1,52 @@
 import axiosInstance from "./axiosInstance";
-import {MARKS_API_ENDPOINTS} from "./apiPaths"
+import { MARKS_API_ENDPOINTS } from "./apiPaths";
 
 export const submitTestData = async (testData) => {
-  try {
-    const response = await axiosInstance.post(`${MARKS_API_ENDPOINTS.TESTS}`, testData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.post(`${MARKS_API_ENDPOINTS.TESTS}`, testData);
+  return response.data;
 };
 
-export const fetchAllTestMarksForMonth = async (section,month,subject) => {
-  try {
-    let response= await axiosInstance.get(`${MARKS_API_ENDPOINTS.MONTHLY_DATA}?month=${month}&subject=${subject}`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const fetchAllTestMarksForMonth = async (section, month, subject) => {
+  let response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.MONTHLY_DATA}?month=${month}&subject=${subject}`);
+  return response.data;
 };
 
-export const fetchTestDetails = async (month,subject) => {
-  try {
-    let response= await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTDETAILS}?month=${month}&subject=${subject}`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const fetchTestDetails = async (month, subject) => {
+  let response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTDETAILS}?month=${month}&subject=${subject}`);
+  return response.data;
 };
 
-export const updateMarks = async (testId,data) => {
-  try {
-    let response= await axiosInstance.put(`${MARKS_API_ENDPOINTS.TESTS}${testId}/`, data)
-    console.log(response);
-    
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const updateMarks = async (testId, data) => {
+  let response = await axiosInstance.put(`${MARKS_API_ENDPOINTS.TESTS}${testId}/`, data);
+  return response.data;
 };
 
-export const fetchMarks = async (testId,sectionId) => {
-  try {
-    const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTS}${testId}/?section_id=${sectionId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const fetchMarks = async (testId, sectionId) => {
+  const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTS}${testId}/?section_id=${sectionId}`);
+  return response.data;
 };
-
 
 export const fetchLevels = async (testId) => {
-  try {
-    const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.LEVELTESTS}${testId}/`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.LEVELTESTS}${testId}/`);
+  return response.data;
 };
 
-
-export const updateLevels = async (testId,data) => {
-  try {
-    let response = await axiosInstance.put(`${MARKS_API_ENDPOINTS.LEVELTESTS}${testId}/`, data)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const updateLevels = async (testId, data) => {
+  let response = await axiosInstance.put(`${MARKS_API_ENDPOINTS.LEVELTESTS}${testId}/`, data);
+  return response.data;
 };
-
 
 export const getTestDetails = async () => {
-  try {
-    const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTDETAILS}`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.TESTDETAILS}`);
+  return response.data;
 };
+
 export const deleteTest = async (testId) => {
-  try {
-    const response = await axiosInstance.delete(`${MARKS_API_ENDPOINTS.TESTDETAILS}${testId}/`)
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.delete(`${MARKS_API_ENDPOINTS.TESTDETAILS}${testId}/`);
+  return response.data;
 };
 
 export const updateTest = async (testId, updatedData) => {
-  try {
-      const response = await axiosInstance.put(`${MARKS_API_ENDPOINTS.TESTDETAILS}${testId}/`, updatedData);
-      return response.data;
-  } catch (error) {
-      console.error("Error updating test:", error);
-  }
+  const response = await axiosInstance.put(`${MARKS_API_ENDPOINTS.TESTDETAILS}${testId}/`, updatedData);
+  return response.data;
 };
