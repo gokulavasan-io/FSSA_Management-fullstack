@@ -9,6 +9,9 @@ import datetime
 from django.conf import settings
 from teacher.serializers import MemberSerializer
 from django.conf import settings
+from validators.query_params_validator import validate_query_params
+from validators.null_validator import validate_to_none,validate_not_none
+
 
 
 class GoogleAuthView(APIView):
@@ -16,9 +19,11 @@ class GoogleAuthView(APIView):
     def post(self, request):
         token = request.data.get("token")
         client_id = settings.GOOGLE_CLIENT_ID
+        
+        validate_not_none(google_auth_token=token,google_client_id=client_id)
 
         try:
-            # Verify the token with Google's OAuth API
+            # Verify the token with Google's OAuth
             id_info = id_token.verify_oauth2_token(token, requests.Request(), client_id)
             email = id_info.get("email")
 
