@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from marks.models import Marks
 from attendance.utils import get_student_statistics
-from validators.null_validator import validate_to_none
+from validators.null_validator import validate_to_none,validate_not_none
 from validators.query_params_validator import validate_query_params
 from marks.models import Subject  
 from students.models import Students
@@ -12,11 +12,14 @@ from students.models import Students
 class StudentScoresByMonthView(APIView):
     @validate_query_params(["subjects"])
     def get(self, request, month_id):
-        section_id = validate_to_none(request.GET.get('section'))
-        subjects_param = request.GET.get('subjects')
+        section_id = request.query_params.get('section')
+        subjects_param = request.query_params.get('subjects')
+        
+        section_id,subjects,month_id=validate_to_none(section_id,subjects_param,month_id)
+        validate_not_none(month_id=month_id,subjects=subjects)
 
         # Convert subjects to list of integers
-        subject_ids = list(map(int, subjects_param.split(','))) if subjects_param else []
+        subject_ids = list(map(int, subjects.split(','))) if subjects else []
 
         # Fetch subject details (ID -> Name)
         subject_map = {

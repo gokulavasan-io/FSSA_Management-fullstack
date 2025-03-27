@@ -124,7 +124,7 @@ class TestDataRetrieveUpdateView(APIView):
         section_id = request.query_params.get('section_id') 
         section_id,test_detail_id = validate_to_none(section_id,test_detail_id)
         
-        validate_not_none(test_detail_id)
+        validate_not_none(test_id=test_detail_id)
 
         try:
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
@@ -183,7 +183,7 @@ class TestDataRetrieveUpdateView(APIView):
             if serializer.is_valid():
                 data = serializer.validated_data
                 test_detail_id = validate_to_none(test_detail_id)
-                validate_not_none(test_detail_id)
+                validate_not_none(test_id=test_detail_id)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
                 students = data['studentsMark']
@@ -297,7 +297,7 @@ class LevelTestRetrieveUpdateView(APIView):
             if serializer.is_valid():
                 data = serializer.validated_data
                 test_detail_id = validate_to_none(test_detail_id)
-                validate_not_none(test_detail_id)
+                validate_not_none(test_id=test_detail_id)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
                 students = data['studentsMark']
@@ -322,7 +322,7 @@ class LevelTestRetrieveUpdateView(APIView):
         try:
             section_id = request.query_params.get('section_id')
             section_id,test_detail_id = validate_to_none(section_id,test_detail_id)
-            validate_not_none(test_detail_id)
+            validate_not_none(test_id=test_detail_id)
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
             marks_query = TestLevels.objects.filter(test_detail=test_detail).order_by('student__id')
             
