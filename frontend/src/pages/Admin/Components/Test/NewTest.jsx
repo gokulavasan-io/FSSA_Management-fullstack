@@ -15,6 +15,8 @@ import dayjs from "dayjs";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
+import { testNameRegex } from "../../../../constants/regex.js";
+
 
 const AddNewTest = ({ reFetchFunc,buttonType }) => {
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
@@ -83,7 +85,6 @@ const AddNewTest = ({ reFetchFunc,buttonType }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    const testNameRegex = /^[A-Za-z0-9\s]+$/;
 
     if (!formData.test_name || !testNameRegex.test(formData.test_name)) {
       newErrors.test_name =
