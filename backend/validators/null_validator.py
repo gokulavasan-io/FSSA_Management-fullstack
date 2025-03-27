@@ -31,8 +31,8 @@ def validate_to_none(*items):
         tuple: A tuple where null-equivalent values are converted to None.
     """
     null_values = {None,'', '""'," ", "null", "None", "undefined"}
-    cleaned_items = tuple(None if str(item).strip().strip("'").strip('"') in null_values else item for item in items)
+    validated_items = tuple(None if str(item).strip().strip("'").strip('"') in null_values else item for item in items)
 
-    return cleaned_items if len(cleaned_items) > 1 else cleaned_items[0]
+    return validated_items if len(validated_items) > 1 else validated_items[0]
 
 

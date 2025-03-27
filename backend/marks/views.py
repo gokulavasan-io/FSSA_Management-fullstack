@@ -7,7 +7,8 @@ from django.http import Http404
 from .models import *
 from .serializers import *
 from django.utils import timezone
-
+from validators.query_params_validator import validate_query_params
+from validators.null_validator import validate_to_none,validate_not_none
 
 class MonthListView(ListAPIView):
     queryset = Month.objects.all().order_by('id')
@@ -23,7 +24,7 @@ class SubjectRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
 class TestDetailListView(generics.ListAPIView):
     serializer_class = TestDetailSerializer
-
+    
     def get_queryset(self):
         queryset = TestDetail.objects.all()
         subject = self.request.query_params.get("subject")
@@ -118,12 +119,15 @@ class TestCreateView(APIView):
     
 
 class TestDataRetrieveUpdateView(APIView):
+    @validate_query_params(['section_id'])
     def get(self, request, test_detail_id):
-        section_id = request.query_params.get('section_id')  # Get section_id from query params
-        section_id = None if section_id == 'null' else section_id
+        section_id = request.query_params.get('section_id') 
+        section_id,test_detail_id = validate_to_none(section_id,test_detail_id)
+        
+        validate_not_none(test_detail_id)
+
         try:
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
-            # If section_id is provided, filter marks based on student's section; otherwise, get all marks for the test
             if section_id:
                 marks_query = Marks.objects.filter(test_detail=test_detail, student__section__id=section_id)
             else:
@@ -178,6 +182,8 @@ class TestDataRetrieveUpdateView(APIView):
             serializer = UpdateMarksSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
+                test_detail_id = validate_to_none(test_detail_id)
+                validate_not_none(test_detail_id)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
                 students = data['studentsMark']
@@ -203,18 +209,15 @@ class TestDataRetrieveUpdateView(APIView):
 
 
 class MonthlyData(APIView):
+    @validate_query_params(['section_id'])
     def get(self, request):
         try:
             section_id = request.query_params.get('section_id')
-            section_id = None if section_id == 'null' else section_id
-
             month_id = request.query_params.get('month')
             subject_id = request.query_params.get('subject')
-
-            # Check if all required parameters are provided
-            if not month_id or not subject_id:
-                return Response({"error": "Missing required parameters: month or subject."}, 
-                                 status=status.HTTP_400_BAD_REQUEST)
+            
+            section_id,month_id,subject_id = validate_to_none(section_id,month_id,subject_id)
+            validate_not_none(month_id=month_id,subject_id=subject_id)
 
             test_details_query = TestDetail.objects.all()
 
@@ -293,6 +296,8 @@ class LevelTestRetrieveUpdateView(APIView):
             serializer = UpdateLevelMarkSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
+                test_detail_id = validate_to_none(test_detail_id)
+                validate_not_none(test_detail_id)
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
                 students = data['studentsMark']
@@ -312,10 +317,12 @@ class LevelTestRetrieveUpdateView(APIView):
             print(f"Unexpected error: {str(e)}")
             return Response({"error": "Internal Server Error. Please contact support."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+    @validate_query_params(['section_id'])
     def get(self, request, test_detail_id):
         try:
             section_id = request.query_params.get('section_id')
-            section_id = None if section_id == 'null' else section_id
+            section_id,test_detail_id = validate_to_none(section_id,test_detail_id)
+            validate_not_none(test_detail_id)
             test_detail = get_object_or_404(TestDetail, id=test_detail_id)
             marks_query = TestLevels.objects.filter(test_detail=test_detail).order_by('student__id')
             
