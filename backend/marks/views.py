@@ -209,10 +209,10 @@ class TestDataRetrieveUpdateView(APIView):
 
 
 class MonthlyData(APIView):
-    @validate_query_params(['section_id'])
+    @validate_query_params(['section','month','subject'])
     def get(self, request):
         try:
-            section_id = request.query_params.get('section_id')
+            section_id = request.query_params.get('section')
             month_id = request.query_params.get('month')
             subject_id = request.query_params.get('subject')
             

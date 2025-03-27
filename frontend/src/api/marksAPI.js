@@ -7,7 +7,7 @@ export const submitTestData = async (testData) => {
 };
 
 export const fetchAllTestMarksForMonth = async (section, month, subject) => {
-  let response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.MONTHLY_DATA}?month=${month}&subject=${subject}`);
+  let response = await axiosInstance.get(`${MARKS_API_ENDPOINTS.MONTHLY_DATA}?month=${month}&subject=${subject}&section=${section}`);
   return response.data;
 };
 

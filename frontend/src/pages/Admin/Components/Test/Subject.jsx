@@ -78,11 +78,11 @@ const SubjectTable = () => {
       render: (_, record) => {
 
         if (requiredSubjects.has(record.subject_name)) {
-          return <Button
-          type="link" danger
+          return <p
+          style={{color:"#566573"}}
         >
-          Sorry! You cannot edit this Subject
-        </Button>
+          Sorry! You cannot edit / delete this Subject
+        </p>
         }
 
         return (
