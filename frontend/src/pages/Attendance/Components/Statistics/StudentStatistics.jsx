@@ -18,6 +18,7 @@ const StudentStatistics = () => {
   const [attendanceData, setAttendanceData] = useState([]);
 
   useEffect(() => {
+    if(!studentStatisticsVisible)  return
     const fetchData = async () => {
       try {
         const response = await fetchStudentStatistics(sectionId, monthId, year);
@@ -31,7 +32,7 @@ const StudentStatistics = () => {
     };
 
     fetchData();
-  }, [sectionId, monthId, year]);
+  }, [studentStatisticsVisible]);
 
   // Extract dynamic status counts
   const getStatusFields = () => {

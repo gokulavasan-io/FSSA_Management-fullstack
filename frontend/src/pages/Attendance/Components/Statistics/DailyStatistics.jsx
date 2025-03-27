@@ -42,8 +42,10 @@ const DailyStatistics = () => {
   
 
   useEffect(() => {
+    if(!dailyStatisticsVisible)  return
+
     fetchData();
-  }, [sectionId, monthId, year]);
+  }, [dailyStatisticsVisible]);
 
   return (
     <Modal

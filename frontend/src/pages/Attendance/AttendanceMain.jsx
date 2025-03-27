@@ -58,6 +58,10 @@ const AttendanceMain = () => {
 
   const fetchAttendance = async () => {
     setPageLoading(true)
+    if (sectionId==undefined||monthId==undefined||year==undefined) {
+      setPageLoading(false)
+      return
+    }
     try {
       const response = await fetchAttendanceData(sectionId, monthId, year);
       const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);

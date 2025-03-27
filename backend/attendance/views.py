@@ -9,23 +9,27 @@ from calendar import monthrange,weekday
 from .utils import get_student_statistics
 from rest_framework import generics
 from .serializers import *
+from validators.query_params_validator import validate_query_params
+from validators.null_validator import validate_to_none,validate_not_none
 
 
 
 class AttendanceView(APIView):
+    @validate_query_params(["year","month","section_id"])
     def get(self, request):
         year = request.query_params.get('year', None)
         month = request.query_params.get('month', None)
         section_id = request.query_params.get('section_id', None)
 
-        if section_id in [None, "", "null"]:
-            section_id = None
+        section_id,year, month = validate_to_none(section_id, year,month)
+        validate_not_none(year=year,month=month)
+        
 
         year = int(year) if year else datetime.now().year
         month = int(month) if month else datetime.now().month
         days_in_month = monthrange(year, month)[1]
 
-        # Fetch the "Weekend" status object
+
         weekend_status = Status.objects.filter(status="Weekend").first()
         if not weekend_status:
             return Response({"error": "Status 'Weekend' not found in the database."}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -92,6 +96,7 @@ class AttendanceView(APIView):
 
         return Response({"columns": columns, "data": formatted_data, "status": status_options})
 
+    @validate_query_params(["records"])
     def put(self, request):
         records = request.data.get("records", [])
         try:
@@ -130,8 +135,8 @@ class AttendanceView(APIView):
                         # Update the status
                         attendance_record.status = status_obj
 
-                    elif status_short_form == "":  # If status is empty, retain the remark but don't delete it
-                        attendance_record.status = None  # Remove the status, but do not delete the remark
+                    elif status_short_form == "":  
+                        attendance_record.status = None  # Remove only status
 
                     # Only update the remark if provided explicitly
                     if remark is not None:
@@ -145,22 +150,21 @@ class AttendanceView(APIView):
 
 
 class RemarkView(APIView):
+    @validate_query_params(["month",'year','section_id'])
     def get(self, request):
-        # Get 'month', 'year', and optionally 'section_id' from query parameters
         month = request.query_params.get("month")
         year = request.query_params.get("year")
         section_id = request.query_params.get('section_id', None)
 
-        # Validate the input parameters
         if not month or not year:
             return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
+        month,year,section_id=validate_to_none(month,year,section_id)
+        validate_not_none(month=month,year=year)
 
         try:
-            # Convert to integer to validate
             month = int(month)
             year = int(year)
             
-            # Validate month and year ranges
             if month < 1 or month > 12:
                 return Response({"error": "Invalid month. Month should be between 1 and 12."}, status=http_status.HTTP_400_BAD_REQUEST)
             if year < 1000 or year > 9999:
@@ -169,7 +173,7 @@ class RemarkView(APIView):
         except ValueError:
             return Response({"error": "Invalid input. Month and Year should be integers."}, status=http_status.HTTP_400_BAD_REQUEST)
 
-        # Filter students by section if section_id is provided
+        # Filter students by section
         if section_id:
             students = Students.objects.filter(section_id=section_id)
         else:
@@ -202,20 +206,16 @@ class RemarkView(APIView):
         # Return the response with the list of students and their attendance with remarks and status
         return Response(result, status=http_status.HTTP_200_OK)
 
+
     def post(self, request):
         student_id = request.data.get("student_id")
         date = request.data.get("date")
         remark = request.data.get("remark")
 
-        if not student_id:
-            return Response({"error": "Missing 'student_id' in request."}, status=400)
-        if not date:
-            return Response({"error": "Missing 'date' in request."}, status=400)
-        if remark is None:  # Explicitly check for None to allow empty strings if needed
-            return Response({"error": "Missing 'remark' in request."}, status=400)
+        student_id,date,remark=validate_to_none(student_id,date,remark)
+        validate_not_none(student_id=student_id,date=date,remark=remark)
 
         try:
-            # Verify if the student exists
             student = Students.objects.filter(id=student_id).first()
             if not student:
                 return Response({"error": "Student not found."}, status=404)
@@ -230,7 +230,7 @@ class RemarkView(APIView):
             attendance, created = Attendance.objects.get_or_create(
                 student=student,
                 date=date_obj,
-                defaults={'status': None}  # Do not set default remark
+                defaults={'status': None}  # set status to none
             )
 
             # Update the remark field
@@ -246,14 +246,13 @@ class RemarkView(APIView):
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
             
+    
     def delete(self, request):
-        
         student_id = request.data.get("student_id")
         date = request.data.get("date")
         
-        if not student_id or not date:
-            return Response({"error": "Both 'student_id' and 'date' are required."}, status=http_status.HTTP_400_BAD_REQUEST)
-
+        student_id,date=validate_to_none(student_id,date)
+        validate_not_none(student_id=student_id,date=date)
         try:
             # Convert date to datetime object
             date_obj = datetime.strptime(date, "%Y-%m-%d").date()
@@ -278,11 +277,12 @@ class RemarkView(APIView):
         
 
 class HolidayView(APIView):
+    @validate_query_params(["month","year"])
     def get(self, request):
         month = request.query_params.get("month")
         year = request.query_params.get("year")
-        if not month or not year:
-            return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
+        month,year=validate_to_none(month,year)
+        validate_not_none(month=month,year=year)
 
         try:
             month = int(month)
@@ -294,15 +294,13 @@ class HolidayView(APIView):
         except ValueError:
             return Response({"error": "Invalid input. Month and Year should be integers."}, status=http_status.HTTP_400_BAD_REQUEST)
 
-        # Initial filter
         holidays = Holiday.objects.filter(date__year=year, date__month=month)
 
-        # Prepare response
         holiday_data = [
             {
-                "date": holiday.date.strftime("%Y-%m-%d"),  # Format date as a string
-                "day_of_week": holiday.date.strftime("%A"),  # Get day of the week
-                "reason": holiday.reason,  # Reason for the holiday
+                "date": holiday.date.strftime("%Y-%m-%d"),  
+                "day_of_week": holiday.date.strftime("%A"),  
+                "reason": holiday.reason,  
             }
             for holiday in holidays
         ]
@@ -312,16 +310,12 @@ class HolidayView(APIView):
     def post(self, request):
         date = request.data.get("date")
         reason = request.data.get("reason")
-        batch_id = 4  # Define batch ID dynamically if needed
+        batch_id = 4     # for temporary batch id
 
-        # Validate required fields
-        if not date:
-            return Response({"error": "Missing 'date' in request."}, status=http_status.HTTP_400_BAD_REQUEST)
-        if not reason:
-            return Response({"error": "Missing 'reason' in request."}, status=http_status.HTTP_400_BAD_REQUEST)
+        date,reason,batch_id=validate_to_none(date,reason,batch_id)
+        validate_not_none(date=date,reason=reason,batch_id=batch_id)
 
         try:
-            # Convert date string to a Date object
             try:
                 date_obj = datetime.strptime(date, "%Y-%m-%d").date()
             except ValueError:
@@ -367,15 +361,13 @@ class HolidayView(APIView):
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
     def delete(self, request):
         date = request.data.get("date")
-
-        # Validate required fields
-        if not date:
-            return Response({"error": "Missing 'date' in request."}, status=http_status.HTTP_400_BAD_REQUEST)
+        date=validate_to_none(date)
+        validate_not_none(date=date)
 
         try:
-            # Convert date string to a Date object
             try:
                 date_obj = datetime.strptime(date, "%Y-%m-%d").date()
             except ValueError:
@@ -398,14 +390,14 @@ class HolidayView(APIView):
  
 
 class CheckHolidayView(APIView):
+    @validate_query_params(['date'])
     def get(self, request):
-        date_str = request.query_params.get("date")  # Expecting YYYY-MM-DD format
-
-        if not date_str:
-            return Response({"error": "Missing 'date' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
+        date = request.query_params.get("date")
+        date=validate_to_none(date)
+        validate_not_none(date=date)
 
         try:
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()  # Convert to date object
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()  
         except ValueError:
             return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=http_status.HTTP_400_BAD_REQUEST)
 
@@ -422,10 +414,13 @@ class CheckHolidayView(APIView):
 
 
 class StudentStatistics(APIView):
+    @validate_query_params(['month','year','section_id'])
     def get(self, request):
         month = request.query_params.get('month')
         year = request.query_params.get('year')
-        section_id = request.query_params.get('sectionId')
+        section_id = request.query_params.get('section_id')
+        month,year,section_id=validate_to_none(month,year,section_id)
+        validate_not_none(month=month,year=year,section_id=section_id)
 
         result = get_student_statistics(month, year, section_id)
 
@@ -437,15 +432,14 @@ class StudentStatistics(APIView):
 
 
 class DailyStatisticsView(APIView):
+    @validate_query_params(['month','year','section_id'])
     def get(self, request):
-        # Get query parameters
         month = request.query_params.get('month')
         year = request.query_params.get('year')
-        section_id = request.query_params.get('sectionId')
+        section_id = request.query_params.get('section_Id')
 
-        # Validate and parse month and year
-        if not month or not year:
-            return Response({"error": "Month and Year are required parameters."}, status=http_status.HTTP_400_BAD_REQUEST)
+        month,year,section_id=validate_to_none(month,year,section_id)
+        validate_not_none(month=month,year=year)
 
         try:
             month = int(month)
