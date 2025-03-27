@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   Layout,
   Avatar,
   Dropdown,
   Menu,
-  Badge,
   Breadcrumb,
   Typography,
 } from "antd";
@@ -25,11 +24,23 @@ const { Text } = Typography;
 
 function TopBar({ collapsed }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [sectionsToChoose, setSetSectionsToChoose] = useState([]);
+  const [selectedSection, setSelectedSection] = useState(null);
   const location = useLocation();
 
   const { handleLogout } = useAuth();
-  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName,userImageUrl } = useMainContext();
+  const { months, selectedMonth, setSelectedMonth, selectedSubject,userRole,userName,sectionName,categoryName,userImageUrl,setSectionId,sectionId,sections } = useMainContext();
  
+
+  useEffect(() => {
+    setSetSectionsToChoose([...sections, { id: null, name: "FSSA" }])
+    const selected = [...sections, { id: null, name: "All" }].find((section) => section.id == sectionId);
+        if (selected) {
+          setSelectedSection(selected)
+      }
+  }, [sections,sectionId])
+  
+
   const monthMenu = (
     <Menu
       onClick={(e) => {
@@ -42,6 +53,24 @@ function TopBar({ collapsed }) {
     >
       {months.map((month) => (
         <Menu.Item key={month.id}>{month.month_name}</Menu.Item>
+      ))}
+    </Menu>
+  );
+
+  const sectionMenu = (
+    <Menu
+      onClick={(e) => {
+        const selected = sectionsToChoose.find((section) => 
+          (section.id === null && e.key === "null") || section.id == e.key
+        ); 
+        if (selected) {
+          setSectionId(selected.id)
+          setSelectedSection(selected)
+        }
+      }}
+    >
+      {sectionsToChoose.map((section) => (
+        <Menu.Item key={section.id}>{section.name}</Menu.Item>
       ))}
     </Menu>
   );
@@ -105,11 +134,11 @@ function TopBar({ collapsed }) {
         </Breadcrumb>
 
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          {/* <Badge dot>
-            <BellOutlined
-              style={{ fontSize: "20px", cursor: "pointer", color: "#737791" }}
-            />
-          </Badge> */}
+          {/* <Dropdown overlay={sectionMenu} trigger={["click"]}>
+              <span style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                  {selectedSection?.name} <MdOutlineKeyboardArrowDown size={16} />
+              </span>
+          </Dropdown> */}
 
           <Dropdown overlay={userMenu} placement="bottomRight">
             <div
