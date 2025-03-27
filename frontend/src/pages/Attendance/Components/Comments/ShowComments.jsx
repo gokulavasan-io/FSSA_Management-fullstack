@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IconButton, CircularProgress } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import ConfirmationDialog from "../../../Components/ConfirmDialog";
 import { validRemarkRegex } from "../../../../constants/regex";

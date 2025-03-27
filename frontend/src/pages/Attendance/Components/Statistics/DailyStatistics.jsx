@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { format } from 'date-fns';
 import { fetchDailyStatistics } from '../../../../api/attendanceAPI';

@@ -9,7 +9,6 @@ import { BsCalendarCheck } from "react-icons/bs";
 import ToodleLogo from "../../../../public/assets/Components/ToodleLogo";
 import { BsJournalBookmark } from "react-icons/bs";
 import { LuUserRoundCog } from "react-icons/lu";
-import { Dashboard } from "@mui/icons-material";
 
 const { Sider } = Layout;
 

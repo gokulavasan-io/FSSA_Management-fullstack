@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { CircularProgress } from "@mui/material";
-import { Close, Mode } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { validReasonRegex } from "../../../../constants/regex";
 import useAttendanceContext from "../../../../Context/AttendanceContext";
