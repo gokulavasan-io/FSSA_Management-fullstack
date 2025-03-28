@@ -2,7 +2,6 @@ import React from "react";
 import { Button, Drawer, List, Typography } from "antd";
 import { MenuOutlined, } from "@ant-design/icons";
 import TestDetailSection from "./TestDetailSection.jsx";
-import ExportData from "../ExportData.jsx";
 import { useMarksContext } from "../../../../Context/MarksContext.jsx";
 import "antd/dist/reset.css";
 import { TableChartOutlined } from "@mui/icons-material";
@@ -80,9 +79,7 @@ const TestDetailSideBar = () => {
           </List.Item>
           <TestDetailSection  isLevelSection={false}  />
 
-          <List.Item>
-            <ExportData />
-          </List.Item>
+
         </List>
       </Drawer>
     </>

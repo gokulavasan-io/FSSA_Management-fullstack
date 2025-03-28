@@ -31,13 +31,11 @@
     "highcharts-accessibility": "^0.1.7",
     "highcharts-react-official": "^3.2.1",
     "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-error-boundary": "^5.0.0",
     "react-icons": "^5.4.0",
     "react-router-dom": "^6.4.0",
-    "vite": "^6.2.3",
-    "xlsx": "^0.18.5"
+    "vite": "^6.2.3"
   }
 }
