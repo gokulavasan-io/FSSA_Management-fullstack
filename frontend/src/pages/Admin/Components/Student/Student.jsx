@@ -109,7 +109,10 @@ const StudentTable = () => {
         Add Student
       </FwButton>
       </div>
-      <Table columns={columns} dataSource={students} rowKey="id" />
+      <Table columns={columns} dataSource={students} rowKey="id" pagination={{
+          pageSize: 10, 
+          showQuickJumper: true,  
+        }} />
 
       <Modal
         title={editingStudent ? "Edit Student" : "Add Student"}
