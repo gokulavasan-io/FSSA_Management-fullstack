@@ -1,22 +1,15 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework import generics,viewsets
 from .models import *
 from .serializers import *
 
-class StudentListCreateAPIView(generics.ListCreateAPIView):
+
+class StudentViewSet(viewsets.ModelViewSet):
     queryset = Students.objects.all()
     serializer_class = StudentSerializer
 
-class StudentRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Students.objects.all()
-    serializer_class = StudentSerializer
-
-class SectionListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Section.objects.all()
-    serializer_class = SectionSerializer
-
-class SectionRetrieveUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+class SectionViewSet(viewsets.ModelViewSet):
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
 

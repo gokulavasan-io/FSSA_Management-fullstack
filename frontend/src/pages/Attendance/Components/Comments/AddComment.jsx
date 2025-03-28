@@ -2,12 +2,10 @@ import React from 'react'
 import dayjs from 'dayjs';
 import { addRemark } from "../../../../api/attendanceAPI";
 import '../../Styles/addCommentDialog.css'
-// import { FwButton } from "@freshworks/crayons/react";
 
 
 export const addRemarkAction = (studentId,date,studentName,remark,refetchAttendance) => {
-  console.log(studentId);
-  
+ 
   const remarkInfo = document.getElementById("remarkInfo");
   const formattedDate = dayjs(date).format('DD/MM/YYYY');
   remarkInfo.innerHTML=`${studentName} - ${formattedDate}`

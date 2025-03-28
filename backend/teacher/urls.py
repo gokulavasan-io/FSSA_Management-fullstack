@@ -1,12 +1,12 @@
-from django.urls import path
-from .views import *
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import RoleViewSet, MemberViewSet, UserInfoView
+
+router = DefaultRouter()
+router.register(r'roles', RoleViewSet)
+router.register(r'members', MemberViewSet)  
 
 urlpatterns = [
-    path('roles/', RoleListCreateAPIView.as_view()),
-    path('roles/<int:pk>/', RoleRetrieveUpdateDestroyAPIView.as_view()),
-
-    path('', MemberListCreateAPIView.as_view()),
-    path('<int:pk>/', MemberRetrieveUpdateDestroyAPIView.as_view()),
-    
-    path('user-info/', UserInfoView.as_view()),
+    path('', include(router.urls)),
+    path('user-info/', UserInfoView.as_view()), 
 ]

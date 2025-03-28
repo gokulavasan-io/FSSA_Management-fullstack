@@ -35,7 +35,7 @@ export const STUDENT_API_ENDPOINTS = {
 };
 
 export const MEMBER_API_ENDPOINTS = {
-    MEMBERS: "/members/",
+    MEMBERS: "/members/members/",
     ROLES:'/members/roles/',
     USERINFO:'/members/user-info/',
 };

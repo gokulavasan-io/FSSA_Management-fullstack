@@ -37,7 +37,7 @@ const AttendanceMain = () => {
     setDailyStatisticsVisible,
     setStudentStatisticsVisible,
   } = useAttendanceContext();
-  const [pageLoading, setPageLoading] = useState(false)
+  const [pageLoading, setPageLoading] = useState(true)
 
   const menu = (
     <Menu>
@@ -63,8 +63,11 @@ const AttendanceMain = () => {
       return
     }
     try {
-      const response = await fetchAttendanceData(sectionId, monthId, year);
-      const fetchedRemarks = await fetchRemarks(sectionId, monthId, year);
+      const [response, fetchedRemarks] = await Promise.all([
+        fetchAttendanceData(sectionId, monthId, year),
+        fetchRemarks(sectionId, monthId, year)
+      ]);
+  
       const { data, status } = response;
       setRemarks(fetchedRemarks);
       setTableData(data);
@@ -200,7 +203,7 @@ const AttendanceMain = () => {
             <Button
               shape="circle"
               type="text"
-              icon={<MenuOutlined style={{ fontSize: "18px", color: "#000" }} />}
+              icon={<MenuOutlined style={{ fontSize: "18px", color: "black" }} />}
             />
           </Dropdown>
         </div>

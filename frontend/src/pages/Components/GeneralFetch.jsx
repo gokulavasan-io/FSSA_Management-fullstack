@@ -17,7 +17,6 @@ const GeneralFetchComponent = () => {
     setSectionName,
     setUserId,
     setSections,
-    userId,
     setUserImageUrl,
     setSelectedKey,
     setSelectedMonth,
@@ -26,48 +25,39 @@ const GeneralFetchComponent = () => {
   } = useMainContext();
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [months, subjects, sections, userData] = await Promise.all([
+          fetchMonths(),
+          fetchSubjects(),
+          fetchSections(),
+          fetchUserData(),
+        ]);
+        
 
-      fetchMonths()
-        .then((response) => {
-          setMonths(response);
-        })
-        .catch((error) => {
-          console.error("Error fetching months:", error);
-        });
-    
-      fetchSubjects()
-        .then((response) => {
-          setSubjects(response);
-        })
-        .catch((error) => {
-          console.error("Error fetching subjects:", error);
-        });
-    
-      fetchSections()
-        .then((response) => {
-          setSections(response);
-        })
-        .catch((error) => {
-          console.error("Error fetching sections:", error);
-        });
-    
-      fetchUserData()
-        .then((response) => {
-          setUserImageUrl(
-            response.image_link ||
-              "https://cdn-icons-png.flaticon.com/256/149/149071.png"
-          );
-          setUserId(response?.id);
-          setUserName(response?.name.split(" ")[0]);
-          setSectionId(response.section);
-          setSectionName(response.section_name);
-          setUserRole(response.role_name);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    
+        // Set fetched data
+        setMonths(months);
+        setSubjects(subjects);
+        setSections(sections);
 
+        // Set user details
+        setUserImageUrl(
+          userData.image_link ||
+            "https://cdn-icons-png.flaticon.com/256/149/149071.png"
+        );
+        setUserId(userData?.id);
+        setUserName(userData?.name.split(" ")[0]);
+        setSectionId(userData.section);
+        setSectionName(userData.section_name);
+        setUserRole(userData.role_name);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    // Retrieve stored session values
     const storedKey = sessionStorage.getItem("selectedKey");
     const storedCategory = sessionStorage.getItem("categoryName");
     const storedSubject = sessionStorage.getItem("selectedSubject");
@@ -78,6 +68,7 @@ const GeneralFetchComponent = () => {
     if (storedKey) setSelectedKey(storedKey);
     if (storedCategory) setCategoryName(storedCategory);
 
+    // Set default subject & month if not in storage
     const date = new Date();
     const monthNumber = date.getMonth() + 1;
     const monthName = date.toLocaleString("default", { month: "long" });
@@ -86,7 +77,6 @@ const GeneralFetchComponent = () => {
     if (!storedMonth)
       setSelectedMonth({ id: monthNumber, month_name: monthName });
   }, []);
-
 
 };
 
