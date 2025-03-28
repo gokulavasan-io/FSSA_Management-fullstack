@@ -1,12 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import dayjs from "dayjs";
 import { categoryMark } from "../constants/MarkCategory";
 import { useMainContext } from "./MainContext";
 
-// Create Context
 const MarksContext = createContext();
 
-// Create a Provider Component
 export const MarksContextProvider = ({ children }) => {
   const { selectedMonth, selectedSubject } = useMainContext();
   
@@ -17,12 +14,8 @@ export const MarksContextProvider = ({ children }) => {
   const [testTableData, setTestTableData] = useState([]);
   const [levelTableData,setLevelTableData] = useState([]);
   const [totalMark, setTotalMark] = useState("");
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [previousTotalMark, setPreviousTotalMark] = useState("");
-  const [previousTestName, setPreviousTestName] = useState("");
   const [testId, setTestId] = useState(null);
   const [testNames, setTestNames] = useState([]);
-  const [error, setError] = useState("");
   const [isLevelTable, setIsLevelTable] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
@@ -32,7 +25,6 @@ export const MarksContextProvider = ({ children }) => {
   const [mainTableColumns, setMainTableColumns] = useState([]);
   const [showMainTableColor, setShowMainTableColor] = useState(false);
   const [aboutTest, setAboutTest] = useState("");
-  const [previousAboutTest, setPreviousAboutTest] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openNewTestForm, setOpenNewTestForm] = useState(false);
   const [testDetailCardVisible, setTestDetailCardVisible] = useState(false);
@@ -60,8 +52,6 @@ export const MarksContextProvider = ({ children }) => {
         categoryMark,
         aboutTest,
         setAboutTest,
-        previousAboutTest,
-        setPreviousAboutTest,
         sidebarOpen,
         setSidebarOpen,
         handleOptionClick,
@@ -77,18 +67,10 @@ export const MarksContextProvider = ({ children }) => {
         setTestTableData,
         totalMark,
         setTotalMark,
-        selectedDate,
-        setSelectedDate,
-        previousTotalMark,
-        setPreviousTotalMark,
-        previousTestName,
-        setPreviousTestName,
         testId,
         setTestId,
         testNames,
         setTestNames,
-        error,
-        setError,
         isLevelTable,
         setIsLevelTable,
         isUpdated,

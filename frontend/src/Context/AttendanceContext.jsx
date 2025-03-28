@@ -1,10 +1,8 @@
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { useMainContext } from "./MainContext";
 
-// Create the context
 const AttendanceContext = createContext();
 
-// Create a provider component
 export const AttendanceContextProvider = ({ children }) => {
   const { selectedMonth } = useMainContext();
   
@@ -13,7 +11,6 @@ export const AttendanceContextProvider = ({ children }) => {
   const [statusOptions, setStatusOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [remarks, setRemarks] = useState([]);
-  const hotTableRef = useRef(null);
 
   const [commentsTableVisible, setCommentsTableVisible] = useState(false);
   const [holidaysTableVisible, setHolidaysTableVisible] = useState(false);
@@ -38,8 +35,7 @@ export const AttendanceContextProvider = ({ children }) => {
         loading,
         setLoading,
         remarks,
-        setRemarks,
-        hotTableRef,commentsTableVisible, setCommentsTableVisible,holidaysTableVisible, setHolidaysTableVisible,
+        setRemarks,commentsTableVisible, setCommentsTableVisible,holidaysTableVisible, setHolidaysTableVisible,
         dailyStatisticsVisible,setDailyStatisticsVisible,studentStatisticsVisible,setStudentStatisticsVisible,
       }}
     >

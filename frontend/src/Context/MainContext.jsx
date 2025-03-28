@@ -1,9 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 
-// Create Context
 const MainContext = createContext();
 
-// Create a Provider Component
 export const MainContextProvider = ({ children }) => {
 
     const [selectedMonth, setSelectedMonth] = useState({});

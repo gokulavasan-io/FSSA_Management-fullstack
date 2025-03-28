@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserId, logout as apiLogout } from "../api/AuthAPI"; // Renaming imported logout
+import { fetchUserId, logout as apiLogout } from "../api/AuthAPI"; 
 
 const AuthContext = createContext();
 
