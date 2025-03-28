@@ -14,6 +14,8 @@ function AppLayout() {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
+    <MainContextProvider>
+    <GeneralFetchComponent />
     <Layout style={{ minHeight: "100vh", overflow: "hidden" }}>
       {/* Sidebar */}
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -43,14 +45,12 @@ function AppLayout() {
             }}
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <MainContextProvider>
-              <GeneralFetchComponent />
               <Outlet />
-            </MainContextProvider>
             </ErrorBoundary>
           </Content>
       </Layout>
     </Layout>
+  </MainContextProvider>
   );
 }
 

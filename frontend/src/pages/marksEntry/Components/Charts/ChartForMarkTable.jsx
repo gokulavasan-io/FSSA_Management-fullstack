@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import "highcharts/modules/accessibility"; // Just import, no need to call
+import "highcharts/modules/accessibility"; 
 
 import { useMarksContext } from "../../../../Context/MarksContext";
 import { categoryMark } from "../../../../constants/MarkCategory";

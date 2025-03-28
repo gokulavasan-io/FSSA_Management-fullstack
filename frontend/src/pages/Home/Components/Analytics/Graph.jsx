@@ -27,6 +27,9 @@ const Graph = ({data,months,title,chartHeight,marginTop,cardHeight} ) => {
       layout: "horizontal",
       align: "center",
       verticalAlign: "bottom",
+      itemStyle: {
+        fontWeight: 300,
+      },
     },
     series: data,
     credits: { enabled: false },

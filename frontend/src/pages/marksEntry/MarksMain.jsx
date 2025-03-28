@@ -145,7 +145,7 @@ const MarksMain = () => {
                 }}
               >
                 <div style={{ flex: 1, width: "100%" }}>
-                  { mainTableColumns.length > 3 && (
+                  { mainTableColumns.length > 2 && (
                     <ChartForCategory />
                   )}
                   {isLevelTable && !isMainTable && (
@@ -155,7 +155,7 @@ const MarksMain = () => {
               </Col>
             </Row>
 
-            {isMainTable && mainTableColumns.length < 3 && (
+            {isMainTable && mainTableColumns.length < 2 && (
               <div
                 style={{
                   display: "flex",
