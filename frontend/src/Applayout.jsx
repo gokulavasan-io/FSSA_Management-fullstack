@@ -1,10 +1,13 @@
+import React, { useState } from "react";
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./pages/TopbarSidebar/Sidebar/Sidebar";
 import TopBar from "./pages/TopbarSidebar/Topbar/Topbar";
-import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./pages/Components/ErrorFallback";
+import { MainContextProvider } from "./Context/MainContext";
+import GeneralFetchComponent from "./pages/Components/GeneralFetch";
+
 const { Content } = Layout;
 
 function AppLayout() {
@@ -20,8 +23,8 @@ function AppLayout() {
         style={{
           marginLeft: 70,
           transition: "margin-left 0.3s ease-in-out",
-          height: "100vh", // Ensure full height
-          overflow: "hidden", // Prevent whole page scrolling
+          height: "100vh", 
+          overflow: "hidden", 
         }}
       >
         {/* TopBar */}
@@ -40,7 +43,10 @@ function AppLayout() {
             }}
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <Outlet />
+            <MainContextProvider>
+              <GeneralFetchComponent />
+              <Outlet />
+            </MainContextProvider>
             </ErrorBoundary>
           </Content>
       </Layout>
