@@ -155,7 +155,7 @@ const MarksMain = () => {
               </Col>
             </Row>
 
-            {isMainTable && mainTableColumns.length < 2 && (
+            {isMainTable && mainTableColumns.length < 3 && (
               <div
                 style={{
                   display: "flex",

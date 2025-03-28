@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import "highcharts/modules/accessibility"; // Just import, no need to call
+import "highcharts/modules/accessibility"; 
 
 import { useMarksContext } from "../../../../Context/MarksContext";
 import { Card, Typography } from "antd";
@@ -79,7 +79,7 @@ export default function ChartForLevelTable() {
       style={{
         maxWidth: "300px",
         overflow: "hidden",
-        borderRadius: "16px",
+        borderRadius: "8px",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >

@@ -24,8 +24,7 @@ const UserProfile = ({ isModalVisible, setIsModalVisible }) => {
   }
 
   const fetchData = async () => {
-    let userId = localStorage.getItem("userId") ;
-    const response = await fetchUserData(userId)
+    const response = await fetchUserData()
     setUserData(formatData(response));
   };
 

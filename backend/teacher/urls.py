@@ -7,4 +7,6 @@ urlpatterns = [
 
     path('', MemberListCreateAPIView.as_view()),
     path('<int:pk>/', MemberRetrieveUpdateDestroyAPIView.as_view()),
+    
+    path('user-info/', UserInfoView.as_view()),
 ]

@@ -51,13 +51,13 @@ const GeneralFetchComponent = () => {
           console.error("Error fetching sections:", error);
         });
     
-      fetchUserData(userId)
+      fetchUserData()
         .then((response) => {
           setUserImageUrl(
             response.image_link ||
               "https://cdn-icons-png.flaticon.com/256/149/149071.png"
           );
-          setUserId(userId);
+          setUserId(response?.id);
           setUserName(response?.name.split(" ")[0]);
           setSectionId(response.section);
           setSectionName(response.section_name);
