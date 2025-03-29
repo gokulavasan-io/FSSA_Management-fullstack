@@ -18,6 +18,7 @@ class AttendanceReport(APIView):
     @validate_query_params(["date","batch","section_id"])
     def get(self, request):
         params=request.query_params
+        
         date = params.get("date")
         batch_id = params.get("batch")
         section_id = params.get("section_id")
@@ -28,18 +29,35 @@ class AttendanceReport(APIView):
         filters = {"batch_id": batch_id}
         if section_id is not None:
             filters["section_id"] = section_id
+            
+            
 
         students = Students.objects.filter(**filters)
-        attendance_records = Attendance.objects.filter(date=date).select_related("student", "status")
+        attendance_records = Attendance.objects.filter(date=date).select_related("student", "status")    
+        
+        """
+            SELECT attendance.*, student.*, status.*
+            FROM attendance
+            JOIN student ON attendance.student_id = student.id
+            JOIN status ON attendance.status_id = status.id
+       
+        select_related - select_related is a query optimization technique in Django ORM 
+                        that performs SQL JOINs to fetch related data in one query   ----> reduces (N+1) query problem
+                         
+        OUTPUT:
+            [
+                Attendance(id=1, student=Students(id=1, name="John"), date="2025-03-29", status=Status(id=1, status="Present")),
+                Attendance(id=2, student=Students(id=2, name="Emma"), date="2025-03-29", status=Status(id=3, status="Late Arrival")),
+                Attendance(id=3, student=Students(id=3, name="David"), date="2025-03-29", status=None),
+            ]
 
-        # Map student ID to attendance status
+        """
         attendance_map = {
             record.student.id: record.status.status.strip() if record.status and str(record.status.status).strip().lower() not in ["", "null",None]
             else "No Status"
             for record in attendance_records
         }
 
-        # Initialize response format
         student_data = {"Present": [], "Half Leave": [], "Absent": [], "No Status": []}
 
         for student in students:
@@ -54,7 +72,6 @@ class AttendanceReport(APIView):
             student_data[status].append(student.name)
 
 
-        # Generate attendance summary
         attendance_summary = {
             "studentData": student_data,
             "attendanceCounts": {status: len(names) for status, names in student_data.items()},
@@ -77,7 +94,7 @@ class MonthlyAnalytics(APIView):
         subject_ids = [int(s) for s in subject_ids.split(",")]
         batch = get_object_or_404(Batch, id=batch_id)
 
-        # Fetch all test details for the given batch and subjects
+        # all test details for the given batch and subjects
         test_details = TestDetail.objects.filter(
             batch=batch, 
             subject_id__in=subject_ids

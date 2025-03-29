@@ -11,7 +11,7 @@ class Status(models.Model):
 
 
 class Attendance(models.Model):
-    student = models.ForeignKey(Students, on_delete=models.CASCADE, related_name='attendances')
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, blank=True)
     remark = models.CharField(max_length=255, blank=True, null=True)

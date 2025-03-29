@@ -44,6 +44,15 @@ class GoogleAuthView(APIView):
                 "iat": datetime.datetime.now(datetime.timezone.utc),
             }
             session_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+            
+            ''''
+            HMAC (Hash-based Message Authentication Code):
+            HMAC is a type of cryptographic hash function that uses a secret key to generate a message authentication code (MAC). 
+            SHA-256 (Secure Hash Algorithm 256-bit):
+            SHA-256 is a cryptographic hash function that produces a 256-bit hash value. 
+            Symmetric Algorithm:
+            In HS256, the same secret key is used for both signing (encode) and verifying (decode) the JWT, making it a symmetric algorithm. 
+            '''
 
             # Set the session token in an HTTP-only cookie
             response = Response({"message": "Login successful", "id": MemberSerializer(user).data.get("id")})
