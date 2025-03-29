@@ -12,7 +12,7 @@ const AttendanceTable = ({
   hotColumns,
   handleAfterChange,
   remarksData,
-  refetchAttendance,
+  handleUpdateAttendance
 }) => {
   const { year } = useMainContext();
   const { monthId } = useAttendanceContext();
@@ -33,7 +33,7 @@ const AttendanceTable = ({
       );
       remark = attendanceRecord?.remark;
     }
-    addRemarkAction(studentId, date, studentName, remark, refetchAttendance);
+    addRemarkAction(studentId, date, studentName, remark,handleUpdateAttendance);
   };
 
   return (

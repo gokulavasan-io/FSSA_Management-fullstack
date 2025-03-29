@@ -4,7 +4,7 @@ import { addRemark } from "../../../../api/attendanceAPI";
 import '../../Styles/addCommentDialog.css'
 
 
-export const addRemarkAction = (studentId,date,studentName,remark,refetchAttendance) => {
+export const addRemarkAction = (studentId,date,studentName,remark,handleUpdateAttendance) => {
  
   const remarkInfo = document.getElementById("remarkInfo");
   const formattedDate = dayjs(date).format('DD/MM/YYYY');
@@ -16,7 +16,7 @@ export const addRemarkAction = (studentId,date,studentName,remark,refetchAttenda
       date: date,
       remark: remark,
     };
-    saveRemark(remarkData, refetchAttendance)
+    saveRemark(remarkData,handleUpdateAttendance)
   },remark);
 };
 
@@ -50,11 +50,10 @@ export function showDialog(onSubmit,remark) {
   };
 }
 
-export async function saveRemark(remarkData,refetchAttendance) {
+export async function saveRemark(remarkData,handleUpdateAttendance) {
   try {
+    await handleUpdateAttendance()
     await addRemark(remarkData);
-    alert("remark added successfully")
-    refetchAttendance()
   } catch (error) {
     console.error("Error adding remark:", error);
     alert("Failed to add remark.");

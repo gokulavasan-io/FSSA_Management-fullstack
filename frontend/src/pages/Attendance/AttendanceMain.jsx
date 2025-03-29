@@ -28,8 +28,6 @@ const AttendanceMain = () => {
     setTableData,
     statusOptions,
     setStatusOptions,
-    loading,
-    setLoading,
     remarks,
     setRemarks,
     setCommentsTableVisible,
@@ -37,7 +35,7 @@ const AttendanceMain = () => {
     setDailyStatisticsVisible,
     setStudentStatisticsVisible,
   } = useAttendanceContext();
-  const [pageLoading, setPageLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
 
   const menu = (
     <Menu>
@@ -57,9 +55,9 @@ const AttendanceMain = () => {
   );
 
   const fetchAttendance = async () => {
-    setPageLoading(true)
+    setLoading(true)
     if (sectionId==undefined||monthId==undefined||year==undefined) {
-      setPageLoading(false)
+      setLoading(false)
       return
     }
     try {
@@ -75,7 +73,7 @@ const AttendanceMain = () => {
     } catch (error) {
       console.error("Error fetching attendance data:", error);
     }finally{
-    setPageLoading(false)
+    setLoading(false)
 
     }
   };
@@ -97,7 +95,6 @@ const AttendanceMain = () => {
   };
 
   const handleUpdateAttendance = async () => {
-    setLoading(true);
 
     const updatedRecords = tableData.map((row) => {
       const attendance = Object.keys(row)
@@ -117,13 +114,10 @@ const AttendanceMain = () => {
 
     try {
       await updateAttendance(updatedRecords);
-      alert("Attendance updated successfully!");
     } catch (error) {
       console.error("Error updating attendance:", error);
       alert("Failed to update attendance.");
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const daysCount = new Date(year, monthId, 0).getDate();
@@ -182,7 +176,7 @@ const AttendanceMain = () => {
   ];
 
   return (
-      pageLoading ? <Loader/> : 
+      loading ? <Loader/> : 
         <div
         style={{
           display: "flex",
@@ -195,9 +189,8 @@ const AttendanceMain = () => {
           <FwButton
             color="secondary"
             onFwClick={handleUpdateAttendance}
-            disabled={loading}
           >
-            {loading ? "Updating..." : " Update"}
+            Update
           </FwButton>
           <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
             <Button
@@ -213,7 +206,7 @@ const AttendanceMain = () => {
           hotColumns={hotColumns}
           handleAfterChange={handleAfterChange}
           remarksData={remarks}
-          refetchAttendance={fetchAttendance}
+          handleUpdateAttendance={handleUpdateAttendance}
         />
   
         <ShowComments />
