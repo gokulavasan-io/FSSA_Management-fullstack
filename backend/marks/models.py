@@ -28,19 +28,25 @@ class TestDetail(models.Model):
         return self.test_name
 
 
-class Marks(models.Model):
-    student = models.ForeignKey('students.Students', on_delete=models.CASCADE, related_name="marks")
-    test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE, related_name="marks")
-    mark = models.TextField(null=True, blank=True)  
+class BaseModel(models.Model):
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE)
     remark = models.TextField( null=True, blank=True)  
+    
+    class Meta:
+        abstract = True
+
+
+class Marks(BaseModel):
+    mark = models.CharField(max_length=10,null=True, blank=True)  
+    
+    def __str__(self):
+        return f"{self.student.name}: {self.mark}"
 
 
     
-class TestLevels(models.Model):
-    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+class TestLevels(BaseModel):
     level = models.CharField(max_length=10, blank=True, null=True)
-    remark = models.CharField(max_length=255, blank=True, null=True)
-    test_detail = models.ForeignKey(TestDetail, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.student.name}: {self.level}"

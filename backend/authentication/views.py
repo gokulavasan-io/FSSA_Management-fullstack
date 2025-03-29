@@ -40,8 +40,8 @@ class GoogleAuthView(APIView):
             # Generate JWT token for session
             payload = {
                 "email": email,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(days=30), 
-                "iat": datetime.datetime.utcnow(),
+                "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30), 
+                "iat": datetime.datetime.now(datetime.timezone.utc),
             }
             session_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
