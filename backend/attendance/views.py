@@ -96,7 +96,6 @@ class AttendanceView(APIView):
 
         return Response({"columns": columns, "data": formatted_data, "status": status_options})
 
-    @validate_query_params(["records"])
     def put(self, request):
         records = request.data.get("records", [])
         try:
