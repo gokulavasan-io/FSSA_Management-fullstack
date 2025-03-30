@@ -36,6 +36,7 @@ const AttendanceMain = () => {
     setStudentStatisticsVisible,
   } = useAttendanceContext();
   const [loading, setLoading] = useState(true)
+  const [daysCount,setDaysCount]=useState(null)
 
   const menu = (
     <Menu>
@@ -66,10 +67,11 @@ const AttendanceMain = () => {
         fetchRemarks(sectionId, monthId, year)
       ]);
   
-      const { data, status } = response;
+      const { data, status,daysCount } = response;
       setRemarks(fetchedRemarks);
       setTableData(data);
       setStatusOptions(status);
+      setDaysCount(daysCount)
     } catch (error) {
       console.error("Error fetching attendance data:", error);
     }finally{
@@ -120,7 +122,6 @@ const AttendanceMain = () => {
     } 
   };
 
-  const daysCount = new Date(year, monthId, 0).getDate();
   const daysInMonth = Array.from({ length: daysCount }, (_, i) => i + 1);
 
   const hotColumns = [

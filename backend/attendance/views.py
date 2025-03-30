@@ -34,10 +34,9 @@ class AttendanceView(APIView):
         if not weekend_status:
             return Response({"error": "Status 'Weekend' not found in the database."}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Fetch students
+
         students_query = Students.objects.filter(section_id=section_id) if section_id else Students.objects.all()
 
-        # Fetch attendance records
         attendance_query = Attendance.objects.select_related('student', 'status').filter(
             date__year=year,
             date__month=month
@@ -45,14 +44,14 @@ class AttendanceView(APIView):
         if section_id:
             attendance_query = attendance_query.filter(student__section_id=section_id)
 
-        # Ensure missing records are created
+        # missing records are created
         existing_records = {(record.student.id, record.date) for record in attendance_query}
         new_attendance_records = []
 
         for student in students_query:
             for day in range(1, days_in_month + 1):
                 date = datetime(year, month, day).date()
-                is_weekend = weekday(year, month, day) >= 5  
+                is_weekend = weekday(year, month, day) >= 5    # 5 and 6 weekend
 
                 if (student.id, date) not in existing_records:
                     new_attendance_records.append(
@@ -62,7 +61,7 @@ class AttendanceView(APIView):
         if new_attendance_records:
             Attendance.objects.bulk_create(new_attendance_records)
 
-        # Fetch updated attendance records
+        #  updated attendance records
         attendance_query = Attendance.objects.select_related('student', 'status').filter(
             date__year=year,
             date__month=month
@@ -70,7 +69,7 @@ class AttendanceView(APIView):
         if section_id:
             attendance_query = attendance_query.filter(student__section_id=section_id)
 
-        # Prepare response
+        #  formatted data
         formatted_data = []
         for student in students_query:
             student_data = {
@@ -85,16 +84,10 @@ class AttendanceView(APIView):
 
             formatted_data.append(student_data)
 
-        # Column headers
-        columns = [
-            {"data": "name", "title": "Student Name"},
-            *[{"data": str(day), "title": f"Day {day}"} for day in range(1, days_in_month + 1)],
-        ]
-
         # Status options
         status_options = Status.objects.order_by('id').values_list('short_form', flat=True)
 
-        return Response({"columns": columns, "data": formatted_data, "status": status_options})
+        return Response({ "data": formatted_data, "status": status_options,'daysCount':days_in_month})
 
     def put(self, request):
         records = request.data.get("records", [])
@@ -110,21 +103,19 @@ class AttendanceView(APIView):
 
                 year = record.get("year")
                 month = record.get("month")
-                if not year or not month:
-                    return Response({"error": "Missing 'year' or 'month' in record"}, status=http_status.HTTP_400_BAD_REQUEST)
+                validate_not_none(year=year,month=month)
 
                 for attendance in record.get("attendance", []):
                     day = attendance.get("day")
                     status_short_form = attendance.get("status")
-                    remark = attendance.get("remark", None)  # May or may not be present
+                    remark = attendance.get("remark", None)  
                     date = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
 
-                    # Fetch or create the attendance record
-                    attendance_record, created = Attendance.objects.get_or_create(
-                        student=student,
-                        date=date,
-                        defaults={"status": None, "remark": ""}  # Set defaults
-                    )
+                    attendance_record = Attendance.objects.filter(student=student, date=date).first()
+
+                    if not attendance_record:
+                        # Create a new attendance record only if it doesn't exist
+                        attendance_record = Attendance(student=student, date=date, status=None, remark="")
 
                     if status_short_form:  # If status is provided, update it
                         status_obj = Status.objects.filter(short_form=status_short_form).first()
@@ -137,7 +128,7 @@ class AttendanceView(APIView):
                     elif status_short_form == "":  
                         attendance_record.status = None  # Remove only status
 
-                    # Only update the remark if provided explicitly
+                    # Only update the remark if provided 
                     if remark is not None:
                         attendance_record.remark = remark
 
@@ -153,10 +144,8 @@ class RemarkView(APIView):
     def get(self, request):
         month = request.query_params.get("month")
         year = request.query_params.get("year")
-        section_id = request.query_params.get('section_id', None)
+        section_id = request.query_params.get('section_id')
 
-        if not month or not year:
-            return Response({"error": "Missing 'month' or 'year' in request"}, status=http_status.HTTP_400_BAD_REQUEST)
         month,year,section_id=validate_to_none(month,year,section_id)
         validate_not_none(month=month,year=year)
 
@@ -172,11 +161,10 @@ class RemarkView(APIView):
         except ValueError:
             return Response({"error": "Invalid input. Month and Year should be integers."}, status=http_status.HTTP_400_BAD_REQUEST)
 
-        # Filter students by section
+        students = Students.objects.all()
         if section_id:
             students = Students.objects.filter(section_id=section_id)
-        else:
-            students = Students.objects.all()
+            
 
         result = []
 
@@ -198,11 +186,11 @@ class RemarkView(APIView):
                 if filtered_attendance:
                     student_data = {
                         "student_id": student.id,
-                        "student_name": student.name,  # Assuming the student model has a 'name' field
+                        "student_name": student.name, 
                         "attendance": filtered_attendance
                     }
                     result.append(student_data)
-        # Return the response with the list of students and their attendance with remarks and status
+                    
         return Response(result, status=http_status.HTTP_200_OK)
 
 
@@ -236,11 +224,7 @@ class RemarkView(APIView):
             attendance.remark = remark
             attendance.save()
 
-            message = "Remark updated successfully."
-            if created:
-                message += " (New attendance record created.)"
-
-            return Response({"message": message}, status=200)
+            return Response({"message": "Remark updated successfully."}, status=200)
 
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=500)
@@ -333,7 +317,6 @@ class HolidayView(APIView):
             else:
                 message = "Holiday added successfully."
 
-            # Fetch the "Holiday" status object
             holiday_status = Status.objects.filter(status="Holiday").first()
             if not holiday_status:
                 return Response({"error": "Status 'Holiday' not found in the database."}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -342,9 +325,9 @@ class HolidayView(APIView):
             students_in_batch = Students.objects.filter(batch=batch_id)
 
             # Check if attendance records exist for this date
-            existing_attendance = Attendance.objects.filter(date=date_obj)
+            existing_attendance_for_day = Attendance.objects.filter(date=date_obj)
 
-            if not existing_attendance.exists():
+            if not existing_attendance_for_day.exists():
                 # If attendance does not exist, create records for all students in the batch with remark=None
                 attendance_records = [
                     Attendance(student=student, date=date_obj, status=holiday_status, remark=None)
@@ -353,7 +336,7 @@ class HolidayView(APIView):
                 Attendance.objects.bulk_create(attendance_records)
             else:
                 # Update existing attendance records to "Holiday" and set remark to None
-                existing_attendance.update(status=holiday_status, remark=None)
+                existing_attendance_for_day.update(status=holiday_status)
 
             return Response({"message": message}, status=http_status.HTTP_200_OK)
 
@@ -378,9 +361,11 @@ class HolidayView(APIView):
                 return Response({"error": "Holiday record not found."}, status=http_status.HTTP_404_NOT_FOUND)
 
             holiday.delete()
-
+            
             # Remove "Holiday" status from attendance records
-            Attendance.objects.filter(date=date_obj, status__status="Holiday").update(status=None)
+            
+            holiday_status = Status.objects.filter(status="Holiday").first()
+            Attendance.objects.filter(date=date_obj, status=holiday_status).update(status=None)
 
             return Response({"message": "Holiday deleted successfully."}, status=http_status.HTTP_200_OK)
 
@@ -445,14 +430,19 @@ class DailyStatisticsView(APIView):
             year = int(year)
             start_date = datetime(year, month, 1)
             end_date = (start_date + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+            
+            """
+            start_date + timedelta(days=32) → March 4, 2024
+            .replace(day=1) → March 1, 2024
+            - timedelta(days=1) → February 29, 2024
+            """
         except ValueError:
             return Response({"error": "Invalid month or year."}, status=http_status.HTTP_400_BAD_REQUEST)
 
         # Filter students by section if sectionId is provided
         if section_id:
             try:
-                section = Section.objects.get(id=section_id)
-                students = Students.objects.filter(section=section)
+                students = Students.objects.filter(section=section_id)
             except Section.DoesNotExist:
                 return Response({"error": "Section not found."}, status=http_status.HTTP_404_NOT_FOUND)
         else:
@@ -464,26 +454,25 @@ class DailyStatisticsView(APIView):
         status_types = [status.status for status in all_statuses if status.status not in excluded_statuses]
 
         
-        # Prepare daily statistics dictionary
+        #  daily statistics dictionary
         daily_statistics = {}
         for day in range(1, end_date.day + 1):
             current_date = datetime(year, month, day).date()
             daily_statistics[current_date] = {
-                "date": current_date.strftime('%d/%m/%Y'),  # Preformatted date
+                "date": current_date.strftime('%d/%m/%Y'),
                 "day":  current_date.strftime('%a').lower(),
                 "is_holiday": current_date.weekday() in [5, 6],
                 "status_counts": {status: 0 for status in status_types}
             }
 
-        # Mark additional holidays explicitly
+        # Mark holidays explicitly
         holidays = Holiday.objects.filter(date__range=(start_date, end_date))
         for holiday in holidays:
             holiday_date = holiday.date
             if holiday_date in daily_statistics:
-                daily_statistics[holiday_date]["is_holiday"] = True
                 daily_statistics[holiday_date]["day"] += " (holiday)"
 
-        # Populate attendance counts
+        #  attendance counts
         attendances = Attendance.objects.filter(
             student__in=students, date__range=(start_date, end_date)
         ).values('date', 'status__status').annotate(count=Count('status'))
@@ -500,7 +489,6 @@ class DailyStatisticsView(APIView):
                 daily_statistics[record_date]["status_counts"][record_status] += record['count']
 
 
-        # Convert to final response format
         formatted_response = []
         for date, data in sorted(daily_statistics.items()):
             row = {

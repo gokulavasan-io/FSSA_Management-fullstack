@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 def validate_not_none(**kwargs):
     """
     Validates multiple named parameters and raises an exception 
-    if any value is null-equivalent.
+    if any value is None or null-equivalent.
     Args:
         **kwargs: Named parameters (key-value pairs) to validate.
     Raises:
