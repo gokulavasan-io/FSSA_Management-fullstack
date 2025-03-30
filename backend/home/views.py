@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import ValidationError
 from attendance.models import *
 from students.models import *
 from marks.models import *
@@ -89,38 +88,45 @@ class MonthlyAnalytics(APIView):
         subject_ids = params.get("subjects")
         
         batch_id,subject_ids=validate_to_none(batch_id,subject_ids)
+        
         validate_not_none(batch_id=batch_id,subjects=subject_ids)
 
         subject_ids = [int(s) for s in subject_ids.split(",")]
-        batch = get_object_or_404(Batch, id=batch_id)
-
-        # all test details for the given batch and subjects
         test_details = TestDetail.objects.filter(
-            batch=batch, 
+            batch_id=batch_id, 
             subject_id__in=subject_ids
         ).select_related("month").order_by("month__id")
 
-        # Fetch all sections
         sections = Section.objects.all()
+        
 
-        # Fetch all marks in a single query
-        all_marks = Marks.objects.filter(test_detail__batch=batch).select_related("student__section")
+        all_marks = Marks.objects.filter(test_detail__batch_id=batch_id).select_related("student__section")
 
-        marks_lookup = defaultdict(lambda: defaultdict(list))  # {section_id: {test_id: [marks]}}
+        marks_lookup = defaultdict(lambda: defaultdict(list))   # 2D dictionary (nested dictionary)
+
 
         for mark in all_marks:
             marks_lookup[mark.student.section_id][mark.test_detail_id].append(mark)
 
         result = {}
-        overall_monthly_averages = defaultdict(list)  # { month_id: [all_class_averages] }
+        overall_monthly_averages = defaultdict(list) 
+         
         months_set = {}
 
-        # Process each section
+
         for section in sections:
             monthly_averages = {}
 
-            for month, tests in groupby(test_details, key=attrgetter("month")):
+            for month, tests in groupby(test_details, key=attrgetter("month")):    
+                
+                """
+                - Groups consecutive items in test_details that have the same month value.
+                - attrgetter("month") extracts the month attribute from each TestDetail object.
+                - Since test_details is already sorted by month__id, groupby will correctly group them.
+                """
+                
                 test_averages = []
+                
 
                 for test in tests:
                     marks_list = marks_lookup[section.id].get(test.id, [])
@@ -140,7 +146,7 @@ class MonthlyAnalytics(APIView):
                         test_average = round(total_marks_sum / total_students, 1)
                         test_averages.append(test_average)
 
-                # Store month by ID to sort later
+                # Store month by ID to sort
                 month_name = month.month_name
                 months_set[month.id] = month_name  # Store month_id as key for sorting
 
@@ -153,7 +159,6 @@ class MonthlyAnalytics(APIView):
 
             result[section.name] = monthly_averages
 
-        # Add an "All" section for overall averages
         result["All"] = {
             months_set[month_id]: round(sum(values) / len(values), 1) if values else 0.0
             for month_id, values in overall_monthly_averages.items()
@@ -162,7 +167,6 @@ class MonthlyAnalytics(APIView):
         # Sort months by month_id
         sorted_months = [months_set[month_id] for month_id in sorted(months_set.keys())]
 
-        # Convert to required format
         formatted_result = {
             "months": sorted_months,
             "data": {
