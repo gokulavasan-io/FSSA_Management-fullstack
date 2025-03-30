@@ -189,14 +189,23 @@ class SubjectAnalytics(APIView):
 
         subject_ids = [int(s) for s in subject_ids.split(",")]
 
-        batch = get_object_or_404(Batch, id=batch_id)
+
         test_details = TestDetail.objects.filter(
-            batch=batch, subject_id__in=subject_ids
+            batch=batch_id, subject_id__in=subject_ids
         ).select_related("month", "subject").order_by("month__id", "subject__id")
+        
+        """
+        SELECT * FROM TestDetail 
+        JOIN Month ON TestDetail.month_id = Month.id
+        JOIN Subject ON TestDetail.subject_id = Subject.id
+        WHERE batch_id = batch_id AND subject_id IN subject_ids
+        ORDER BY Month.id, Subject.id;
+
+        """
 
         sections = Section.objects.all().order_by("id")
         all_marks = Marks.objects.filter(
-            test_detail__batch=batch, test_detail__subject_id__in=subject_ids
+            test_detail__batch=batch_id, test_detail__subject__in=subject_ids
         ).select_related("student__section", "test_detail__subject")
 
         marks_lookup = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
@@ -205,11 +214,26 @@ class SubjectAnalytics(APIView):
 
         result = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
         all_months = sorted(
-            set(test.month.month_name for test in test_details),
-            key=lambda x: Month.objects.get(month_name=x).id
+            set(test.month.month_name for test in test_details),    # sort months that only have tests  
+            key=lambda x: Month.objects.get(month_name=x).id        
         )
 
         for month, tests in groupby(test_details, key=attrgetter("month")):
+            
+            """
+            {
+                "Jan": [TestDetail(id=1, month="Jan", subject="Math"),
+                        TestDetail(id=2, month="Jan", subject="Science")],
+
+                "Feb": [TestDetail(id=3, month="Feb", subject="Math"),
+                        TestDetail(id=4, month="Feb", subject="Science")],
+
+                "Mar": [TestDetail(id=5, month="Mar", subject="Math")]
+            }
+
+            """
+            
+            
             month_name = month.month_name
             subject_section_averages = defaultdict(lambda: defaultdict(list))
 
@@ -256,8 +280,11 @@ class SubjectAnalytics(APIView):
         }
 
         for subject, month_data in result.items():
+            
             structured_response["SubjectsData"][subject] = {}
+            
             for section in list(sections.values_list("name", flat=True)) + ["All"]:
+                
                 structured_response["SubjectsData"][subject][section] = [
                     month_data[month].get(section, 0.0) for month in structured_response["months"]
                 ]
