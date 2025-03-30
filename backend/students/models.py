@@ -47,7 +47,7 @@ SCHOOL_CHOICES = [
 
 class Students(models.Model):
     name = models.CharField(max_length=255)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name="students", null=True)  
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True)  
     age = models.IntegerField(null=True)  
     gender = models.CharField(max_length=10,choices=GENDER_CHOICES, null=True, blank=True) 
     category = models.CharField(max_length=2, choices=CATEGORY_CHOICES, null=True, blank=True) 

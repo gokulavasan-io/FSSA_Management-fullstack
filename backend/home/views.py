@@ -285,6 +285,12 @@ class SubjectAnalytics(APIView):
             
             for section in list(sections.values_list("name", flat=True)) + ["All"]:
                 
+                """
+                values_list("name", flat=True) extracts only the "name" field from sections, returning a list-like structure.
+                ["A", "B", "C"]+["All"] =>  ["A", "B", "C", "All"]
+                    
+                """
+                
                 structured_response["SubjectsData"][subject][section] = [
                     month_data[month].get(section, 0.0) for month in structured_response["months"]
                 ]
