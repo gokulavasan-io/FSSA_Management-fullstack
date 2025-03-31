@@ -52,6 +52,7 @@ class TestCreateView(APIView):
                 created_at = data['created_at'] if data['created_at'] else timezone.now()
                 month = data['month']
 
+
                 # Check if a test with the same name already exists for the same month and subject
                 existing_test = TestDetail.objects.filter(
                     test_name=data['test_name'],
@@ -64,7 +65,7 @@ class TestCreateView(APIView):
                         "message": "Test with this name already exists for the selected month and subject.",
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                # Create the test detail without section (for all students globally)
+
                 test_detail = TestDetail.objects.create(
                     test_name=data['test_name'],
                     month=month,
@@ -76,9 +77,10 @@ class TestCreateView(APIView):
                     isLevelTest=data['isLevelTest']
                 )
 
-                # Fetch all students in the database
-                all_students = Students.objects.all()
-
+                # Fetch all students in the database  for that batch
+                all_students = Students.objects.all().filter(batch=data["batch"])
+                
+                
                 # Create Marks entries for each student
                 marks_objects = []
                 
@@ -143,7 +145,7 @@ class TestDataRetrieveUpdateView(APIView):
                     average_mark = "Absent"
                 else:
                     try:
-                        mark_value = float(mark.mark)  # Convert mark to float if numeric
+                        mark_value = float(mark.mark)  # Convert mark to float 
                         if mark_value>total_marks:
                             mark_value=0
                         average_mark = 0
@@ -152,12 +154,12 @@ class TestDataRetrieveUpdateView(APIView):
                             average_mark = round(average_mark, 1)
                     except ValueError:
                         # Handle invalid mark values
-                        average_mark = ""
+                        average_mark = ""               # '' because for frontend need to show empty cell
 
                 marks_data.append({
                     "student_id":mark.student.id,
                     "student_name": mark.student.name,
-                    "mark": mark.mark,  # Retain original value for display
+                    "mark": mark.mark, 
                     "average_mark": average_mark,
                     "remark": mark.remark
                 })
@@ -221,12 +223,9 @@ class MonthlyData(APIView):
 
             test_details_query = TestDetail.objects.all()
 
-            # Get the related month and subject
-            month = get_object_or_404(Month, id=month_id)
-            subject = get_object_or_404(Subject, id=subject_id)
 
             # Filter test details based on month and subject
-            test_details_query = test_details_query.filter(month=month, subject=subject)
+            test_details_query = test_details_query.filter(month=month_id, subject=subject_id)
 
             if not test_details_query.exists():
                 return Response([], status=status.HTTP_200_OK)
@@ -239,10 +238,10 @@ class MonthlyData(APIView):
                 if not test_detail.isLevelTest:
                     testNames.append(test_detail.test_name)
 
-                # Get marks for the test detail and filter by section if section_id is provided
+                # Get marks for the test detail and order_by students id
                 marks_query = Marks.objects.filter(test_detail=test_detail).order_by('student__id')
 
-                # If section_id is provided, filter marks for that specific section
+
                 if section_id:
                     marks_query = marks_query.filter(student__section_id=section_id)
                     
@@ -265,9 +264,15 @@ class MonthlyData(APIView):
                     if student_name not in student_marks:
                         student_marks[student_name] = []
                         student_avg_marks[student_name] = 0.0
+                        
                     student_marks[student_name].append(average_mark)
+                    
+                    # making average to 0 if absent for calculation
                     if mark.mark == "Absent":
                         average_mark =  0.0
+                        
+                        
+                    # updating avg_marks for each test for each student
                     student_avg_marks[student_name] = round(
                         (student_avg_marks[student_name] * (len(student_marks[student_name]) - 1) + average_mark)
                         / len(student_marks[student_name]), 1
@@ -276,7 +281,6 @@ class MonthlyData(APIView):
 
                 
                 
-            # Prepare the student average marks list
             student_avg_marks_list = []
             for student_name, marks in student_marks.items():
                 avg_marks = student_avg_marks[student_name]
@@ -298,6 +302,7 @@ class LevelTestRetrieveUpdateView(APIView):
                 data = serializer.validated_data
                 test_detail_id = validate_to_none(test_detail_id)
                 validate_not_none(test_id=test_detail_id)
+                
                 test_detail = get_object_or_404(TestDetail, id=test_detail_id)
                 
                 students = data['studentsMark']

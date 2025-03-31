@@ -17,7 +17,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
         model = TestDetail
         fields = '__all__'
 
-    def to_representation(self, instance):
+    def to_representation(self, instance):                   # ref:   https://testdriven.io/blog/drf-serializers/#to_representation
         data = super().to_representation(instance)
 
         data['month'] = {
