@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from .models import *
 
-class StudentMarkSerializer(serializers.Serializer):
+class StudentMarkSerializer(serializers.ModelSerializer):
     model=Marks
     fields='__all__'
     
 
-class StudentLevelMarkSerializer(serializers.Serializer):
+class StudentLevelMarkSerializer(serializers.ModelSerializer):
     model=TestLevels
     fields='__all__'
 

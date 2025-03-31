@@ -13,4 +13,3 @@ urlpatterns = [
     path("monthly-data/",MonthlyData.as_view()),
    
 ]
-    
