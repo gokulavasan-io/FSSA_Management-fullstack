@@ -1,33 +1,31 @@
 from datetime import datetime, timedelta
 from django.db.models import Count
-from .models import Students, Section, Attendance, Status, Holiday  # Update with your actual app name
+from .models import  Attendance, Status, Holiday 
+from students.models import Students, Section
+from validators.null_validator import validate_to_none,validate_not_none
 
 def get_student_statistics(month=None, year=None, section_id=None):
     
-    section_id = None if section_id == 'null' else section_id
+    section_id = validate_to_none(section_id)
+    validate_not_none(month=month,year=year)
 
-    # Default to full data if no month and year are provided
+
     if month and year:
         try:
             month = int(month)
             year = int(year)
             start_date = datetime(year, month, 1)
-            end_date = (start_date + timedelta(days=32)).replace(day=1)  # First day of the next month
+            end_date = (start_date + timedelta(days=32)).replace(day=1) 
         except ValueError:
             return {"error": "Invalid month or year"}
-    else:
-        start_date = None
-        end_date = None
 
-    # Filter students by section if provided
+
+
+    students = Students.objects.all()
     if section_id:
-        try:
-            section = Section.objects.get(id=section_id)
-            students = Students.objects.filter(section=section)
-        except Section.DoesNotExist:
-            return {"error": "Section not found"}
-    else:
-        students = Students.objects.all()
+        students = Students.objects.filter(section=section_id)
+
+        
 
     result = []
     all_statuses = Status.objects.all()
@@ -37,16 +35,20 @@ def get_student_statistics(month=None, year=None, section_id=None):
     if start_date and end_date:
         current_date = start_date
         holidays = Holiday.objects.filter(date__range=(start_date, end_date)).values_list('date', flat=True)
+        
+        """ 
+        flat=True: Flattens the result, returning a simple list instead of a list of tuples.
+        """
 
         while current_date < end_date:
-            if current_date.weekday() < 5 and current_date not in holidays:  # Exclude weekends and holidays
+            if current_date.weekday() < 5 and current_date not in holidays:  # 5 = Saturday, 6 = Sunday → Weekends are excluded
                 working_days += 1
             current_date += timedelta(days=1)
     else:
         working_days = "N/A"
 
     for student in students:
-        # Filter attendance for the student
+        
         attendance_data = Attendance.objects.filter(student=student)
         if start_date and end_date:
             attendance_data = attendance_data.filter(date__range=(start_date, end_date))
@@ -58,12 +60,22 @@ def get_student_statistics(month=None, year=None, section_id=None):
         status_counts = {status.status: 0 for status in all_statuses}
         attendance_counts = attendance_data.values('status__status').annotate(count=Count('status'))
         
+        """
+        Count('status'): Counts the number of records where the status field is present.
+        annotate(count=...): Adds a new field named count to each group in the queryset, storing the count of status values.
+        
+        output : [
+                    {"status__status": "Present", "count": 3},
+                    {"status__status": "Absent", "count": 2}
+                ]        
+        """
+        
         for record in attendance_counts:
             status_name = record["status__status"]
             if not status_name is None:
                 status_counts[status_name] = record['count']
 
-        # Calculate total score
+        
         total_score = status_counts.get("Present", 0)
 
         if status_counts.get("Late Arrival", 0) < 3:

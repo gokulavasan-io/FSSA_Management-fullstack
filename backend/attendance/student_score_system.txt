@@ -1,0 +1,22 @@
+Student - Marking System Explanation:
+
+1. Present ("Present")  
+   - Each Present day contributes 1 mark.
+
+2. Late Arrival ("Late Arrival")  
+   - If fewer than 3 late arrivals: Each counts as 1 mark.  
+   - If 3 or more late arrivals: Every third late arrival reduces 0.5 marks.  
+
+3. Approved Permission ("Approved Permission")  
+   - If fewer than 3 approved permissions: Each counts as 1 mark.  
+   - If 3 or more approved permissions: Every third permission reduces 0.5 marks.  
+
+4. Half Day Leave ("Half Day Leave")  
+   - Each half-day leave contributes 0.5 marks.  
+
+5. Sick Leave ("Sick Leave")  
+   - If 2 or fewer sick leaves: Fully counted.  (1 mark )
+   - If more than 2 sick leaves: No marks.  
+
+6. Casual Leave ("Casual Leave")  
+   - Each Casual Leave contributes 1 mark.
