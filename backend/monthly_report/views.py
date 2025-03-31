@@ -9,7 +9,7 @@ from marks.models import Subject
 from students.models import Students
 
 
-class StudentScoresByMonthView(APIView):
+class MonthlyReportView(APIView):
     @validate_query_params(["subjects"])
     def get(self, request, month_id):
         section_id = request.query_params.get('section')
@@ -27,13 +27,12 @@ class StudentScoresByMonthView(APIView):
             for subject in Subject.objects.filter(id__in=subject_ids)
         }
 
-        # Check for Attendance inclusion
+        # check if to include attendance
         include_attendance = "Attendance" in subject_map.values()
 
-        # Academic subjects to consider in academic average
+        # Academic subjects for academic average
         academic_subjects = {"Project", "PET", "Problem Solving", "Tech", "Life Skills", "English"}
 
-        # ✅ Fetch students along with section name
         students_query = Students.objects.all()
         if section_id:
             students_query = students_query.filter(section_id=section_id)
@@ -52,7 +51,7 @@ class StudentScoresByMonthView(APIView):
         # Attendance data if needed
         attendance_data = {}
         if include_attendance:
-            attendance_data = get_student_statistics(month=month_id, year=2024, section_id=section_id)
+            attendance_data = get_student_statistics(month=month_id, year=2024, section_id=section_id) # using the utils from attendance.utils
 
         # Fetch marks
         marks_query = Marks.objects.filter(
@@ -98,11 +97,10 @@ class StudentScoresByMonthView(APIView):
             student_scores[student_name]['scores']['Academic Average'] = academic_avg
             student_scores[student_name]['scores']['Overall Average'] = overall_avg
 
-        # ✅ Class average calculation with all subjects included
         section_averages = {}
 
         # Fetch all existing sections
-        sections = list(Students.objects.values_list('section__name', flat=True).distinct())
+        sections = list(Students.objects.values_list('section__name', flat=True))
         
         # Initialize each section with all subjects as 0.0
         for section_name in sections:
@@ -120,7 +118,7 @@ class StudentScoresByMonthView(APIView):
             avg_score = round(entry['average_score'], 1) if entry['average_score'] is not None else 0.0
             section_averages[section_name][subject_name] = avg_score
 
-        # Now calculate Academic and Overall Averages for each section
+        # calculate Academic and Overall Averages for each section
         for section_name, subject_scores in section_averages.items():
             all_subject_scores = list(subject_scores.values())
 
@@ -142,8 +140,8 @@ class StudentScoresByMonthView(APIView):
                     sec_attendance = sec["attendance_percentage"]
                     section_averages[sec_name]['Attendance'] = round(sec_attendance, 1)
 
-        # ✅ Final response
+
         return Response({
             'students': student_scores,         # Individual student scores and their averages, with section name
-            'class_average': section_averages  # Per-section averages including subjects, academic & overall avg
+            'class_average': section_averages  # section averages including subjects, academic & overall avg
         })
