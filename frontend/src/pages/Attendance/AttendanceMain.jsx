@@ -57,7 +57,7 @@ const AttendanceMain = () => {
 
   const fetchAttendance = async () => {
     setLoading(true)
-    if (sectionId==undefined||monthId==undefined||year==undefined) {
+    if (monthId==undefined||year==undefined) {
       setLoading(false)
       return
     }

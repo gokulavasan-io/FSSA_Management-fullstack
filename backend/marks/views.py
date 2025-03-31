@@ -181,7 +181,7 @@ class TestDataRetrieveUpdateView(APIView):
        
     def put(self, request, test_detail_id):
         try:
-            serializer = StudentMarkSerializer(data=request.data,many=True)
+            serializer = UpdateMarksSerializer(data=request.data)
             if serializer.is_valid():
                 data = serializer.validated_data
                 test_detail_id = validate_to_none(test_detail_id)
@@ -297,7 +297,7 @@ class MonthlyData(APIView):
 class LevelTestRetrieveUpdateView(APIView):
     def put(self, request, test_detail_id):
         try:
-            serializer = StudentLevelMarkSerializer(data=request.data,many=True)
+            serializer = UpdateLevelMarkSerializer(data=request.data,many=True)
             if serializer.is_valid():
                 data = serializer.validated_data
                 test_detail_id = validate_to_none(test_detail_id)

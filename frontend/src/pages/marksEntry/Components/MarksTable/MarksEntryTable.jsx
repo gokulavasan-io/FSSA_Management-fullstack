@@ -40,7 +40,7 @@ function TestTable() {
       await updateMarks(testId, { studentsMark: testTableData });
       setIsUpdated(true);
     } catch (error) {
-      console.error("Error submitting marks data:", error.message);
+      console.error("Error submitting marks data:", error);
       alert("Something went wrong. Try again later.", "error");
     }
   };

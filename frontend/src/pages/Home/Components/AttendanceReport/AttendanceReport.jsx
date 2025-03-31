@@ -22,8 +22,7 @@ const AttendanceReport = () => {
     "No Status": [],
   });
 
-  // const today = dayjs().format("YYYY-MM-DD");
-  let today="2024-01-24"
+  const today = dayjs().format("YYYY-MM-DD");
   const navigate = useNavigate();
 
   // Popover State

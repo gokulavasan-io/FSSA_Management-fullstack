@@ -6,7 +6,7 @@ export const MainContextProvider = ({ children }) => {
 
     const [selectedMonth, setSelectedMonth] = useState({});
     const [selectedSubject, setSelectedSubject] = useState({})
-    const [year, setYear] = useState(2024);
+    const [year, setYear] = useState(2025);
     const [months, setMonths] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(false);

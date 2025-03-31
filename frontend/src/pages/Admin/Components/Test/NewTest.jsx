@@ -15,7 +15,6 @@ import dayjs from "dayjs";
 import { useMainContext } from "../../../../Context/MainContext.jsx";
 import { FwButton } from "@freshworks/crayons/react";
 const { Option } = Select;
-import { testNameRegex } from "../../../../constants/regex.js";
 
 
 const AddNewTest = ({ reFetchFunc,buttonType }) => {
@@ -86,9 +85,9 @@ const AddNewTest = ({ reFetchFunc,buttonType }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.test_name || !testNameRegex.test(formData.test_name)) {
+    if (!formData.test_name) {
       newErrors.test_name =
-        "Test Name must contain only letters, numbers, and spaces.";
+        "Test Name required";
     }
 
     if (!formData.month) newErrors.month = "Please select a month";
@@ -128,7 +127,6 @@ const AddNewTest = ({ reFetchFunc,buttonType }) => {
       reFetchFunc();
       resetForm();
       setOpenNewTestForm(false);
-      alert("New Test Added")
     } catch (error) {
       if (error.response && error.response.data.message) {
         setErrors({ test_name: error.response.data.message });
